@@ -4,6 +4,8 @@ package Timing;
  *  This class provides the basic functionality of a timer.
  *  For proper use, it should be used in a continuous loop with a specific frame rate.
  *  The default period is 60 frames per second (fps).
+ *  @note This timer isn't reset by default, which means that it will activate in the next frame.
+ *  If you want it to be active in the current frame after instantiating the class, call void resetTimer().
  */
 public class Timer {
     public static final float DELTA_TIME = 0.016666668F; // default value for frame period

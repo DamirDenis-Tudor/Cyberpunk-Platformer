@@ -33,7 +33,7 @@ public class TimersHandler {
      * @param timer   timer to be added
      * @param ID      identifier of the timer
      * @return        void
-     * @throws        Exception
+     * @throws        Exception message
      */
     public void addTimer(Timer timer, String ID) throws Exception {
         if (timer == null) {
@@ -54,7 +54,7 @@ public class TimersHandler {
         if (this.timers.containsKey(ID)) {
             return (Timer)this.timers.get(ID);
         } else {
-            throw new Exception("Invalid member ID in TimeHandler!");
+            throw new Exception("Invalid member ID: " + ID + " in TimeHandler!");
         }
     }
 }
