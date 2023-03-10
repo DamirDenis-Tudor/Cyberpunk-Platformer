@@ -1,0 +1,15 @@
+ - Jocul are urmatoarele state-uri : PlayState , MenuState
+ - Fiecare State are un SceneHandler, cel din urma gestionand scenele, dezactivand/activand scene
+ - La randul ei fiecare scena are o serie de componenente, componente ce retin o referenta catre scena careia apartin
+ - Ideea este in velul urmator : 
+	- schimbarea de scena o vor face componentele initiand o cerere de schimbare de scena catre scena de care apartine
+        - aceasta la randul ei "intreaba mai departe daca poate fi facuta schimbarea"
+ - Pe scurt conceptul este in felul urmator : 
+	- creare : StateHandler -> States -> ScenesHandler -> Scenes -> Components
+        - cerere de schimbare de scena : 
+		- poate fi data de o componenta a unei scene : exemplu -> sunt in PlayScene si playerul termina nivelul -> schimba care LevelCompletedScene
+		- sau poate fi schimbata de insasi scena : exemplu -> sunt in PlayScene si apas butonul(de la tastatura ) ESC -> schimba catre LevelPauseScene
+
+ - Note: 
+	- Daca scena care se vrea a fi activa nu face parte din state-ul activ curent, atunci se va seta state-ul activ catre acela care contine scena
+	- As fi putut sa pun toate scenele gramada, dar am vrut eu sa fac o stratificare(sa las loc si pentru alte implementari, de exemplu un state de Multiplayer state in care sa o scena de asteptare, un loby etc)
