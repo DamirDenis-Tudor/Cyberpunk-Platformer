@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class implements the Singleton design pattern and
+ * This class implements the <b>Singleton design pattern</b> and
  * handles all the timers in the game by saving them into a HashMap.
  */
 public class TimersHandler {
-    private Map<String, Timer> timers ; // timers HashMap
+    private final Map<String, Timer> timers ; // timers HashMap
     private static TimersHandler instance = null; // first and last instance
 
     /**

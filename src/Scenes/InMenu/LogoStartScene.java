@@ -2,7 +2,7 @@ package Scenes.InMenu;
 
 import Scenes.Scene;
 
-public class LogoStartScene implements Scene {
+public class LogoStartScene extends Scene {
     @Override
     public void draw() {
         //System.out.println("LogoStartScene draw.");

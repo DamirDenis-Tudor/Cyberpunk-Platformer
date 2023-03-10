@@ -1,21 +1,27 @@
-package States;
+package States; // This package implements State Design Pattern.
 
 import Scenes.InMenu.InitGameScene;
 import Scenes.InMenu.LogoStartScene;
 import Scenes.InMenu.MainMenuScene;
 import Scenes.InMenu.SettingsScene;
 
+/**
+ * This class implements the menuState that is
+ * responsible with the menu interaction.
+ */
 public class MenuState extends State {
 
     public MenuState() throws Exception {
         super();
 
-        sceneHandler.addScene("InitGameScene" , new InitGameScene());
+        /*
+            add a couple of scenes
+         */
         sceneHandler.addScene("LogoStartScene" , new LogoStartScene());
         sceneHandler.addScene("MainMenuScene" , new MainMenuScene());
+        sceneHandler.addScene("InitGameScene" , new InitGameScene());
         sceneHandler.addScene("SettingsScene" , new SettingsScene());
 
-        sceneHandler.setActiveScene("InitGameScene");
     }
     @Override
     public void updateState() throws Exception {
@@ -30,20 +36,5 @@ public class MenuState extends State {
         //System.out.println("-----------MenuState draw--------------");
 
         sceneHandler.getActiveScene().draw();
-    }
-
-    @Override
-    public void saveState() {
-
-    }
-
-    @Override
-    public void loadState() {
-
-    }
-
-    @Override
-    public void resetState() {
-
     }
 }

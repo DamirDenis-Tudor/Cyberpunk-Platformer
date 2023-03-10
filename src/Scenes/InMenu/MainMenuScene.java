@@ -5,12 +5,11 @@ import States.StatesHandler;
 import Timing.Timer;
 import Timing.TimersHandler;
 
-public class MainMenuScene implements Scene {
+public class MainMenuScene extends Scene {
     // BUTOANE
 
     public MainMenuScene() throws Exception {
-        TimersHandler.getInstance().addTimer(new Timer(5) , "main");
-        TimersHandler.getInstance().getTimer("main").resetTimer();
+
     }
     @Override
     public void draw() {
@@ -19,12 +18,6 @@ public class MainMenuScene implements Scene {
     @Override
     public void update() throws Exception {
         //System.out.println("MainMenuScene update.");
-
-        if(!TimersHandler.getInstance().getTimer("main").getTimerState()) {
-            StatesHandler.getInstance().setActiveState("play");
-            StatesHandler.getInstance().getActiveState().
-                    getSceneHandler().setActiveScene("LevelCompletedScene");
-        }
     }
 
 

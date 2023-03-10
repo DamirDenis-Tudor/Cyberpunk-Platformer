@@ -1,9 +1,10 @@
-package States;
+package States; // This package implements State Design Pattern.
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This class implements the Singleton design pattern and
+ * This class implements the <b>Singleton Design Pattern</b> and
  * handles all the states in the game by saving them into a HashMap.
  */
 public class StatesHandler {
@@ -15,10 +16,13 @@ public class StatesHandler {
         states = new HashMap<>();
         activeState = null;
 
+        /*
+            add a couple of states
+         */
         addState("play" , new PlayState());
         addState("menu" , new MenuState());
 
-        setActiveState("menu");
+
     }
 
     /**
@@ -40,6 +44,9 @@ public class StatesHandler {
     public void addState(String ID , State state) throws Exception {
         if(states.containsKey(ID)) {
             throw new Exception("Error - trying to add an existing state!");
+        }
+        if(states.isEmpty()){
+            activeState = state;
         }
         states.put(ID , state);
     }
@@ -65,5 +72,28 @@ public class StatesHandler {
             throw new Exception("Error - trying to get an invalid active state!");
         }
         return activeState;
+    }
+
+    /**
+     * This method handles the scene change request .
+     * It can change the active state if the new scene not
+     * belong to the current active state.
+     * @param newScene
+     */
+    public void handleSceneChangeRequest(String newScene) throws Exception {
+        boolean isValidScene = false;
+        for (Map.Entry<String, State> state:states.entrySet()) {
+            if(state.getValue().getSceneHandler().checkSceneBelongsToGroup(newScene)){
+                isValidScene = true;
+                if (activeState != state.getValue()) {
+                    activeState = state.getValue();
+                }
+                activeState.getSceneHandler().setActiveScene(newScene);
+            }
+        }
+
+        if (!isValidScene){
+            throw (new Exception("EROR : handleSceneChangeRequest -> scene name is invalid : \"" + newScene + "\""));
+        }
     }
 }

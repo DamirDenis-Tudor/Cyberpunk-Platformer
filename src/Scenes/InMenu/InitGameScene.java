@@ -1,14 +1,10 @@
 package Scenes.InMenu;
 
 import Scenes.Scene;
-import States.StatesHandler;
-import Timing.Timer;
-import Timing.TimersHandler;
 
-public class InitGameScene implements Scene {
+public class InitGameScene extends Scene {
     public InitGameScene() throws Exception {
-        TimersHandler.getInstance().addTimer(new Timer(5) , "init");
-        TimersHandler.getInstance().getTimer("init").resetTimer();
+
     }
     @Override
     public void draw() {
@@ -23,8 +19,5 @@ public class InitGameScene implements Scene {
             test : after 10 seconds the state will change to "play"
             and scene that will be rendered is playScene
          */
-        if(!TimersHandler.getInstance().getTimer("init").getTimerState()){
-            StatesHandler.getInstance().setActiveState("play");
-        }
     }
 }

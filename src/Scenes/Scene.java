@@ -1,7 +1,19 @@
 package Scenes;
 
-public interface Scene {
-    void draw();
+import States.StatesHandler;
 
-    void update() throws Exception;
+public abstract class Scene {
+    public abstract void draw() throws Exception;
+
+    public abstract void update() throws Exception;
+
+    public void requestSceneChange(String newScene) throws Exception {
+        StatesHandler.getInstance().handleSceneChangeRequest(newScene);
+    }
+
+    /*
+        public abstract void saveState();
+        public abstract void loadState();
+        public abstract void resetState();
+    */
 }

@@ -2,7 +2,7 @@ package Scenes.InGame;
 
 import Scenes.Scene;
 
-public class LevelFailedScene implements Scene {
+public class LevelFailedScene extends Scene {
     @Override
     public void draw() {
      //   System.out.println("LevelFailedScene draw.");

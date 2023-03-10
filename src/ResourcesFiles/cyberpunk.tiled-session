@@ -1,0 +1,77 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "green_city_map.tmx",
+    "expandedProjectPaths": [
+        "resources"
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "#green_city_tileset": {
+            "dynamicWrapping": true
+        },
+        "green_city_map.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 96.969696969697,
+                "y": 1051.5151515151515
+            }
+        },
+        "green_city_map.tmx#green_city_tileset": {
+            "dynamicWrapping": true
+        },
+        "green_city_map.xml#green_city_objects": {
+            "dynamicWrapping": true,
+            "scaleInEditor": 1
+        },
+        "green_city_map.xml#green_city_tileset": {
+            "dynamicWrapping": true,
+            "scaleInEditor": 1
+        },
+        "green_city_tileset.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "industrial_city_tileset.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "industrial_city_tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.externalTilesetPath": "/home/denis/Facultate/PAOO/Game/Cyberpunk/src/ResourcesFiles",
+    "last.imagePath": "/home/denis/Facultate/PAOO/Game/Cyberpunk/src/ResourcesFiles/resources/cyber-greenzoneTileSet/1 Tiles",
+    "map.height": 20,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 100,
+    "openFiles": [
+        "green_city_map.tmx",
+        "green_city_tileset.tsx"
+    ],
+    "project": "cyberpunk.tiled-project",
+    "recentFiles": [
+        "green_city_tileset.tsx",
+        "green_city_map.tmx",
+        "industrial_city_tileset.tmx",
+        "industrial_city_tileset.tsx"
+    ],
+    "tileset.embedInMap": false,
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}
