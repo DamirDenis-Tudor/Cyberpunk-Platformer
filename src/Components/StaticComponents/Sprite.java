@@ -1,13 +1,11 @@
-package GameAssets.Types;
-
-import GameAssets.Asset;
+package Components.StaticComponents;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Sprite implements Asset {
+public class Sprite implements StaticComponent {
     private final BufferedImage tile;
     private int xPosition;
     private int yPosition;

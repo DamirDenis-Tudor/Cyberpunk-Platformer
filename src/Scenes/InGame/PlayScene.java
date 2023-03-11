@@ -1,7 +1,9 @@
 package Scenes.InGame;
 
-import Components.Character;
-import Components.Component;
+import Components.DinamicComponents.Characters.Character;
+import Components.DinamicComponents.Characters.Player;
+import Components.StaticComponents.AssetsDeposit;
+import Components.StaticComponents.StaticComponent;
 import Scenes.Scene;
 
 import java.util.ArrayList;
@@ -9,22 +11,24 @@ import java.util.List;
 
 
 public class PlayScene extends Scene {
-    List<Component> components;
+    List<StaticComponent> components;
 
     public PlayScene() throws Exception {
         components = new ArrayList<>();
 
-        components.add(new Character(this));
-
+        components.add(AssetsDeposit.getInstance().getGameMap("GreenCity"));
+        components.add(new Player(this));
     }
     @Override
     public void draw() throws Exception {
-
+        for (StaticComponent component : components) {
+            component.draw();
+        }
     }
 
     @Override
     public void update() throws Exception {
-        for (Component component:components) {
+        for (StaticComponent component : components) {
             component.update();
         }
     }

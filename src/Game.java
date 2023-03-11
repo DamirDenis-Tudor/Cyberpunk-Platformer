@@ -1,4 +1,4 @@
-import GameAssets.Assets;
+import Components.StaticComponents.AssetsDeposit;
 import GameWindow.GameWindow;
 import States.StatesHandler;
 
@@ -40,7 +40,7 @@ public class Game implements Runnable {
         final double timeFrame = 1000000000.f / framesPerSecond;
 
         try {
-            Assets assets = Assets.getInstance();
+            AssetsDeposit assets = AssetsDeposit.getInstance();
             GameWindow window = GameWindow.getInstance();
             StatesHandler statesHandler = StatesHandler.getInstance();
             while (runState) {

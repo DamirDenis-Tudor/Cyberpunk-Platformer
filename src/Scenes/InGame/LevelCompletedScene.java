@@ -1,14 +1,14 @@
 package Scenes.InGame;
 
-import Components.Button;
-import Components.Component;
+import Components.DinamicComponents.Buttons.Button;
+import Components.StaticComponents.StaticComponent;
 import Scenes.Scene;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LevelCompletedScene extends Scene {
-    List<Component> components;
+    List<StaticComponent> components;
 
     public LevelCompletedScene(){
         components = new ArrayList<>();
@@ -23,7 +23,7 @@ public class LevelCompletedScene extends Scene {
     @Override
     public void update() throws Exception {
         // System.out.println("LevelCompletedScene update.");
-        for (Component component:components) {
+        for (StaticComponent component : components) {
             component.update();
         }
     }
