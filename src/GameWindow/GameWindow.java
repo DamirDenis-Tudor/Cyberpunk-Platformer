@@ -1,5 +1,8 @@
 package GameWindow;
 
+import Input.KeyboardInput;
+import Input.MouseInput;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -60,12 +63,17 @@ public class GameWindow {
         canvas.setMaximumSize(new Dimension(windowWidth, windowHeight));
         canvas.setMinimumSize(new Dimension(windowWidth, windowHeight));
 
+        canvas.addKeyListener(KeyboardInput.getInstance());
+
+        canvas.addMouseListener(MouseInput.getInstance());
+
         windowFrame.add(canvas);
 
         windowFrame.pack();
 
         canvas.createBufferStrategy(3);
 
+        Toolkit.getDefaultToolkit().sync();
     }
 
 
@@ -77,6 +85,7 @@ public class GameWindow {
             instance = new GameWindow("Cyberpunk",
                     Toolkit.getDefaultToolkit().getScreenSize().width,
                     Toolkit.getDefaultToolkit().getScreenSize().height);
+            //instance = new GameWindow("CyberPunk" , 600 , 800);
         }
         return instance;
     }

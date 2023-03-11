@@ -1,5 +1,6 @@
 import Components.StaticComponents.AssetsDeposit;
 import GameWindow.GameWindow;
+import Input.KeyboardInput;
 import States.StatesHandler;
 
 /**
@@ -43,10 +44,13 @@ public class Game implements Runnable {
             AssetsDeposit assets = AssetsDeposit.getInstance();
             GameWindow window = GameWindow.getInstance();
             StatesHandler statesHandler = StatesHandler.getInstance();
+            KeyboardInput keyboardInput = KeyboardInput.getInstance();
             while (runState) {
                 curentTime = System.nanoTime();
 
                 if ((curentTime - oldTime) > timeFrame) {
+
+                    keyboardInput.updateInputKey();
 
                     statesHandler.getActiveState().updateState();
 

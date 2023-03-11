@@ -11,4 +11,14 @@ public class Enemy extends Character{
     public void move() {
 
     }
+
+    @Override
+    public void update() throws Exception {
+
+    }
+
+    @Override
+    public void draw() {
+
+    }
 }

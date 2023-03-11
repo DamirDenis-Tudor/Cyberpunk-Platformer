@@ -16,7 +16,7 @@ public class AssetsDeposit {
     private AssetsDeposit() throws IOException {
         gameMaps = new HashMap<>();
         gameMaps.put("GreenCity" , new GameMap("src/ResourcesFiles/green_city_map.tmx"));
-       // gameMaps.put("IndustrialCity" , new GameMap("src/ResourcesFiles/industrial_city_map.tmx"));
+        gameMaps.put("IndustrialCity" , new GameMap("src/ResourcesFiles/industrial_city_map.tmx"));
         System.out.println();
     }
 
