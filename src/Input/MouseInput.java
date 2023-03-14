@@ -35,14 +35,13 @@ public class MouseInput implements MouseListener {
             case InputEvent.BUTTON1_DOWN_MASK -> {
                 // System.out.println("That's the LEFT button");
                 isLeftMouseClicked = true;
-                System.out.println("That's the left button clicked");
             }
             case InputEvent.BUTTON2_DOWN_MASK -> {
                 //System.out.println("That's the MIDDLE button");
             }
             case InputEvent.BUTTON3_DOWN_MASK -> {
                 isRightMouseClicked = true;
-                System.out.println("That's the right button");
+
             }
         }
     }
@@ -52,14 +51,14 @@ public class MouseInput implements MouseListener {
         switch (e.getModifiersEx()) {
             case InputEvent.BUTTON1_DOWN_MASK -> {
                 isLeftMousePressed = true;
-                System.out.println("That's the LEFT button pressed");
+
             }
             case InputEvent.BUTTON2_DOWN_MASK -> {
-                System.out.println("That's the MIDDLE button");
+
             }
             case InputEvent.BUTTON3_DOWN_MASK -> {
                 isRightMousePressed = true;
-                System.out.println("That's the RIGHT button");
+
             }
         }
     }

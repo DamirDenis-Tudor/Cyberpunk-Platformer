@@ -74,6 +74,8 @@ public class GameWindow {
         canvas.createBufferStrategy(3);
 
         Toolkit.getDefaultToolkit().sync();
+
+
     }
 
 
@@ -114,7 +116,7 @@ public class GameWindow {
      */
     public void clear() {
         canvas.getBufferStrategy().getDrawGraphics().
-                clearRect(0, 0, windowWidth, windowHeight);
+                clearRect(0, 0, 2*windowWidth, 2*windowHeight);
     }
 
     /**

@@ -1,5 +1,7 @@
 package Components.StaticComponents;
 
+import Components.StaticComponents.Components.GameMap;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -12,11 +14,10 @@ public class AssetsDeposit {
     private static AssetsDeposit instance = null;
 
     private final Map< String , GameMap> gameMaps;
-
     private AssetsDeposit() throws IOException {
         gameMaps = new HashMap<>();
-        gameMaps.put("GreenCity" , new GameMap("src/ResourcesFiles/green_city_map.tmx"));
-        gameMaps.put("IndustrialCity" , new GameMap("src/ResourcesFiles/industrial_city_map.tmx"));
+        gameMaps.put("GreenCity" , new GameMap("src/ResourcesFiles/maps/green_map.tmx"));
+        gameMaps.put("IndustrialCity" , new GameMap("src/ResourcesFiles/maps/industrial_map.tmx"));
         System.out.println();
     }
 

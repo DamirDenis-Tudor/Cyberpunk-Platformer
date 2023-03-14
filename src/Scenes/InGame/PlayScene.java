@@ -1,6 +1,5 @@
 package Scenes.InGame;
 
-import Components.DinamicComponents.Characters.Character;
 import Components.DinamicComponents.Characters.Player;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.StaticComponent;
