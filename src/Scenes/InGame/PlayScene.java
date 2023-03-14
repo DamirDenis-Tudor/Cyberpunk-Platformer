@@ -15,7 +15,7 @@ public class PlayScene extends Scene {
     public PlayScene() throws Exception {
         components = new ArrayList<>();
 
-        components.add(AssetsDeposit.getInstance().getGameMap("IndustrialCity"));
+        components.add(AssetsDeposit.getInstance().getGameMap("GreenCity"));
         components.add(new Player(this));
     }
     @Override

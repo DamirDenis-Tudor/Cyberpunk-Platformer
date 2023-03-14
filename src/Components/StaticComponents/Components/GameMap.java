@@ -3,6 +3,7 @@ package Components.StaticComponents.Components;
 import Components.StaticComponents.StaticComponent;
 import GameWindow.Camera;
 import GameWindow.GameWindow;
+import Utils.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -15,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static Utils.Constants.*;
+
 
 public class GameMap implements StaticComponent {
     private final GameWindow gameWindow = GameWindow.getInstance();
-    private static final float mapScale = 1.6875f; // scale factor
-    private static final int mapDim = 32; // default map dim
     private int width; // lines
     private int height; // columns
     private Map<String, MapAsset> tiles; // String - id , Tile

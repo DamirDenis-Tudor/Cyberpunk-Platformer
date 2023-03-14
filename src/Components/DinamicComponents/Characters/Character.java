@@ -11,5 +11,7 @@ public abstract class Character extends DinamicComponent {
         setScene(scene);
     }
 
+    //
+
     public abstract void move();
 }

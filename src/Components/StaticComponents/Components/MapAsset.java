@@ -6,11 +6,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class MapAsset {
-    private BufferedImage image;
+    private final BufferedImage image;
 
-    private int width;
+    private final int width;
 
-    private int height;
+    private final int height;
     public MapAsset(String path , int width , int height) throws IOException {
         this.width= width;
         this.height = height;
