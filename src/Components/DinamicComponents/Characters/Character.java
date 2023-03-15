@@ -13,5 +13,5 @@ public abstract class Character extends DinamicComponent {
 
     //
 
-    public abstract void move();
+    public abstract void move() throws Exception;
 }

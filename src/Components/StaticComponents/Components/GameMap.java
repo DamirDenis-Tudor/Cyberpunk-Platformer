@@ -3,7 +3,6 @@ package Components.StaticComponents.Components;
 import Components.StaticComponents.StaticComponent;
 import GameWindow.Camera;
 import GameWindow.GameWindow;
-import Utils.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -217,5 +216,7 @@ public class GameMap implements StaticComponent {
                 }
             }
         }
+
+        System.out.println();
     }
 }
