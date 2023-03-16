@@ -14,27 +14,15 @@ public class PlayState extends State{
     public PlayState() throws Exception {
 
         super();
-
         /*
             add a couple of scenes
          */
-        sceneHandler.addScene("PlayScene" , new PlayScene());
-        sceneHandler.addScene("LevelPauseScene" , new LevelPauseScene());
-        sceneHandler.addScene("LevelFailedScene" , new LevelFailedScene());
-        sceneHandler.addScene("LevelCompletedScene" , new LevelCompletedScene());
-    }
-    @Override
-    public void updateState() throws Exception {
-
-        //System.out.println("-----------PlayState update-----------");
-        sceneHandler.getActiveScene().update();
+        sceneHandler.addScene("PlayScene" , new PlayScene(this));
+        sceneHandler.addScene("LevelPauseScene" , new LevelPauseScene(this));
+        sceneHandler.addScene("LevelFailedScene" , new LevelFailedScene(this));
+        sceneHandler.addScene("LevelCompletedScene" , new LevelCompletedScene(this));
     }
 
-    @Override
-    public void drawState() throws Exception {
-        //System.out.println("-----------PlayState draw-----------");
-        sceneHandler.getActiveScene().draw();
-    }
 
 }
 

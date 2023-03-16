@@ -1,18 +1,19 @@
 package Components.DinamicComponents.Characters;
 
+import Components.DinamicComponents.Objects.Chest;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
 import Scenes.Scene;
 import Utils.Coordinate;
 
-public class Enemy extends Character{
+public class Animal extends Character {
     private AssetsDeposit assetsDeposit;
     private Animation animation;
 
-    public Enemy(Scene scene, Coordinate<Integer> position) throws Exception {
+    public Animal(Scene scene, Coordinate<Integer> position) throws Exception {
         super(scene);
         assetsDeposit = AssetsDeposit.getInstance();
-        animation = new Animation(assetsDeposit.getAnimation("Enemy2Idle"));
+        animation = new Animation(assetsDeposit.getAnimation("Dog1Idle"));
         animation.setPosition(position);
     }
 

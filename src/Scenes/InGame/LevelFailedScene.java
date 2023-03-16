@@ -1,15 +1,10 @@
 package Scenes.InGame;
 
 import Scenes.Scene;
+import States.State;
 
-public class LevelFailedScene extends Scene {
-    @Override
-    public void draw() {
-     //   System.out.println("LevelFailedScene draw.");
-    }
-
-    @Override
-    public void update() {
-      //  System.out.println("LevelFailedScene update.");
+final public class LevelFailedScene extends Scene {
+    public LevelFailedScene(State state) {
+        super(state);
     }
 }

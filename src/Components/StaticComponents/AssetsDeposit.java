@@ -45,14 +45,16 @@ public class AssetsDeposit {
 
         for (int index = 0; index < elements.getLength(); ++index) {
             Element element = (Element) elements.item(index);
-            Element imageElement = (Element) element.getFirstChild().getNextSibling();
+            Element property = (Element) element.getElementsByTagName("property").item(0);
+            Element imageElement = (Element) element.getElementsByTagName("image").item(0);
 
             String source = imageElement.getAttribute("source").replace("..", "src/ResourcesFiles");
             String id = element.getAttribute("class");
-            int width = Integer.parseInt(imageElement.getAttribute("width"));
+            int spriteSheetWidth = Integer.parseInt(imageElement.getAttribute("width"));
             int height = Integer.parseInt(imageElement.getAttribute("height"));
+            int width = Integer.parseInt(property.getAttribute("value"));
 
-            animations.put(id , new Animation(source , width , height));
+            animations.put(id , new Animation(source , spriteSheetWidth , width ,height ));
         }
         System.out.println();
     }

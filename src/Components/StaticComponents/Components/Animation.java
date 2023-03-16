@@ -2,6 +2,7 @@ package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
 import GameWindow.GameWindow;
+import GameWindow.Camera;
 import Timing.Timer;
 import Timing.TimersHandler;
 
@@ -10,9 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import Utils.Constants.*;
-
-import static Utils.Constants.mapDim;
+import Utils.Coordinate;
 import static Utils.Constants.mapScale;
 
 public class Animation implements StaticComponent {
@@ -25,31 +24,45 @@ public class Animation implements StaticComponent {
     private  int activeImageIndex;
 
     private boolean drawInMirror = false;
-    private int posX;
-    private int posY;
 
-    private int width;
+    private Coordinate<Integer> position;
 
-    private int height;
+    private final int spriteSheetWidth;
 
-    public Animation(String path , int width , int height ) throws Exception {
-        idCounter ++;
-        posX = 0;
-        posY = 0;
+    private final int height;
+
+    private final int width;
+    public Animation(String path , int spriteSheetWidth, int width ,int height ) throws Exception {
         activeImageIndex = 0;
         images = new ArrayList<>();
 
-        timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.1F) , timerId);
-        timersHandler.getTimer(timerId).resetTimer();
-
         BufferedImage spriteSheet = ImageIO.read(new File(path));
-        for (int index = 0 ; index < width/height ; index++){
-            images.add(spriteSheet.getSubimage(index * height , 0 , height , height));
+        for (int index = 0; index < spriteSheetWidth / width ; index++){
+            images.add(spriteSheet.getSubimage(index * width , 0 , width , height));
         }
 
-        this.width = width;
+        this.spriteSheetWidth = spriteSheetWidth;
         this.height = height;
+        this.width = width;
+    }
+
+    public Animation(Animation animation) throws Exception {
+        idCounter ++;
+        timerId = "animation" + idCounter;
+        timersHandler.addTimer(new Timer(0.10F) , timerId);
+        timersHandler.getTimer(timerId).resetTimer();
+
+        this.position = animation.position;
+        this.images = animation.images;
+        this.spriteSheetWidth = animation.spriteSheetWidth;
+        this.height = animation.height;
+        this.width = animation.width;
+
+        this.gameWindow = animation.gameWindow;
+        this.timersHandler = animation.timersHandler;
+
+        this.activeImageIndex = animation.activeImageIndex;
+        this.drawInMirror = animation.drawInMirror;
     }
 
     @Override
@@ -67,16 +80,15 @@ public class Animation implements StaticComponent {
     @Override
     public void draw() {
         if (drawInMirror) {
-            gameWindow.getGraphics().drawImage(images.get(activeImageIndex) , posX + (int)(height*mapScale) , posY  , -(int)(height*mapScale),(int)(height*mapScale) , null);
+            gameWindow.getGraphics().drawImage(images.get(activeImageIndex) , position.getPosX() + (int)(width *mapScale) + Camera.getInstance().getCurrentXoffset(), position.getPosY()  , -(int)(width *mapScale),(int)(height*mapScale) , null);
         }
         else {
-            gameWindow.getGraphics().drawImage(images.get(activeImageIndex) , posX , posY  , (int)(height*mapScale),(int)(height*mapScale) , null);
+            gameWindow.getGraphics().drawImage(images.get(activeImageIndex) , position.getPosX() + Camera.getInstance().getCurrentXoffset(), position.getPosY()  , (int)(width *mapScale),(int)(height*mapScale) , null);
         }
     }
 
-    public void setPosition(int posX , int posY){
-        this.posX = posX;
-        this.posY = posY;
+    public void setPosition(Coordinate<Integer> position){
+        this.position = position;
     }
 
     public void reset(){

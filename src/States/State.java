@@ -10,7 +10,7 @@ import Scenes.SceneHandler;
  * and reset all its components.
  * @note each state has a scenes handler .
  */
-public abstract class State {
+public class State {
     protected SceneHandler sceneHandler;
 
     /**
@@ -30,7 +30,17 @@ public abstract class State {
         }
         return sceneHandler;
     }
-    public abstract void updateState() throws Exception;
-    public abstract void drawState() throws Exception;
+
+    public void requestSceneChange(String newScene) throws Exception {
+        StatesHandler.getInstance().handleSceneChangeRequest(newScene);
+    }
+
+    public void updateState() throws Exception {
+        sceneHandler.getActiveScene().update();
+    }
+
+    public void drawState() throws Exception {
+        sceneHandler.getActiveScene().draw();
+    }
 
 }

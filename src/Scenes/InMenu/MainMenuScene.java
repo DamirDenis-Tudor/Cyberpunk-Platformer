@@ -1,24 +1,17 @@
 package Scenes.InMenu;
 
 import Scenes.Scene;
+import States.State;
 import States.StatesHandler;
 import Timing.Timer;
 import Timing.TimersHandler;
 
-public class MainMenuScene extends Scene {
+final public class MainMenuScene extends Scene {
     // BUTOANE
 
-    public MainMenuScene() throws Exception {
+    public MainMenuScene(State state) throws Exception {
+        super(state);
 
     }
-    @Override
-    public void draw() {
-        //System.out.println("MainMenuScene draw.");
-    }
-    @Override
-    public void update() throws Exception {
-        //System.out.println("MainMenuScene update.");
-    }
-
 
 }

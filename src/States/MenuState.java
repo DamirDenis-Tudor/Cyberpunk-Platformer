@@ -17,24 +17,10 @@ public class MenuState extends State {
         /*
             add a couple of scenes
          */
-        sceneHandler.addScene("LogoStartScene" , new LogoStartScene());
-        sceneHandler.addScene("MainMenuScene" , new MainMenuScene());
-        sceneHandler.addScene("InitGameScene" , new InitGameScene());
-        sceneHandler.addScene("SettingsScene" , new SettingsScene());
+        sceneHandler.addScene("LogoStartScene" , new LogoStartScene(this));
+        sceneHandler.addScene("MainMenuScene" , new MainMenuScene(this));
+        sceneHandler.addScene("InitGameScene" , new InitGameScene(this));
+        sceneHandler.addScene("SettingsScene" , new SettingsScene(this));
 
-    }
-    @Override
-    public void updateState() throws Exception {
-
-        //System.out.println("-----------MenuState update-----------");
-
-        sceneHandler.getActiveScene().update();
-    }
-
-    @Override
-    public void drawState() throws Exception {
-        //System.out.println("-----------MenuState draw--------------");
-
-        sceneHandler.getActiveScene().draw();
     }
 }

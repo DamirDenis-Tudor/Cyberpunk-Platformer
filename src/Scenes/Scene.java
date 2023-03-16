@@ -1,19 +1,46 @@
 package Scenes;
 
-import States.StatesHandler;
+import Components.StaticComponents.StaticComponent;
+import States.State;
 
-public abstract class Scene {
-    public abstract void draw() throws Exception;
+import java.util.ArrayList;
+import java.util.List;
 
-    public abstract void update() throws Exception;
+public class Scene {
+    private final State state;
 
-    public void requestSceneChange(String newScene) throws Exception {
-        StatesHandler.getInstance().handleSceneChangeRequest(newScene);
+    protected List<StaticComponent> components;
+
+    public Scene(State state){
+        this.state = state;
+        components = new ArrayList<>();
     }
 
-    /*
-        public abstract void saveState();
-        public abstract void loadState();
-        public abstract void resetState();
-    */
+    public void draw() throws Exception {
+        for (StaticComponent component : components) {
+            component.draw();
+        }
+    }
+
+    public void update() throws Exception {
+        for (StaticComponent component : components) {
+            component.update();
+        }
+    }
+
+    public void requestSceneChange(String newScene) throws Exception {
+        state.requestSceneChange(newScene);
+    }
+
+
+    public void saveState(){
+
+    }
+    public void loadState(){
+
+    }
+    public void resetState(){
+
+    }
+
 }

@@ -1,23 +1,10 @@
 package Scenes.InMenu;
 
 import Scenes.Scene;
+import States.State;
 
-public class InitGameScene extends Scene {
-    public InitGameScene() throws Exception {
-
-    }
-    @Override
-    public void draw() {
-    //    System.out.println("InitGameScene draw.");
-    }
-
-    @Override
-    public void update() throws Exception {
-        //System.out.println("InitGameScene update.");
-
-        /*
-            test : after 10 seconds the state will change to "play"
-            and scene that will be rendered is playScene
-         */
+final public class InitGameScene extends Scene {
+    public InitGameScene(State state) {
+        super(state);
     }
 }

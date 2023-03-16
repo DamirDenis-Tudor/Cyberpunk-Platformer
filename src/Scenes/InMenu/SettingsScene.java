@@ -1,15 +1,10 @@
 package Scenes.InMenu;
 
 import Scenes.Scene;
+import States.State;
 
-public class SettingsScene extends Scene {
-    @Override
-    public void draw() {
-        //System.out.println("SettingsScene draw.");
-    }
-
-    @Override
-    public void update() {
-        //System.out.println("SettingsScene update.");
+final public class SettingsScene extends Scene {
+    public SettingsScene(State state) {
+        super(state);
     }
 }

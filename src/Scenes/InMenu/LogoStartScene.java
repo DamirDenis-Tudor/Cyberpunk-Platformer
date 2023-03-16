@@ -1,15 +1,10 @@
 package Scenes.InMenu;
 
 import Scenes.Scene;
+import States.State;
 
-public class LogoStartScene extends Scene {
-    @Override
-    public void draw() {
-        //System.out.println("LogoStartScene draw.");
-    }
-
-    @Override
-    public void update() {
-       // System.out.println("LogoStartScene update.");
+final public class LogoStartScene extends Scene {
+    public LogoStartScene(State state) {
+        super(state);
     }
 }

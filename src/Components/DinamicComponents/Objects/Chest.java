@@ -1,24 +1,21 @@
-package Components.DinamicComponents.Characters;
+package Components.DinamicComponents.Objects;
 
+import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
 import Scenes.Scene;
 import Utils.Coordinate;
 
-public class Enemy extends Character{
+public class Chest extends DinamicComponent {
     private AssetsDeposit assetsDeposit;
     private Animation animation;
 
-    public Enemy(Scene scene, Coordinate<Integer> position) throws Exception {
-        super(scene);
+    public Chest(Scene scene, Coordinate<Integer> position) throws Exception {
+        setScene(scene);
         assetsDeposit = AssetsDeposit.getInstance();
-        animation = new Animation(assetsDeposit.getAnimation("Enemy2Idle"));
+
+        animation = new Animation(assetsDeposit.getAnimation("Chest2"));
         animation.setPosition(position);
-    }
-
-    @Override
-    public void move() {
-
     }
 
     @Override

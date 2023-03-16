@@ -52,18 +52,6 @@ public class StatesHandler {
     }
 
     /**
-     * @param ID active state identifier
-     */
-    public void setActiveState(String ID) throws Exception {
-        if(!states.containsKey(ID)) {
-            throw new Exception("Error - trying to add an existing state!");
-        }
-        this.activeState = states.get(ID);
-        System.out.println("Active state has been changed to " + ID +
-                " , scene : " + activeState.getSceneHandler().getActiveSceneID());
-    }
-
-    /**
      * @return active state
      * @throws Exception message
      */
