@@ -16,18 +16,5 @@ final public class LevelPauseScene extends Scene {
 
     }
 
-    @Override
-    public void saveState() {
 
-    }
-
-    @Override
-    public void loadState() {
-
-    }
-
-    @Override
-    public void resetState() {
-
-    }
 }

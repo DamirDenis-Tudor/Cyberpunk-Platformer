@@ -8,7 +8,7 @@ package Timing;
  *  If you want it to be active in the current frame after instantiating the class, call void resetTimer().
  */
 public class Timer {
-    public static final float DELTA_TIME = 0.016666668F; // default value for frame period
+    public static float deltaTime; // default value for frame period
     private float startTime;
     private float endTime;
     private float duration; // variable for saving the timer duration
@@ -27,6 +27,7 @@ public class Timer {
      */
     public boolean getTimerState() {
         if (this.startTime >= this.endTime) {
+            resetTimer();
             return false;
         } else {
             this.startTime += 0.016666668F;

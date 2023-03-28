@@ -13,18 +13,4 @@ final public class SettingsScene extends Scene {
 
     }
 
-    @Override
-    public void saveState() {
-
-    }
-
-    @Override
-    public void loadState() {
-
-    }
-
-    @Override
-    public void resetState() {
-
-    }
 }

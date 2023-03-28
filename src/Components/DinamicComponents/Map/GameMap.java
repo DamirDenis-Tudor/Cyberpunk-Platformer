@@ -1,13 +1,12 @@
 package Components.DinamicComponents.Map;
 
 import Components.DinamicComponents.DinamicComponent;
-import Components.DinamicComponents.Map.MapAsset;
 import Components.StaticComponents.Components.ParallaxWallpaper;
+import Enums.ComponentNames;
 import Scenes.Messages.Message;
-import Scenes.Scene;
-import Window.Camera;
-import Window.GameWindow;
 import Utils.Coordinate;
+import Utils.Rectancle;
+import Window.GameWindow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,9 +21,12 @@ import java.util.*;
 import static Utils.Constants.mapDim;
 import static Utils.Constants.mapScale;
 
-
+/**
+ * This class contains all the information about the game map:
+ * matrix of objects|tiles, dimensions, predefined object positions.
+ */
 public class GameMap extends DinamicComponent {
-    private final GameWindow gameWindow = GameWindow.getInstance(); // the first and only instance
+    private final GameWindow gameWindow = GameWindow.getInstance();
     private int width; // lines
     private int height; // columns
     private Map<String, MapAsset> tiles; // String - id , Tile
@@ -36,7 +38,6 @@ public class GameMap extends DinamicComponent {
 
     public GameMap(String path) {
         try {
-            this.scene = scene;
             //   first initialize the document element
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
@@ -64,8 +65,8 @@ public class GameMap extends DinamicComponent {
 
                 String tileSource = imageElement.getAttribute("source").replace("..", "src/Resources");
                 String tileId = Integer.toString(Integer.parseInt(tileElement.getAttribute("id")) + 1);
-                int tileWidth = Integer.parseInt(imageElement.getAttribute("width"));
-                int tileHeight = Integer.parseInt(imageElement.getAttribute("height"));
+                int tileWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
+                int tileHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
 
                 tiles.put(tileId, new MapAsset(tileSource, tileWidth, tileHeight));
             }
@@ -111,8 +112,8 @@ public class GameMap extends DinamicComponent {
 
                 String objectSource = imageElement.getAttribute("source").replace("..", "src/Resources");
                 String objectId = Integer.toString(Integer.parseInt(objectElement.getAttribute("id")) + Integer.parseInt(lastMapId));
-                int objectWidth = Integer.parseInt(imageElement.getAttribute("width"));
-                int objectHeight = Integer.parseInt(imageElement.getAttribute("height"));
+                int objectWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
+                int objectHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
 
                 objects.put(objectId, new MapAsset(objectSource, objectWidth, objectHeight));
             }
@@ -190,23 +191,21 @@ public class GameMap extends DinamicComponent {
 
     @Override
     public void notify(Message message) {
-
+        /*
+            I don't know yet if the map will 
+            make request, but it's nice that it can.
+         */
     }
 
     @Override
     public void update() throws Exception {
         background.update();
-
-        /*
-         * update the map objects
-         * -> save the camera offset
-         */
     }
 
     @Override
     public void draw() {
         /*
-         * drawing the parralax background
+         * drawing the parallax background
          */
         background.draw();
 
@@ -217,12 +216,13 @@ public class GameMap extends DinamicComponent {
             for (int j = 0; j < width; j++) {
                 if (!Objects.equals(tilesIndexes[i][j], "0")) {
                     MapAsset asset = tiles.get(tilesIndexes[i][j]);
-                    int xPos = (int) (j * (mapDim * mapScale) + Camera.getInstance().getCurrentXoffset());
-                    int yPos = (int) (i * mapDim * mapScale);
-                    int dimW = (int) (asset.getWidth() * mapScale);
-                    int dimH = (int) (asset.getHeight() * mapScale);
+                    int xPos = j * mapDim;
+                    int yPos = i * mapDim;
+                    int dimW = asset.getWidth();
+                    int dimH = asset.getHeight();
 
                     gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
+                    gameWindow.getGraphics().drawRect(xPos, yPos, dimW, dimH);
                 }
             }
         }
@@ -234,31 +234,69 @@ public class GameMap extends DinamicComponent {
             for (int j = 0; j < width; j++) {
                 if (!Objects.equals(objectsIndexes[i][j], "0")) {
                     MapAsset asset = objects.get(objectsIndexes[i][j]);
-                    int dimW = (int) (asset.getWidth() * mapScale);
-                    int dimH = (int) (asset.getHeight() * mapScale);
-                    int xPos = (int) (j * (mapDim * mapScale) + Camera.getInstance().getCurrentXoffset());
-                    int yPos = (int) (i * mapDim * mapScale) - dimH + (int) (mapDim * mapScale);
+                    int dimW = asset.getWidth();
+                    int dimH = asset.getHeight();
+                    int xPos = j * mapDim;
+                    int yPos = i * mapDim - dimH + mapDim;
 
                     gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
                 }
             }
         }
+    }
+    @Override
+    public ComponentNames getType() {
+        return ComponentNames.Map;
+    }
 
+    /**
+     * In this context, map handles the interaction with any movable object.
+     * @param component interacts with
+     */
+    @Override
+    public void handleInteractionWith(DinamicComponent component) {
+        Rectancle rectancle = component.getCollideBox();
+
+        // first of all wee need to place the component
+        // into a specific area of map => clamping
+        int xStart = Math.max(0, rectancle.getPosition().getPosX() / mapDim - 1);
+        int xEnd   = Math.min(width, (rectancle.getPosition().getPosX() + rectancle.getWidth()) / mapDim + 1);
+        int yStart = Math.max(0, rectancle.getPosition().getPosY() / mapDim - 1);
+        int yEnd   = Math.min(height, (rectancle.getPosition().getPosY() + rectancle.getHeight()) / mapDim + 1);
+
+        for (int y = yStart; y <= yEnd; y++) {
+            for (int x = xStart; x <= xEnd; x++) {
+                if (!Objects.equals(tilesIndexes[y][x], "0")) {
+                    rectancle.solveCollision(getRectangle(x, y));
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param x map relative X coordinate
+     * @param y map relative Y coordinate
+     * @return rectangle object
+     */
+    public Rectancle getRectangle(int x, int y) {
+        Coordinate<Integer> pos = new Coordinate<>(x * mapDim, y * mapDim);
+        return new Rectancle(pos, mapDim, mapDim);
     }
 
     public Coordinate<Integer> getPlayerPosition() {
         return entitiesCoordonates.get("player").get(0);
     }
 
-    public List<Coordinate<Integer>> getEnemiesPositions(){
+    public List<Coordinate<Integer>> getEnemiesPositions() {
         return entitiesCoordonates.get("enemies");
     }
 
-    public List<Coordinate<Integer>> getAnimalsPositions(){
+    public List<Coordinate<Integer>> getAnimalsPositions() {
         return entitiesCoordonates.get("animals");
     }
 
-    public List<Coordinate<Integer>> getChestsPositions(){
+    public List<Coordinate<Integer>> getChestsPositions() {
         return entitiesCoordonates.get("chests");
     }
 

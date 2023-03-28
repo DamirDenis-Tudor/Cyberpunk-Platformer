@@ -1,3 +1,4 @@
+import Timing.Timer;
 import Window.GameWindow;
 import Input.KeyboardInput;
 import Scenes.SceneHandler;
@@ -45,11 +46,13 @@ public class Game implements Runnable {
                 curentTime = System.nanoTime();
 
                 if ((curentTime - oldTime) > timeFrame) {
+                    Timer.deltaTime = (curentTime-oldTime)/1000000000.f;
+
                     keyboardInput.updateInputKey();
 
-                    sceneHandler.getActiveScene().update();
-
                     window.clear();
+
+                    sceneHandler.getActiveScene().update();
 
                     sceneHandler.getActiveScene().draw();
 

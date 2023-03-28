@@ -1,62 +1,78 @@
 package Components.DinamicComponents.Characters;
 
+import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
-import static Enums.ComponentNames.*;
+import Enums.ComponentNames;
+import Enums.MessageNames;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Window.Camera;
 import Input.KeyboardInput;
-import Timing.Timer;
-import Timing.TimersHandler;
 import Enums.AnimationNames;
 import Utils.Coordinate;
-import static Enums.MessageNames.Message1;
-public class Player extends Character {
-    private Camera camera;
-    private KeyboardInput keyboardInput;
-    private AssetsDeposit assetsDeposit;
+public class Player extends DinamicComponent {
+    private final KeyboardInput keyboardInput;
     private final Animation animation;
 
     public Player(Scene scene, Coordinate<Integer> position) throws Exception {
-        super(scene);
-        camera = Camera.getInstance();
-        keyboardInput = KeyboardInput.getInstance();
-        assetsDeposit = AssetsDeposit.getInstance();
+        this.scene = scene;
 
-        animation = new Animation(assetsDeposit.getAnimation(AnimationNames.BikerDoubleJump));
+        Camera camera = Camera.getInstance();
+        keyboardInput = KeyboardInput.getInstance();
+        AssetsDeposit assetsDeposit = AssetsDeposit.getInstance();
+
+        animation = new Animation(assetsDeposit.getAnimation(AnimationNames.BikerDash));
         animation.setPosition(position);
 
-        TimersHandler.getInstance().addTimer(new Timer(3) , "timer");
-        TimersHandler.getInstance().getTimer("timer").resetTimer();
-    }
-
-    @Override
-    public void move() throws Exception {
-        if (KeyboardInput.getInstance().getKeyA()) {
-            camera.setCurrentXoffset(5);
-        } else if (KeyboardInput.getInstance().getKeyD()) {
-            camera.setCurrentXoffset(-5);
-        }
+        // takes a "reference" of the animation rectangle
+        collideBox = animation.getRectancle();
     }
 
     @Override
     public void notify(Message message) {
-
+        /*
+            different kinds of messages that means something:
+            -> has been hit;
+            -> has picked up something;
+            and so on
+         */
     }
 
     @Override
     public void update() throws Exception {
-        move();
-        animation.update();
-        if(!TimersHandler.getInstance().getTimer("timer").getTimerState()) {
-            scene.notify(new Message(Message1 , Player));
+        // movement
+        if (keyboardInput.getKeyD()){
+            collideBox.moveByX(5);
+        }
+        if (keyboardInput.getKeyA()){
+            collideBox.moveByX(-5);
+        }
+        if (keyboardInput.getKeyW()){
+            collideBox.moveByY(-5);
+        }
+        if (keyboardInput.getKeyS()){
+            collideBox.moveByY(5);
         }
 
+        // make a request to handle the collisions
+        scene.notify(new Message(MessageNames.HandleCollision , ComponentNames.Player));
+
+        animation.update();
     }
 
     @Override
     public void draw() {
         animation.draw();
+    }
+
+    @Override
+    public ComponentNames getType() {
+        return ComponentNames.Player;
+    }
+
+    @Override
+    public void handleInteractionWith(DinamicComponent component) {
+        // here will have the opportunity to handle interactions;
     }
 }

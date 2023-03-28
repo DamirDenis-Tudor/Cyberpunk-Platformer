@@ -1,19 +1,25 @@
 package Components.DinamicComponents;
 
+import Enums.ComponentNames;
 import Scenes.Messages.Message;
 import Scenes.Scene;
+import Utils.Rectancle;
 
 /**
- * This class brings an additional feature compared to StaticComponent,
- * namely the ability to influence the game's dynamics, more specifically,
- * it can make a request to change a scene.
- *
- * TODO: make it to have the possibility to communicate
- *       with other dynamically objects via a mediator class
+ * This allows for the updating and drawing of any component, the ability to make requests
+ * to the associated scene, and to handle interactions with other objects in a specific manner.
+ * Additionally, it provides the capability for the object to be recognized by an identifier.
+ * As a result, access to the physical object is not necessary as the object can be identified solely by its identifier.
  */
 public abstract class DinamicComponent{
-    protected Scene scene; // reference to the scene that belongs to
-    public abstract void notify(Message message);
+    protected Scene scene = null;
+    protected Rectancle collideBox;
+    public abstract void  notify(Message message);
     public abstract void update() throws Exception;
     public abstract void draw();
+    public abstract ComponentNames getType();
+    public abstract void handleInteractionWith(DinamicComponent component);
+    public Rectancle getCollideBox() {
+        return collideBox;
+    }
 }

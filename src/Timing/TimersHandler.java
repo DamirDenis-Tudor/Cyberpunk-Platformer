@@ -52,7 +52,7 @@ public class TimersHandler {
      */
     public Timer getTimer(String ID) throws Exception {
         if (this.timers.containsKey(ID)) {
-            return (Timer)this.timers.get(ID);
+            return this.timers.get(ID);
         } else {
             throw new Exception("Invalid member ID: " + ID + " in TimeHandler!");
         }

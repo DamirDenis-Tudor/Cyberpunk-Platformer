@@ -22,4 +22,9 @@ public class Coordinate <T>{
     public T getPosY(){
         return posY;
     }
+
+    @Override
+    public String toString() {
+        return "X : " + posX + " , Y : " + posY;
+    }
 }

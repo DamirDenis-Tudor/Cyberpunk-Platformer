@@ -9,12 +9,15 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class handles the behavior of a parallax background.
+ * For additional info see how Parallax effect works.
+ */
 public class ParallaxWallpaper implements StaticComponent {
 
     private final GameWindow gameWindow;
     private final KeyboardInput keyboardInput;
     private final List<BufferedImage> images;
-
     private final List<Integer> velocities;
 
     private final List<Integer> background1Position;
@@ -60,7 +63,9 @@ public class ParallaxWallpaper implements StaticComponent {
         long deltaTime = now - lastUpdateTime;
         lastUpdateTime = now;
         double deltaSeconds = deltaTime / 1_000_000_000.0;
-
+        /*
+            TODO
+         */
         for (int index = 0; index < images.size(); index++) {
             int velocity = velocities.get(index);
             int direction = scrollingDirection();
@@ -84,6 +89,10 @@ public class ParallaxWallpaper implements StaticComponent {
 
     @Override
     public void draw() {
+        /*
+            for performance, all the gathered into a single
+            linage and then in drawn on screen.
+         */
         BufferedImage bf = new BufferedImage(gameWindow.GetWndWidth(), gameWindow.GetWndHeight() , 1);
         Graphics g = bf.createGraphics();
         for (int index = 0; index < images.size(); index++) {
