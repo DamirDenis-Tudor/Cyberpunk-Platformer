@@ -6,10 +6,9 @@ import Scenes.Scene;
 public abstract class Character extends DinamicComponent {
 
     public Character(Scene scene) throws Exception {
-        setScene(scene);
+        this.scene = scene;
     }
 
     //
-
     public abstract void move() throws Exception;
 }

@@ -1,8 +1,12 @@
-package Components.StaticComponents.Components;
+package Components.DinamicComponents.Map;
 
-import Components.StaticComponents.StaticComponent;
-import GameWindow.Camera;
-import GameWindow.GameWindow;
+import Components.DinamicComponents.DinamicComponent;
+import Components.DinamicComponents.Map.MapAsset;
+import Components.StaticComponents.Components.ParallaxWallpaper;
+import Scenes.Messages.Message;
+import Scenes.Scene;
+import Window.Camera;
+import Window.GameWindow;
 import Utils.Coordinate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,7 +23,7 @@ import static Utils.Constants.mapDim;
 import static Utils.Constants.mapScale;
 
 
-public class GameMap implements StaticComponent {
+public class GameMap extends DinamicComponent {
     private final GameWindow gameWindow = GameWindow.getInstance(); // the first and only instance
     private int width; // lines
     private int height; // columns
@@ -32,7 +36,7 @@ public class GameMap implements StaticComponent {
 
     public GameMap(String path) {
         try {
-
+            this.scene = scene;
             //   first initialize the document element
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
@@ -48,7 +52,7 @@ public class GameMap implements StaticComponent {
             tiles = new HashMap<>();
             Element source = (Element) root.getElementsByTagName("tileset").item(0);
 
-            Document tilesDocument = builder.parse(new File(source.getAttribute("source").replace("..", "src/ResourcesFiles")));
+            Document tilesDocument = builder.parse(new File(source.getAttribute("source").replace("..", "src/Resources")));
             Element tilesRoot = tilesDocument.getDocumentElement();
             NodeList elements = tilesRoot.getElementsByTagName("tile");
 
@@ -58,7 +62,7 @@ public class GameMap implements StaticComponent {
                 Element tileElement = (Element) elements.item(index);
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
 
-                String tileSource = imageElement.getAttribute("source").replace("..", "src/ResourcesFiles");
+                String tileSource = imageElement.getAttribute("source").replace("..", "src/Resources");
                 String tileId = Integer.toString(Integer.parseInt(tileElement.getAttribute("id")) + 1);
                 int tileWidth = Integer.parseInt(imageElement.getAttribute("width"));
                 int tileHeight = Integer.parseInt(imageElement.getAttribute("height"));
@@ -72,7 +76,7 @@ public class GameMap implements StaticComponent {
             background = new ParallaxWallpaper();
 
             Element backGroundSource = (Element) root.getElementsByTagName("tileset").item(1);
-            Document backgroundDocument = builder.parse(new File(backGroundSource.getAttribute("source").replace("..", "src/ResourcesFiles")));
+            Document backgroundDocument = builder.parse(new File(backGroundSource.getAttribute("source").replace("..", "src/Resources")));
             document.getDocumentElement().normalize();
 
             Element backgroundRoot = backgroundDocument.getDocumentElement();
@@ -84,7 +88,7 @@ public class GameMap implements StaticComponent {
             for (int index = 0; index < backgrounds.getLength(); ++index) {
                 Element tileElement = (Element) backgrounds.item(index);
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
-                background.addImage(ImageIO.read(new File(imageElement.getAttribute("source").replace("../", "src/ResourcesFiles/"))));
+                background.addImage(ImageIO.read(new File(imageElement.getAttribute("source").replace("../", "src/Resources/"))));
             }
 
             // -------------------------------------
@@ -95,7 +99,7 @@ public class GameMap implements StaticComponent {
 
             Element objSource = (Element) root.getElementsByTagName("tileset").item(2);
             String lastMapId = objSource.getAttribute("firstgid");
-            Document objectsDocument = builder.parse(new File(objSource.getAttribute("source").replace("..", "src/ResourcesFiles")));
+            Document objectsDocument = builder.parse(new File(objSource.getAttribute("source").replace("..", "src/Resources")));
             Element objectsRoot = objectsDocument.getDocumentElement();
             NodeList objectsElements = objectsRoot.getElementsByTagName("tile");
 
@@ -105,7 +109,7 @@ public class GameMap implements StaticComponent {
                 Element objectElement = (Element) objectsElements.item(index);
                 Element imageElement = (Element) objectElement.getFirstChild().getNextSibling();
 
-                String objectSource = imageElement.getAttribute("source").replace("..", "src/ResourcesFiles");
+                String objectSource = imageElement.getAttribute("source").replace("..", "src/Resources");
                 String objectId = Integer.toString(Integer.parseInt(objectElement.getAttribute("id")) + Integer.parseInt(lastMapId));
                 int objectWidth = Integer.parseInt(imageElement.getAttribute("width"));
                 int objectHeight = Integer.parseInt(imageElement.getAttribute("height"));
@@ -182,6 +186,11 @@ public class GameMap implements StaticComponent {
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
+    }
+
+    @Override
+    public void notify(Message message) {
+
     }
 
     @Override

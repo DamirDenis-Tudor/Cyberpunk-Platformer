@@ -7,12 +7,9 @@
 
 - ### In game interations 
 Dynamic components that can alter the game's guidelines will interact via the Mediator Design Pattern, providing elegant and well-structured code practices.
- 
-- ### Database
-The Scene class includes methods that interact with the database. These database actions are responsible for saving information related to the scenes.
- 
-- ### Other things
-The game has an organizing timing system that allows any component or scene to have multiple timers for various purposes. The assets-related data is loaded through an organized tmx and tsx manner, enabling easy additions and modifications.
+
+![Example Image](presentation_resources/arhitecture.png "Resources")
+
 # 2. Story  
 
 - ### Introduction
@@ -35,10 +32,10 @@ The game has an organizing timing system that allows any component or scene to h
 - The game features a main player who can be customized as a cyborg, punk, or biker character, and is equipped with body and fire weapons to fight against various enemies. The main player also possesses incredible parkour abilities to navigate through challenging levels filled with traps, dangerous animals, and six types of enemies, each with their unique behaviors.
 - As the game progresses, the player must face two boss fights and race against time, which adds an extra layer of excitement to the gameplay. To enhance the player's experience, there are several interactive elements such as citizens who provide helpful information, chests that contain collectable weapons, ladders to climb, barrels that explode, cards to collect, and control panels to operate.
 
-![Example Image](presentation_resources/game_preview.png "GreenCityMapPreview")
+![Example Image](presentation_resources/game_preview.png "GamePreview")
 
 # 4. Game Assets
-![Example Image](presentation_resources/all_assets.png "GreenCityMapPreview")
+![Example Image](presentation_resources/all_assets.png "Resources")
 
 
 # 5. User Interactions

@@ -1,4 +1,4 @@
-package Components.StaticComponents.Components;
+package Components.DinamicComponents.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

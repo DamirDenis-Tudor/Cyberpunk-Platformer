@@ -1,49 +1,43 @@
 package Scenes.InGame;
 
-import Components.DinamicComponents.Characters.Animal;
-import Components.DinamicComponents.Characters.Enemy;
-import Components.DinamicComponents.Characters.Player;
-import Components.DinamicComponents.Objects.Chest;
-import Components.StaticComponents.AssetsDeposit;
-import Components.StaticComponents.Components.GameMap;
 import Scenes.Scene;
-import States.State;
+import Components.DinamicComponents.Characters.Player;
+import Components.StaticComponents.AssetsDeposit;
+import Components.DinamicComponents.Map.GameMap;
 
+import Scenes.Messages.Message;
 
+import static Enums.SceneNames.*;
+import static Enums.MessageNames.*;
+import static Enums.ComponentNames.*;
+import static Enums.MapNames.*;
 
 final public class PlayScene extends Scene {
 
-    public PlayScene(State state) throws Exception {
-        super(state);
-
-        GameMap map = AssetsDeposit.getInstance().getGameMap("GreenCity");
-        // load map
-        components.add(map);
-
-        // add player
-        components.add(new Player(this , map.getPlayerPosition()));
-
-        // add enemies
-        for (int index = 0 ; index < map.getEnemiesPositions().size() ; index++ ) {
-            components.add(new Enemy(this, map.getEnemiesPositions().get(index)));
+    public PlayScene() throws Exception {
+        super();
+        GameMap map = AssetsDeposit.getInstance().getGameMap(GreenCityMap);
+        addComponent(new Player(this , map.getPlayerPosition()));
+    }
+    @Override
+    public void notify(Message message) throws Exception {
+        if (message.getSource() == Player && message.getType() == Message1){
+            requestSceneChange(LevelPausedScene);
         }
+    }
 
-        // add animals
-        for (int index = 0 ; index < map.getAnimalsPositions().size() ; index++ ) {
-            components.add(new Animal(this, map.getAnimalsPositions().get(index)));
-        }
+    @Override
+    public void saveState() {
 
-        // add chests
-        for (int index = 0 ; index < map.getChestsPositions().size() ; index++ ) {
-            components.add(new Chest(this, map.getChestsPositions().get(index)));
-        }
+    }
 
-        // add ladders
+    @Override
+    public void loadState() {
 
-        // add boss
+    }
 
-        // add special objects
+    @Override
+    public void resetState() {
 
-        // and so on...
     }
 }

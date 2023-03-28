@@ -1,7 +1,7 @@
 package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
-import GameWindow.GameWindow;
+import Window.GameWindow;
 import Input.KeyboardInput;
 
 import java.awt.*;

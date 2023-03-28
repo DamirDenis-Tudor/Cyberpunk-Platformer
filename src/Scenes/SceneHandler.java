@@ -1,55 +1,47 @@
 package Scenes;
 
+import Scenes.InGame.LevelCompletedScene;
+import Scenes.InGame.LevelFailedScene;
+import Scenes.InGame.LevelPauseScene;
+import Scenes.InGame.PlayScene;
+import Scenes.InMenu.InitGameScene;
+import Scenes.InMenu.LogoStartScene;
+import Scenes.InMenu.MainMenuScene;
+import Scenes.InMenu.SettingsScene;
+import Enums.SceneNames;
+
+import static Enums.SceneNames.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * This class is responsible for handling of multiple scenes.
- * Usually is an object of State class.
  */
 public class SceneHandler {
-    private final Map<String, Scene> scenes;
+    static SceneHandler instance;
+    private final Map<SceneNames, Scene> scenes;
     private Scene activeScene;
 
-    public SceneHandler(){
+    private SceneHandler() throws Exception {
         scenes = new HashMap<>();
+        scenes.put(LogoStartScene          , new LogoStartScene());
+        scenes.put(MainMenuScene           , new MainMenuScene());
+        scenes.put(InitGameScene           , new InitGameScene());
+        scenes.put(SettingsScene           , new SettingsScene());
+        scenes.put(PlayScene               , new PlayScene());
+        scenes.put(LevelPausedScene        , new LevelPauseScene());
+        scenes.put(LevelFailedScene        , new LevelFailedScene());
+        scenes.put(LevelCompletedScene     , new LevelCompletedScene());
+
+        activeScene = scenes.get(PlayScene);
     }
 
-    /**
-     * @param ID identifier for scene
-     * @param scene to be added
-     * @throws Exception message
-     */
-    public void addScene(String ID , Scene scene) throws Exception {
-        if(scenes.containsKey(ID)){
-            throw new Exception("Error : trying to add an element that have same ID with an existing one!");
+    public static SceneHandler getInstance() throws Exception {
+        if(instance == null){
+            instance = new SceneHandler();
         }
-        if(scenes.isEmpty()){
-            activeScene = scene;
-        }
-        scenes.put(ID , scene);
-    }
-
-    /**
-     *
-     * @param ID identifier for the next possible active scene
-     * @throws Exception message
-     */
-    public void setActiveScene(String ID) throws Exception {
-        if(!scenes.containsKey(ID)){
-            throw new Exception("Error : invalid ID : " + ID + " in scene handler." );
-        }
-        System.out.println("Scene has been changed to " + ID  + "." );
-        activeScene = scenes.get(ID);
-    }
-
-    /**
-     *
-     * @param sceneName to be checked
-     * @return true/false if the scene belongs or not to this scene handler
-     */
-    public boolean checkSceneBelongsToGroup(String sceneName){
-        return scenes.containsKey(sceneName);
+        return instance;
     }
 
     /**
@@ -69,16 +61,31 @@ public class SceneHandler {
      * @return identifier of active scene
      * @throws Exception message
      */
-    public String getActiveSceneID() throws Exception {
+    public SceneNames getActiveSceneID() throws Exception {
         if (activeScene == null){
             throw new NullPointerException("Error - active scene is null.");
         }
 
-        for (Map.Entry<String, Scene> entry: scenes.entrySet()) {
+        for (Map.Entry<SceneNames, Scene> entry: scenes.entrySet()) {
             if (entry.getValue() == activeScene){
                 return entry.getKey();
             }
         }
         throw new Exception("Error - identifier not found for active scene.");
+    }
+
+    /**
+     * This method handles the scene change request .
+     * It can change the active state if the new scene not
+     * belong to the current active state.
+     * @param newScene
+     */
+    public void handleSceneChangeRequest(SceneNames newScene) throws Exception {
+        if(scenes.containsKey(newScene)){
+            activeScene = scenes.get(newScene);
+        }else {
+            throw new Exception("ID SCENA INVALOD");
+        }
+
     }
 }

@@ -1,8 +1,8 @@
 package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
-import GameWindow.GameWindow;
-import GameWindow.Camera;
+import Window.GameWindow;
+import Window.Camera;
 import Timing.Timer;
 import Timing.TimersHandler;
 
@@ -49,7 +49,7 @@ public class Animation implements StaticComponent {
     public Animation(Animation animation) throws Exception {
         idCounter ++;
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.10F) , timerId);
+        timersHandler.addTimer(new Timer(0.15F) , timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
         this.position = animation.position;

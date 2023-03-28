@@ -1,17 +1,30 @@
 package Scenes.InGame;
 
 import Components.DinamicComponents.Buttons.Button;
-import Components.StaticComponents.StaticComponent;
+import Scenes.Messages.Message;
 import Scenes.Scene;
-import States.State;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final public class LevelCompletedScene extends Scene {
-    public LevelCompletedScene(State state){
-        super(state);
+    public LevelCompletedScene(){
+    }
 
-        components.add(new Button(this));
+    @Override
+    public void notify(Message message) {
+
+    }
+
+    @Override
+    public void saveState() {
+
+    }
+
+    @Override
+    public void loadState() {
+
+    }
+
+    @Override
+    public void resetState() {
+
     }
 }

@@ -1,8 +1,6 @@
-import Components.StaticComponents.AssetsDeposit;
-import GameWindow.GameWindow;
-import GameWindow.Camera;
+import Window.GameWindow;
 import Input.KeyboardInput;
-import States.StatesHandler;
+import Scenes.SceneHandler;
 
 /**
  *
@@ -30,9 +28,6 @@ public class Game implements Runnable {
         }
     }
 
-    /**
-     *
-     */
     @Override
     public void run() {
         long oldTime = System.nanoTime();
@@ -42,10 +37,9 @@ public class Game implements Runnable {
         final double timeFrame = 1000000000.f / framesPerSecond;
 
         try {
-            AssetsDeposit assets = AssetsDeposit.getInstance();
             GameWindow window = GameWindow.getInstance();
-            StatesHandler statesHandler = StatesHandler.getInstance();
             KeyboardInput keyboardInput = KeyboardInput.getInstance();
+            SceneHandler sceneHandler = SceneHandler.getInstance();
 
             while (runState) {
                 curentTime = System.nanoTime();
@@ -53,11 +47,11 @@ public class Game implements Runnable {
                 if ((curentTime - oldTime) > timeFrame) {
                     keyboardInput.updateInputKey();
 
-                    statesHandler.getActiveState().updateState();
+                    sceneHandler.getActiveScene().update();
 
                     window.clear();
 
-                    statesHandler.getActiveState().drawState();
+                    sceneHandler.getActiveScene().draw();
 
                     window.show();
 

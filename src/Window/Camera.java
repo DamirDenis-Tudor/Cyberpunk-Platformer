@@ -1,6 +1,4 @@
-package GameWindow;
-
-import Input.KeyboardInput;
+package Window;
 
 /**
  * This class describes the basic the functionality

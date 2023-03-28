@@ -1,4 +1,4 @@
-package GameWindow;
+package Window;
 
 import Input.KeyboardInput;
 import Input.MouseInput;

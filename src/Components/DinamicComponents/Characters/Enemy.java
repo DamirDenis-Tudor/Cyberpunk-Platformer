@@ -2,7 +2,9 @@ package Components.DinamicComponents.Characters;
 
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
+import Scenes.Messages.Message;
 import Scenes.Scene;
+import Enums.AnimationNames;
 import Utils.Coordinate;
 
 public class Enemy extends Character{
@@ -12,12 +14,17 @@ public class Enemy extends Character{
     public Enemy(Scene scene, Coordinate<Integer> position) throws Exception {
         super(scene);
         assetsDeposit = AssetsDeposit.getInstance();
-        animation = new Animation(assetsDeposit.getAnimation("Enemy2Idle"));
+        animation = new Animation(assetsDeposit.getAnimation(AnimationNames.BikerDoubleJump));
         animation.setPosition(position);
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void notify(Message message) {
 
     }
 

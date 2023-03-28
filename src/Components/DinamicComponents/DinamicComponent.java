@@ -1,6 +1,6 @@
 package Components.DinamicComponents;
 
-import Components.StaticComponents.StaticComponent;
+import Scenes.Messages.Message;
 import Scenes.Scene;
 
 /**
@@ -11,21 +11,9 @@ import Scenes.Scene;
  * TODO: make it to have the possibility to communicate
  *       with other dynamically objects via a mediator class
  */
-public abstract class DinamicComponent implements StaticComponent {
-    private Scene scene; // reference to the scene that belongs to
-
-    /**
-     * @param scene reference scene
-     */
-    protected void setScene(Scene scene){
-        this.scene = scene;
-    }
-
-    /**
-     * @param newScene to be set active
-     * @throws Exception an error message for inexistent sceneName
-     */
-    public void requestSceneChange(String newScene) throws Exception {
-        scene.requestSceneChange(newScene);
-    }
+public abstract class DinamicComponent{
+    protected Scene scene; // reference to the scene that belongs to
+    public abstract void notify(Message message);
+    public abstract void update() throws Exception;
+    public abstract void draw();
 }

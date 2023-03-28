@@ -1,16 +1,31 @@
 package Scenes.InMenu;
 
+import Scenes.Messages.Message;
 import Scenes.Scene;
-import States.State;
-import States.StatesHandler;
-import Timing.Timer;
-import Timing.TimersHandler;
 
 final public class MainMenuScene extends Scene {
-    // BUTOANE
 
-    public MainMenuScene(State state) throws Exception {
-        super(state);
+    public MainMenuScene() throws Exception {
+
+    }
+
+    @Override
+    public void notify(Message message) {
+
+    }
+
+    @Override
+    public void saveState() {
+
+    }
+
+    @Override
+    public void loadState() {
+
+    }
+
+    @Override
+    public void resetState() {
 
     }
 

@@ -1,7 +1,5 @@
 package Utils;
 
-import java.util.List;
-
 public class Coordinate <T>{
     private T posX ;
     private T posY ;
