@@ -1,10 +1,11 @@
 package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
+import Enums.AnimationNames;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
-import Utils.Rectancle;
+import Utils.Rectangle;
 import Window.Camera;
 import Window.GameWindow;
 
@@ -22,47 +23,67 @@ public class Animation implements StaticComponent {
     private TimersHandler timersHandler = TimersHandler.getInstance();
     private GameWindow gameWindow = GameWindow.getInstance();
     private final List<BufferedImage> images;
+    private final int width;
+    private final int height;
     private int activeImageIndex;
-    private boolean drawInMirror = false;
-    private final Rectancle rectancle;
-    private final int spriteSheetWidth;
+    private boolean direction = false;
+    private Rectangle rectangle;
+    private AnimationNames type;
 
-    public Animation(String path, int spriteSheetWidth, int width, int height) throws Exception {
+    /**
+     *
+     * @param path
+     * @param spriteSheetWidth
+     * @param width
+     * @param height
+     * @param box
+     * @param type
+     * @throws Exception
+     */
+    public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationNames type ) throws Exception {
+        this.type = type;
         activeImageIndex = 0;
+        this.width = (int)(width*mapScale);
+        this.height = (int)((height-box.getMinY()-1)*mapScale);
         images = new ArrayList<>();
 
         BufferedImage spriteSheet = ImageIO.read(new File(path));
         for (int index = 0; index < spriteSheetWidth / width; index++) {
-            images.add(spriteSheet.getSubimage(index * width, 0, width, height));
+            images.add(spriteSheet.getSubimage(index * width, box.getMinY(), width, height-box.getMinY()-1));
         }
 
-        this.spriteSheetWidth = spriteSheetWidth;
-
-        this.rectancle = new Rectancle(new Coordinate<>(0, 0), (int)(width*mapScale), (int)(height*mapScale));
+        this.rectangle = box;
     }
 
+    /**
+     *
+     * @param animation
+     * @throws Exception
+     */
     public Animation(Animation animation) throws Exception {
         idCounter++;
-
+        // create a timer for the animation each time when we copy it
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.15F), timerId);
+        timersHandler.addTimer(new Timer(0.1F), timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
         this.images = animation.images;
-        this.spriteSheetWidth = animation.spriteSheetWidth;
 
-        this.rectancle = animation.rectancle;
+        this.rectangle = new Rectangle(animation.rectangle);
+
+        this.height = animation.height;
+        this.width = animation.width;
 
         this.gameWindow = animation.gameWindow;
-        this.timersHandler = animation.timersHandler;
-
         this.activeImageIndex = animation.activeImageIndex;
-        this.drawInMirror = animation.drawInMirror;
+        this.direction = animation.direction;
+        this.type = animation.type;
     }
 
     @Override
     public void update() throws Exception {
         if (!timersHandler.getTimer(timerId).getTimerState()) {
+            timersHandler.getTimer(timerId).resetTimer();
             if (activeImageIndex < images.size() - 1) {
                 activeImageIndex++;
             } else {
@@ -73,31 +94,33 @@ public class Animation implements StaticComponent {
 
     @Override
     public void draw() {
-        if (drawInMirror) {
-            int posX = rectancle.getPosition().getPosX() + (int) (rectancle.getWidth() ) + Camera.getInstance().getCurrentXoffset();
-            int posY = rectancle.getPosition().getPosY();
-            int width = -(int) (rectancle.getWidth());
-            int heigth = (int) (rectancle.getHeight());
-            gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX, posY, width, heigth, null);
+        if (!direction) {
+            int posX = rectangle.getPosition().getPosX() + (rectangle.getWidth() ) + Camera.getInstance().getCurrentXoffset();
+            int posY = rectangle.getPosition().getPosY();
+            gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX , posY, -width, height, null);
         } else {
-            int posX = rectancle.getPosition().getPosX() + Camera.getInstance().getCurrentXoffset();
-            int posY =  rectancle.getPosition().getPosY();
-            int width = (int) (rectancle.getWidth());
-            int height = (int) (rectancle.getHeight());
+            int posX = rectangle.getPosition().getPosX() + Camera.getInstance().getCurrentXoffset();
+            int posY =  rectangle.getPosition().getPosY();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX, posY, width, height, null);
-            gameWindow.getGraphics().drawRect(posX,posY,width,height);
+            //gameWindow.getGraphics().drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
         }
     }
 
     public void setPosition(Coordinate<Integer> position) {
-        this.rectancle.setPosition(position);
+        this.rectangle.setPosition(position);
+    }
+    public void setRectangle(Rectangle rectangle){
+        this.rectangle = rectangle;
+    }
+    public void setDirection(boolean value) {
+        direction = value;
     }
 
-    public Rectancle getRectancle() {
-        return rectancle;
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 
-    public void drawInMirror(boolean value) {
-        drawInMirror = value;
+    public AnimationNames getType() {
+        return type;
     }
 }

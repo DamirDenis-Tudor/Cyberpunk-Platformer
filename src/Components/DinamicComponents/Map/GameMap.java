@@ -3,9 +3,10 @@ package Components.DinamicComponents.Map;
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.Components.ParallaxWallpaper;
 import Enums.ComponentNames;
+import Enums.MessageNames;
 import Scenes.Messages.Message;
 import Utils.Coordinate;
-import Utils.Rectancle;
+import Utils.Rectangle;
 import Window.GameWindow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,6 +30,8 @@ public class GameMap extends DinamicComponent {
     private final GameWindow gameWindow = GameWindow.getInstance();
     private int width; // lines
     private int height; // columns
+
+    private int xStart, xEnd, yStart, yEnd;
     private Map<String, MapAsset> tiles; // String - id , Tile
     private Map<String, MapAsset> objects; // String - id , Object
     private String[][] tilesIndexes; // indexes for tiles
@@ -243,7 +246,12 @@ public class GameMap extends DinamicComponent {
                 }
             }
         }
+
+        // draw collide box
+        //GameWindow.getInstance().getGraphics().drawRect(xStart * mapDim, yStart * mapDim, (xEnd - xStart) * mapDim, (yEnd - yStart) * mapDim);
+
     }
+
     @Override
     public ComponentNames getType() {
         return ComponentNames.Map;
@@ -251,37 +259,61 @@ public class GameMap extends DinamicComponent {
 
     /**
      * In this context, map handles the interaction with any movable object.
+     *
      * @param component interacts with
      */
     @Override
-    public void handleInteractionWith(DinamicComponent component) {
-        Rectancle rectancle = component.getCollideBox();
+    public void handleInteractionWith(DinamicComponent component) throws Exception {
+        Rectangle rectancle = component.getCollideBox();
 
         // first of all wee need to place the component
         // into a specific area of map => clamping
-        int xStart = Math.max(0, rectancle.getPosition().getPosX() / mapDim - 1);
-        int xEnd   = Math.min(width, (rectancle.getPosition().getPosX() + rectancle.getWidth()) / mapDim + 1);
-        int yStart = Math.max(0, rectancle.getPosition().getPosY() / mapDim - 1);
-        int yEnd   = Math.min(height, (rectancle.getPosition().getPosY() + rectancle.getHeight()) / mapDim + 1);
+        xStart = Math.max(0, rectancle.getPosition().getPosX() / mapDim - 2);
+        xEnd = Math.min(width, (rectancle.getPosition().getPosX() + rectancle.getWidth()) / mapDim + 3);
+        yStart = Math.max(0, rectancle.getPosition().getPosY() / mapDim - 1);
+        yEnd = Math.min(height, (rectancle.getPosition().getPosY() + rectancle.getHeight()) / mapDim + 1);
+
+        // variables for special cases collision detection
+        boolean wasGroundCollision = false;
+        boolean wasTopCollision = false;
 
         for (int y = yStart; y <= yEnd; y++) {
             for (int x = xStart; x <= xEnd; x++) {
                 if (!Objects.equals(tilesIndexes[y][x], "0")) {
-                    rectancle.solveCollision(getRectangle(x, y));
+                    Rectangle tileRect = getRectangle(x, y);
+
+                    // solve the collision and save the offsets
+                    double verticalOffset = rectancle.solveCollision(tileRect);
+
+                    // determine the collision type
+                    if (verticalOffset < 0) {
+                        wasGroundCollision = true;
+                    } else if (verticalOffset > 0) {
+                        wasTopCollision = true;
+                    }
                 }
             }
+        }
+
+        // notify the component
+        if (wasGroundCollision) {
+            component.notify(new Message(MessageNames.ActivateBottomCollision, ComponentNames.None));
+        } else {
+            component.notify(new Message(MessageNames.DeactivateBottomCollision, ComponentNames.None));
+        }
+        if (wasTopCollision) {
+            component.notify(new Message(MessageNames.ActivateTopCollision, ComponentNames.None));
         }
     }
 
     /**
-     * 
      * @param x map relative X coordinate
      * @param y map relative Y coordinate
      * @return rectangle object
      */
-    public Rectancle getRectangle(int x, int y) {
+    public Rectangle getRectangle(int x, int y) {
         Coordinate<Integer> pos = new Coordinate<>(x * mapDim, y * mapDim);
-        return new Rectancle(pos, mapDim, mapDim);
+        return new Rectangle(pos, mapDim, mapDim);
     }
 
     public Coordinate<Integer> getPlayerPosition() {

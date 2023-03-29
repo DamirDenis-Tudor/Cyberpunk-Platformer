@@ -1,5 +1,9 @@
 package Enums;
 
 public enum MessageNames {
-    HandleCollision ;
+    HandleCollision ,
+    ActivateTopCollision ,
+    DeactivateTopCollision,
+    ActivateBottomCollision,
+    DeactivateBottomCollision;
 }

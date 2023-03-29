@@ -9,6 +9,11 @@ public class Coordinate <T>{
         this.posY = posY;
     }
 
+    public Coordinate(Coordinate<T> other){
+        this.posX = other.posX;
+        this.posY = other.posY;
+    }
+
     public void setX(T posX){
         this.posX = posX;
     }

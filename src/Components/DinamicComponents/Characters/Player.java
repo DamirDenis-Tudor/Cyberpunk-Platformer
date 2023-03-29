@@ -3,61 +3,132 @@ package Components.DinamicComponents.Characters;
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
+import Enums.AnimationNames;
 import Enums.ComponentNames;
 import Enums.MessageNames;
+import Input.KeyboardInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
-import Window.Camera;
-import Input.KeyboardInput;
-import Enums.AnimationNames;
+import Timing.Timer;
+import Timing.TimersHandler;
 import Utils.Coordinate;
+import Utils.Rectangle;
+
 public class Player extends DinamicComponent {
     private final KeyboardInput keyboardInput;
-    private final Animation animation;
+    private final TimersHandler timersHandler;
+    private Animation animation;
+    private boolean bottomCollision = false;
+    private boolean topCollision = false;
+    private Integer jumpsCounter = 0;
+
+    private boolean direction = true; // true -> right , false -> left
+
+    private void changeAnimation(AnimationNames name) throws Exception {
+        // the animation will be change only if
+        // is not equal with the old one
+        if(animation.getType() != name) {
+            animation = new Animation(AssetsDeposit.getInstance().getAnimation(name));
+            animation.setPosition(collideBox.getPosition());
+        }
+    }
 
     public Player(Scene scene, Coordinate<Integer> position) throws Exception {
         this.scene = scene;
 
-        Camera camera = Camera.getInstance();
         keyboardInput = KeyboardInput.getInstance();
-        AssetsDeposit assetsDeposit = AssetsDeposit.getInstance();
+        timersHandler = TimersHandler.getInstance();
 
-        animation = new Animation(assetsDeposit.getAnimation(AnimationNames.BikerDash));
-        animation.setPosition(position);
+        collideBox = new Rectangle(position , 0,0);
+
+        // load animation
+        animation = new Animation(AssetsDeposit.getInstance().getAnimation(AnimationNames.BikerIdle));
+        animation.setPosition(collideBox.getPosition());
 
         // takes a "reference" of the animation rectangle
-        collideBox = animation.getRectancle();
+        collideBox = animation.getRectangle();
+
+        timersHandler.addTimer(new Timer(0.25f), getType().name());
     }
 
     @Override
     public void notify(Message message) {
-        /*
-            different kinds of messages that means something:
-            -> has been hit;
-            -> has picked up something;
-            and so on
-         */
+        if (message.getType() == MessageNames.ActivateBottomCollision) {
+            bottomCollision = true;
+            topCollision = false;
+            jumpsCounter = 0;
+        } else if (message.getType() == MessageNames.DeactivateBottomCollision) {
+            bottomCollision = false;
+        }
+
+        if (message.getType() == MessageNames.ActivateTopCollision) {
+            topCollision = true;
+        }
     }
 
     @Override
     public void update() throws Exception {
-        // movement
-        if (keyboardInput.getKeyD()){
+        boolean horizontalMove = false;
+        // horizontal movement
+        if (keyboardInput.getKeyD()) {
+            direction = true;
             collideBox.moveByX(5);
-        }
-        if (keyboardInput.getKeyA()){
+            horizontalMove = true;
+        } else if (keyboardInput.getKeyA()) {
+            direction = false;
             collideBox.moveByX(-5);
+            horizontalMove = true;
         }
-        if (keyboardInput.getKeyW()){
-            collideBox.moveByY(-5);
+
+        // max jump will be implemented with a timer
+        // this was a method appropriate to my system
+        boolean jumpingTimer = timersHandler.getTimer(getType().name()).getTimerState();
+
+        // -> If the player is on the ground, the space key has been pressed,
+        //    and the timer is off, then we can start the "jump".
+        // -> Or if the timer is off, double jump hasn't occurred and the space key
+        //    has been released and then pressed again => jump
+        if ((bottomCollision && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
+                (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())) {
+            timersHandler.getTimer(getType().name()).resetTimer();
+            jumpsCounter++;
         }
-        if (keyboardInput.getKeyS()){
-            collideBox.moveByY(5);
+
+        // if the timer in on and top collision hasn't occurred then move up
+        if (jumpingTimer && !topCollision) {
+            if(jumpsCounter == 1) {
+                collideBox.moveByY(-7);
+            }else {
+                collideBox.moveByY(-9);
+            }
+        } // indeed move down
+        else if (!bottomCollision || topCollision) {
+            collideBox.moveByY(9);
+        }
+
+        // if the top collision has occurred then stop timer earlier
+        if (topCollision && jumpsCounter == 2) {
+            timersHandler.getTimer(getType().name()).finishEarlier();
         }
 
         // make a request to handle the collisions
-        scene.notify(new Message(MessageNames.HandleCollision , ComponentNames.Player));
+        scene.notify(new Message(MessageNames.HandleCollision, ComponentNames.Player));
 
+        // animation logic
+        if(jumpsCounter == 0) {
+            if (horizontalMove) {
+                changeAnimation(AnimationNames.BikerRun);
+            } else {
+                changeAnimation(AnimationNames.BikerIdle);
+            }
+        }else if (jumpsCounter == 1){
+            changeAnimation(AnimationNames.BikerJump);
+        } else if (jumpsCounter == 2) {
+            changeAnimation(AnimationNames.BikerDoubleJump);
+        }
+
+        // update the animation
+        animation.setDirection(direction);
         animation.update();
     }
 

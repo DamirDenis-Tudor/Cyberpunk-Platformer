@@ -1,5 +1,5 @@
 package Enums;
 
 public enum ComponentNames {
-    Player , Map , Cat
+    Player , Map , Animal, Enemy , None
 }

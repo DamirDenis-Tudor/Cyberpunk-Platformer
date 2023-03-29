@@ -4,6 +4,8 @@ import Components.StaticComponents.Components.Animation;
 import Components.DinamicComponents.Map.GameMap;
 import Enums.AnimationNames;
 import Enums.MapNames;
+import Utils.Coordinate;
+import Utils.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -13,6 +15,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import static Enums.MapNames.*;
+import static Utils.Constants.mapScale;
 
 import java.util.Map;
 
@@ -25,12 +28,12 @@ public class AssetsDeposit {
     private final Map <AnimationNames, Animation> animations;
     private AssetsDeposit() throws Exception {
 
-        // load game maps
+        // -----------------------load game maps
         gameMaps = new HashMap<>();
         gameMaps.put(GreenCityMap , new GameMap("src/Resources/maps/green_map.tmx"));
         gameMaps.put(IndustrialCity , new GameMap("src/Resources/maps/industrial_map.tmx"));
 
-        // load game animations
+        // -----------------------load game animations
         animations = new HashMap<>();
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -52,7 +55,13 @@ public class AssetsDeposit {
             int height = Integer.parseInt(imageElement.getAttribute("height"));
             int width = Integer.parseInt(property.getAttribute("value"));
 
-            animations.put(AnimationNames.valueOf(id), new Animation(source , spriteSheetWidth , width ,height ));
+            Element box = (Element) element.getElementsByTagName("objectgroup").item(0).getFirstChild().getNextSibling();
+            int x = (int)Float.parseFloat(box.getAttributeNode("x").getValue());
+            int y = (int)Float.parseFloat(box.getAttributeNode("y").getValue());
+            int boxHeight = (int) (Float.parseFloat(box.getAttributeNode("height").getValue())*mapScale);
+            int boxWidth = (int)(Float.parseFloat(box.getAttributeNode("width").getValue())*mapScale);
+            Rectangle boxBounding = new Rectangle(new Coordinate<>(x,y) , boxWidth, boxHeight);
+            animations.put(AnimationNames.valueOf(id), new Animation(source , spriteSheetWidth , width ,height , boxBounding,AnimationNames.valueOf(id) ));
         }
         System.out.println();
     }

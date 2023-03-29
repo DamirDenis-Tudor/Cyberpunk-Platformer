@@ -27,12 +27,21 @@ public class Timer {
      */
     public boolean getTimerState() {
         if (this.startTime >= this.endTime) {
-            resetTimer();
+            this.startTime = 0f;
+            this.endTime = 0f;
             return false;
         } else {
             this.startTime += 0.016666668F;
             return true;
         }
+    }
+
+    /**
+     *  this method allow to finish a timer earlier
+     */
+    public void finishEarlier(){
+        this.startTime = 0f;
+        this.endTime = 0f;
     }
 
     /**
@@ -57,5 +66,13 @@ public class Timer {
      */
     public float getRemainingTime() {
         return this.startTime;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public float getDuration() {
+        return duration;
     }
 }

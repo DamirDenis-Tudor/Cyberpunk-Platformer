@@ -3,6 +3,8 @@ package Scenes;
 import Components.DinamicComponents.DinamicComponent;
 import Scenes.Messages.Message;
 import Enums.*;
+import Utils.Rectangle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * Note : each DinamicComponent has a reference to its scene.(see the Mediator Design Pattern)
  */
 public abstract class Scene {
-    List<DinamicComponent> components;
+    protected List<DinamicComponent> components;
     public Scene() {
         components = new ArrayList<>();
     }
@@ -56,6 +58,20 @@ public abstract class Scene {
             }
         }
         return null;
+    }
+
+    public List<DinamicComponent> getAllComponentsWithName(ComponentNames name){
+        List<DinamicComponent> searchedComponents= new ArrayList<>();
+        for (DinamicComponent dinamicComponent: components){
+            if (name == dinamicComponent.getType()){
+                searchedComponents.add(dinamicComponent);
+            }
+        }
+        return searchedComponents;
+    }
+
+    public Rectangle getComponentCollideBox(ComponentNames name){
+        return findComponent(name).getCollideBox();
     }
 
     /**

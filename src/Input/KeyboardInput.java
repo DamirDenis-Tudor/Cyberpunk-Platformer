@@ -6,30 +6,43 @@ import java.awt.event.KeyListener;
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;
 
-    private final boolean []keyCodes;
+    private final boolean[] keyCodes;
     private boolean keyW;
     private boolean keyA;
     private boolean keyS;
     private boolean keyD;
     private boolean space;
 
-    private KeyboardInput(){
+    private boolean previousKeyW;
+    private boolean previousKeyA;
+    private boolean previousKeyS;
+    private boolean previousKeyD;
+    private boolean previousSpace;
+
+
+    private KeyboardInput() {
         keyCodes = new boolean[256];
         keyW = false;
         keyA = false;
         keyS = false;
         keyD = false;
         space = false;
+        previousSpace = false;
     }
 
     public static KeyboardInput getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new KeyboardInput();
         }
         return instance;
     }
 
-    public void updateInputKey(){
+    public void updateInputKey() {
+        previousSpace = space;
+        previousKeyA = keyA;
+        previousKeyW = keyW;
+        previousKeyS = keyS;
+        previousKeyD = keyD;
         keyW = keyCodes[KeyEvent.VK_W];
         keyA = keyCodes[KeyEvent.VK_A];
         keyS = keyCodes[KeyEvent.VK_S];
@@ -52,18 +65,45 @@ public class KeyboardInput implements KeyListener {
 
     }
 
-    public boolean getKeyW(){
+    public boolean getKeyW() {
         return keyW;
     }
-    public boolean getKeyA(){
+
+    public boolean getKeyA() {
         return keyA;
     }
-    public boolean getKeyS(){
+
+    public boolean getKeyS() {
         return keyS;
     }
-    public boolean getKeyD(){
+
+    public boolean getKeyD() {
         return keyD;
     }
+
+    public boolean getSpace() {
+        return space;
+    }
+    public boolean getPreviousKeyA(){
+        return previousKeyA;
+    }
+
+    public boolean getPreviousKeyD(){
+        return previousKeyD;
+    }
+
+    public boolean getPreviousKeyS(){
+        return previousKeyS;
+    }
+
+    public boolean getPreviousKeyW(){
+        return previousKeyW;
+    }
+
+    public boolean getPreviousSpace(){
+        return previousSpace;
+    }
+
 
 
 }

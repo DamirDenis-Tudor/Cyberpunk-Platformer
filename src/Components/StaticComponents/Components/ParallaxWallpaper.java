@@ -50,9 +50,9 @@ public class ParallaxWallpaper implements StaticComponent {
 
     private int scrollingDirection() {
         if (keyboardInput.getKeyA()) {
-            return 1;
+        //    return 1;
         } else if (keyboardInput.getKeyD()) {
-            return -1;
+       //     return -1;
         }
         return 0;
     }
