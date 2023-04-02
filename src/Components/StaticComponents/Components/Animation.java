@@ -22,13 +22,21 @@ public class Animation implements StaticComponent {
     private String timerId;
     private TimersHandler timersHandler = TimersHandler.getInstance();
     private GameWindow gameWindow = GameWindow.getInstance();
-    private final List<BufferedImage> images;
-    private final int width;
-    private final int height;
+    private List<BufferedImage> images;
+    private int width;
+    private int height;
     private int activeImageIndex;
     private boolean direction = false;
     private Rectangle rectangle;
     private AnimationNames type;
+    private boolean lock = false;
+    private int repeats = 0;
+
+    private int currentCount = 0;
+
+    public Animation(){
+        rectangle = new Rectangle(new Coordinate<>(0,0) , 0, 0);
+    }
 
     /**
      *
@@ -64,7 +72,7 @@ public class Animation implements StaticComponent {
         idCounter++;
         // create a timer for the animation each time when we copy it
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.1F), timerId);
+        timersHandler.addTimer(new Timer(0.06F), timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
         this.images = animation.images;
@@ -82,13 +90,17 @@ public class Animation implements StaticComponent {
 
     @Override
     public void update() throws Exception {
-        if (!timersHandler.getTimer(timerId).getTimerState()) {
+        if (!timersHandler.getTimer(timerId).getTimerState() && (!lock || currentCount != repeats)) {
             timersHandler.getTimer(timerId).resetTimer();
             if (activeImageIndex < images.size() - 1) {
                 activeImageIndex++;
             } else {
                 activeImageIndex = 0;
+                if(repeats != 0){
+                    currentCount ++;
+                }
             }
+
         }
     }
 
@@ -98,6 +110,7 @@ public class Animation implements StaticComponent {
             int posX = rectangle.getPosition().getPosX() + (rectangle.getWidth() ) + Camera.getInstance().getCurrentXoffset();
             int posY = rectangle.getPosition().getPosY();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX , posY, -width, height, null);
+            //gameWindow.getGraphics().drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
             int posX = rectangle.getPosition().getPosX() + Camera.getInstance().getCurrentXoffset();
             int posY =  rectangle.getPosition().getPosY();
@@ -115,12 +128,36 @@ public class Animation implements StaticComponent {
     public void setDirection(boolean value) {
         direction = value;
     }
-
+    public boolean getDirection(){
+        return direction;
+    }
     public Rectangle getRectangle() {
         return rectangle;
     }
 
     public AnimationNames getType() {
         return type;
+    }
+
+    public boolean animationIsOver(){
+        if(images !=null) {
+            return activeImageIndex == images.size()-1;
+        }
+        return true;
+    }
+
+    public void lockAtLastFrame(){
+        lock = true;
+    }
+
+    public void setRepeats(int number){
+        if(currentCount == repeats) {
+            repeats = number;
+            currentCount = 0;
+        }
+    }
+
+    public boolean repeatsAreOver(){
+        return currentCount == repeats;
     }
 }

@@ -2,6 +2,7 @@ package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
 import Window.GameWindow;
+import Window.Camera;
 import Input.KeyboardInput;
 
 import java.awt.*;
@@ -16,10 +17,11 @@ import java.util.List;
 public class ParallaxWallpaper implements StaticComponent {
 
     private final GameWindow gameWindow;
+
+    private final Camera camera;
     private final KeyboardInput keyboardInput;
     private final List<BufferedImage> images;
     private final List<Integer> velocities;
-
     private final List<Integer> background1Position;
 
     private final List<Integer> background2Position;
@@ -29,6 +31,7 @@ public class ParallaxWallpaper implements StaticComponent {
     public ParallaxWallpaper() {
         gameWindow = GameWindow.getInstance();
         keyboardInput = KeyboardInput.getInstance();
+        camera = Camera.getInstance();
         images = new ArrayList<>();
 
         background1Position = new ArrayList<>();
@@ -41,18 +44,14 @@ public class ParallaxWallpaper implements StaticComponent {
         images.add(image);
         background1Position.add(0);
         background2Position.add(gameWindow.GetWndWidth());
-
-        /*
-            TODO: make velocities dependent of delta time;
-         */
-        velocities.add(images.size());
+        velocities.add(images.size()-1);
     }
 
     private int scrollingDirection() {
-        if (keyboardInput.getKeyA()) {
-        //    return 1;
-        } else if (keyboardInput.getKeyD()) {
-       //     return -1;
+        if (camera.getCurrentXoffset() - camera.getPastOffset() > 0) {
+            return 1;
+        } else if (camera.getCurrentXoffset() - camera.getPastOffset() < 0) {
+            return -1;
         }
         return 0;
     }

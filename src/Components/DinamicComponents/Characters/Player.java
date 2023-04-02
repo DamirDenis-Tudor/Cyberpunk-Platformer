@@ -1,8 +1,6 @@
 package Components.DinamicComponents.Characters;
 
 import Components.DinamicComponents.DinamicComponent;
-import Components.StaticComponents.AssetsDeposit;
-import Components.StaticComponents.Components.Animation;
 import Enums.AnimationNames;
 import Enums.ComponentNames;
 import Enums.MessageNames;
@@ -13,56 +11,95 @@ import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
 import Utils.Rectangle;
+import Window.Camera;
+
+import static Utils.Constants.velocity;
 
 public class Player extends DinamicComponent {
     private final KeyboardInput keyboardInput;
     private final TimersHandler timersHandler;
-    private Animation animation;
+    private final Camera camera;
+    private final AnimationHandler animationHandler;
     private boolean bottomCollision = false;
     private boolean topCollision = false;
+    private boolean attack = false;
+    private boolean hurt = false;
+    private boolean firstHit = false;
+    private boolean death = false;
     private Integer jumpsCounter = 0;
+    private final AnimationNames[] attackCombo;
+    private int attackComboIndex = 0;
 
-    private boolean direction = true; // true -> right , false -> left
-
-    private void changeAnimation(AnimationNames name) throws Exception {
-        // the animation will be change only if
-        // is not equal with the old one
-        if(animation.getType() != name) {
-            animation = new Animation(AssetsDeposit.getInstance().getAnimation(name));
-            animation.setPosition(collideBox.getPosition());
-        }
-    }
+    private int health = 100;
 
     public Player(Scene scene, Coordinate<Integer> position) throws Exception {
         this.scene = scene;
 
         keyboardInput = KeyboardInput.getInstance();
         timersHandler = TimersHandler.getInstance();
+        camera = Camera.getInstance();
+        camera.setPastTargetPosition(position.getPosX());
 
-        collideBox = new Rectangle(position , 0,0);
+        animationHandler = new AnimationHandler();
 
-        // load animation
-        animation = new Animation(AssetsDeposit.getInstance().getAnimation(AnimationNames.BikerIdle));
-        animation.setPosition(collideBox.getPosition());
+        collideBox = new Rectangle(position, 0, 0);
 
-        // takes a "reference" of the animation rectangle
-        collideBox = animation.getRectangle();
+        animationHandler.setPosition(collideBox.getPosition());
+        animationHandler.changeAnimation(AnimationNames.BikerIdle, collideBox.getPosition());
+        collideBox = animationHandler.getAnimation().getRectangle();
 
-        timersHandler.addTimer(new Timer(0.25f), getType().name());
+        attackCombo = new AnimationNames[3];
+        attackCombo[0] = AnimationNames.BikerAttack1;
+        attackCombo[1] = AnimationNames.BikerAttack2;
+        attackCombo[2] = AnimationNames.BikerAttack3;
+
+        timersHandler.addTimer(new Timer(0.30f), getType().name());
     }
 
     @Override
-    public void notify(Message message) {
-        if (message.getType() == MessageNames.ActivateBottomCollision) {
-            bottomCollision = true;
-            topCollision = false;
-            jumpsCounter = 0;
-        } else if (message.getType() == MessageNames.DeactivateBottomCollision) {
-            bottomCollision = false;
-        }
+    public void notify(Message message) throws Exception {
+        switch (message.getSource()) {
+            case Map -> {
+                if (message.getType() == MessageNames.ActivateBottomCollision) {
+                    bottomCollision = true;
+                    topCollision = false;
+                    jumpsCounter = 0;
+                } else if (message.getType() == MessageNames.DeactivateBottomCollision) {
+                    bottomCollision = false;
+                } else if (message.getType() == MessageNames.ActivateTopCollision) {
+                    topCollision = true;
+                }
+            }
+            case BasicEnemy -> {
+                if (message.getType() == MessageNames.Attack && !attack) {
+                    animationHandler.changeAnimation(AnimationNames.BikerHurt, collideBox.getPosition());
+                    animationHandler.getAnimation().setRepeats(2);
+                    hurt = true;
+                    health -= 1;
+                    if (health <= 0) {
+                        death = true;
+                        setActiveStatus(false);
+                        scene.notify(new Message(MessageNames.PlayerDeath , ComponentNames.Player));
+                    }
+                }
+            }
 
-        if (message.getType() == MessageNames.ActivateTopCollision) {
-            topCollision = true;
+        }
+    }
+
+    @Override
+    public void handleInteractionWith(DinamicComponent component) throws Exception {
+        if (component.getActiveStatus()) {
+            if (component.getType() == ComponentNames.Map) {
+
+            } else {
+                if (collideBox.intersects(component.getCollideBox()) && attack) {
+                    if (!firstHit) {
+                        component.notify(new Message(MessageNames.Attack, ComponentNames.Player));
+                        firstHit = true;
+                    }
+                }
+            }
         }
     }
 
@@ -70,14 +107,16 @@ public class Player extends DinamicComponent {
     public void update() throws Exception {
         boolean horizontalMove = false;
         // horizontal movement
-        if (keyboardInput.getKeyD()) {
-            direction = true;
-            collideBox.moveByX(5);
-            horizontalMove = true;
-        } else if (keyboardInput.getKeyA()) {
-            direction = false;
-            collideBox.moveByX(-5);
-            horizontalMove = true;
+        if ((!attack) || jumpsCounter != 0) {
+            if (keyboardInput.getKeyD()) {
+                animationHandler.getAnimation().setDirection(true);
+                collideBox.moveByX(velocity);
+                horizontalMove = true;
+            } else if (keyboardInput.getKeyA()) {
+                animationHandler.getAnimation().setDirection(false);
+                collideBox.moveByX(-velocity);
+                horizontalMove = true;
+            }
         }
 
         // max jump will be implemented with a timer
@@ -96,9 +135,9 @@ public class Player extends DinamicComponent {
 
         // if the timer in on and top collision hasn't occurred then move up
         if (jumpingTimer && !topCollision) {
-            if(jumpsCounter == 1) {
+            if (jumpsCounter == 1) {
                 collideBox.moveByY(-7);
-            }else {
+            } else {
                 collideBox.moveByY(-9);
             }
         } // indeed move down
@@ -114,36 +153,62 @@ public class Player extends DinamicComponent {
         // make a request to handle the collisions
         scene.notify(new Message(MessageNames.HandleCollision, ComponentNames.Player));
 
-        // animation logic
-        if(jumpsCounter == 0) {
-            if (horizontalMove) {
-                changeAnimation(AnimationNames.BikerRun);
-            } else {
-                changeAnimation(AnimationNames.BikerIdle);
-            }
-        }else if (jumpsCounter == 1){
-            changeAnimation(AnimationNames.BikerJump);
-        } else if (jumpsCounter == 2) {
-            changeAnimation(AnimationNames.BikerDoubleJump);
+        if (keyboardInput.getKeyE() && !keyboardInput.isPreviousKeyE()) {
+            attack = true;
+            System.out.println();
+            System.out.println();
+            System.out.println();
         }
 
-        // update the animation
-        animation.setDirection(direction);
-        animation.update();
+        if (attack && animationHandler.getAnimation().animationIsOver()) {
+            attack = false;
+            firstHit = false;
+            attackComboIndex++;
+            if (attackComboIndex > 2) {
+                attackComboIndex = 0;
+            }
+
+        }
+
+        // animation logic
+        if (death) {
+            if (animationHandler.getAnimation().animationIsOver()) {
+                animationHandler.getAnimation().lockAtLastFrame();
+            }
+            animationHandler.changeAnimation(AnimationNames.BikerDeath, collideBox.getPosition());
+        } else {
+            if (jumpsCounter == 0) {
+                if (attack) {
+                    animationHandler.changeAnimation(attackCombo[attackComboIndex], collideBox.getPosition());
+                } else if (hurt) {
+                    if (animationHandler.getAnimation().repeatsAreOver()) {
+                        hurt = false;
+                    }
+                } else {
+                    if (horizontalMove) {
+                        animationHandler.changeAnimation(AnimationNames.BikerRun, collideBox.getPosition());
+                    } else {
+                        animationHandler.changeAnimation(AnimationNames.BikerIdle, collideBox.getPosition());
+                    }
+                }
+            } else if (jumpsCounter == 1) {
+                animationHandler.changeAnimation(AnimationNames.BikerJump, collideBox.getPosition());
+            } else if (jumpsCounter == 2) {
+                animationHandler.changeAnimation(AnimationNames.BikerDoubleJump, collideBox.getPosition());
+            }
+        }
+
+        camera.setTargetPosition(collideBox.getMinX());
+        animationHandler.update();
     }
 
     @Override
     public void draw() {
-        animation.draw();
+        animationHandler.draw();
     }
 
     @Override
     public ComponentNames getType() {
         return ComponentNames.Player;
-    }
-
-    @Override
-    public void handleInteractionWith(DinamicComponent component) {
-        // here will have the opportunity to handle interactions;
     }
 }

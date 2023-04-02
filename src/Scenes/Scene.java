@@ -60,6 +60,11 @@ public abstract class Scene {
         return null;
     }
 
+    /**
+     * this method selects all the components with the given name
+     * @param name given name
+     * @return list of components
+     */
     public List<DinamicComponent> getAllComponentsWithName(ComponentNames name){
         List<DinamicComponent> searchedComponents= new ArrayList<>();
         for (DinamicComponent dinamicComponent: components){
@@ -69,11 +74,6 @@ public abstract class Scene {
         }
         return searchedComponents;
     }
-
-    public Rectangle getComponentCollideBox(ComponentNames name){
-        return findComponent(name).getCollideBox();
-    }
-
     /**
      * this method should handle all the components scene requests.
      * @param message to be handled

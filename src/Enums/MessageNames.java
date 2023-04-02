@@ -3,7 +3,14 @@ package Enums;
 public enum MessageNames {
     HandleCollision ,
     ActivateTopCollision ,
-    DeactivateTopCollision,
     ActivateBottomCollision,
-    DeactivateBottomCollision;
+    DeactivateBottomCollision,
+    LeftCollision,
+    RightCollision,
+    LeftCollisionWithOther,
+    RightCollisionWithOther,
+    EnemyDeath,
+    Attack,
+    PlayerDeath
+
 }

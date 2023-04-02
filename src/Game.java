@@ -1,4 +1,5 @@
 import Timing.Timer;
+import Window.Camera;
 import Window.GameWindow;
 import Input.KeyboardInput;
 import Scenes.SceneHandler;
@@ -41,6 +42,7 @@ public class Game implements Runnable {
             GameWindow window = GameWindow.getInstance();
             KeyboardInput keyboardInput = KeyboardInput.getInstance();
             SceneHandler sceneHandler = SceneHandler.getInstance();
+            Camera camera = Camera.getInstance();
 
             while (runState) {
                 curentTime = System.nanoTime();

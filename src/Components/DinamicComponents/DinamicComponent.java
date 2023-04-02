@@ -14,12 +14,30 @@ import Utils.Rectangle;
 public abstract class DinamicComponent{
     protected Scene scene = null;
     protected Rectangle collideBox;
+    private static int idCounter = 0;
+    private int id=0;
+    private boolean active = true;
+    public DinamicComponent(){
+        id=idCounter;
+        idCounter++;
+    }
+    public int getId(){
+        return id;
+    }
     public abstract void  notify(Message message) throws Exception;
+    public abstract void handleInteractionWith(DinamicComponent component) throws Exception;
     public abstract void update() throws Exception;
     public abstract void draw();
     public abstract ComponentNames getType();
-    public abstract void handleInteractionWith(DinamicComponent component) throws Exception;
     public Rectangle getCollideBox() {
         return collideBox;
+    }
+
+    public boolean getActiveStatus(){
+        return active;
+    }
+
+    public void setActiveStatus(boolean value){
+        active = value;
     }
 }

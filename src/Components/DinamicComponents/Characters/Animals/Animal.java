@@ -1,4 +1,4 @@
-package Components.DinamicComponents.Characters;
+package Components.DinamicComponents.Characters.Animals;
 
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AssetsDeposit;
@@ -35,7 +35,7 @@ public class Animal extends DinamicComponent {
     public void update() throws Exception {
         collideBox.moveByY(8);
         animation.update();
-        scene.notify(new Message(MessageNames.HandleCollision , ComponentNames.Animal));
+        scene.notify(new Message(MessageNames.HandleCollision , ComponentNames.GroundAnimal));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Animal extends DinamicComponent {
 
     @Override
     public ComponentNames getType() {
-        return ComponentNames.Animal;
+        return ComponentNames.GroundAnimal;
     }
 
     @Override

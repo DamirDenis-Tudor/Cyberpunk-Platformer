@@ -11,12 +11,17 @@ public class KeyboardInput implements KeyListener {
     private boolean keyA;
     private boolean keyS;
     private boolean keyD;
+
+    private boolean keyE;
     private boolean space;
 
     private boolean previousKeyW;
     private boolean previousKeyA;
     private boolean previousKeyS;
+
     private boolean previousKeyD;
+
+    private boolean previousKeyE;
     private boolean previousSpace;
 
 
@@ -26,6 +31,7 @@ public class KeyboardInput implements KeyListener {
         keyA = false;
         keyS = false;
         keyD = false;
+        keyE = false;
         space = false;
         previousSpace = false;
     }
@@ -43,10 +49,12 @@ public class KeyboardInput implements KeyListener {
         previousKeyW = keyW;
         previousKeyS = keyS;
         previousKeyD = keyD;
+        previousKeyE = keyE;
         keyW = keyCodes[KeyEvent.VK_W];
         keyA = keyCodes[KeyEvent.VK_A];
         keyS = keyCodes[KeyEvent.VK_S];
         keyD = keyCodes[KeyEvent.VK_D];
+        keyE = keyCodes[KeyEvent.VK_E];
         space = keyCodes[KeyEvent.VK_SPACE];
     }
 
@@ -81,29 +89,37 @@ public class KeyboardInput implements KeyListener {
         return keyD;
     }
 
+    public boolean getKeyE() {
+        return keyE;
+    }
+
+
     public boolean getSpace() {
         return space;
     }
-    public boolean getPreviousKeyA(){
+
+    public boolean getPreviousKeyA() {
         return previousKeyA;
     }
 
-    public boolean getPreviousKeyD(){
+    public boolean getPreviousKeyD() {
         return previousKeyD;
     }
 
-    public boolean getPreviousKeyS(){
+    public boolean getPreviousKeyS() {
         return previousKeyS;
     }
 
-    public boolean getPreviousKeyW(){
+    public boolean getPreviousKeyW() {
         return previousKeyW;
     }
 
-    public boolean getPreviousSpace(){
+    public boolean getPreviousSpace() {
         return previousSpace;
     }
-
+    public boolean isPreviousKeyE() {
+        return previousKeyE;
+    }
 
 
 }
