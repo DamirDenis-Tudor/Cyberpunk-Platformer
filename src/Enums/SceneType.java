@@ -1,6 +1,6 @@
 package Enums;
 
-public enum SceneNames {
+public enum SceneType {
     PlayScene,
     LevelCompletedScene,
     LevelPausedScene,

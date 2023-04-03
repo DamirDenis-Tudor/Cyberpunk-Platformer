@@ -2,8 +2,8 @@ package Components.StaticComponents;
 
 import Components.StaticComponents.Components.Animation;
 import Components.DinamicComponents.Map.GameMap;
-import Enums.AnimationNames;
-import Enums.MapNames;
+import Enums.AnimationType;
+import Enums.MapType;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import org.w3c.dom.Document;
@@ -14,7 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.HashMap;
 
-import static Enums.MapNames.*;
+import static Enums.MapType.*;
 import static Utils.Constants.mapScale;
 
 import java.util.Map;
@@ -24,8 +24,8 @@ import java.util.Map;
  */
 public class AssetsDeposit {
     private static AssetsDeposit instance = null;
-    private final Map<MapNames, GameMap> gameMaps;
-    private final Map <AnimationNames, Animation> animations;
+    private final Map<MapType, GameMap> gameMaps;
+    private final Map <AnimationType, Animation> animations;
     private AssetsDeposit() throws Exception {
 
         // -----------------------load game maps
@@ -61,7 +61,7 @@ public class AssetsDeposit {
             int boxHeight = (int) (Float.parseFloat(box.getAttributeNode("height").getValue())*mapScale);
             int boxWidth = (int)(Float.parseFloat(box.getAttributeNode("width").getValue())*mapScale);
             Rectangle boxBounding = new Rectangle(new Coordinate<>(x,y) , boxWidth, boxHeight);
-            animations.put(AnimationNames.valueOf(id), new Animation(source , spriteSheetWidth , width ,height , boxBounding,AnimationNames.valueOf(id) ));
+            animations.put(AnimationType.valueOf(id), new Animation(source , spriteSheetWidth , width ,height , boxBounding, AnimationType.valueOf(id) ));
         }
         System.out.println();
     }
@@ -75,11 +75,11 @@ public class AssetsDeposit {
         }
         return instance;
     }
-    public GameMap getGameMap(MapNames name){
+    public GameMap getGameMap(MapType name){
         return gameMaps.get(name);
     }
 
-    public Animation getAnimation(AnimationNames name){
+    public Animation getAnimation(AnimationType name){
         return animations.get(name);
     }
 }

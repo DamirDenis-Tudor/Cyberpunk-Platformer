@@ -5,13 +5,13 @@ import Components.DinamicComponents.Characters.Player;
 import Components.DinamicComponents.DinamicComponent;
 import Components.DinamicComponents.Map.GameMap;
 import Components.StaticComponents.AssetsDeposit;
-import Enums.MessageNames;
+import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
 
-import static Enums.ComponentNames.*;
-import static Enums.MapNames.GreenCityMap;
+import static Enums.ComponentType.*;
+import static Enums.MapType.GreenCityMap;
 
 final public class PlayScene extends Scene {
 
@@ -39,11 +39,11 @@ final public class PlayScene extends Scene {
                 switch (message.getType()) {
                     case HandleCollision -> {
                         findComponent(Player).handleInteractionWith(findComponent(Map));
-                        findComponent(Map).handleInteractionWith(findComponent(message.getSource()));
+                        findComponent(Map).handleInteractionWith(findComponent(Player));
 
                         for (DinamicComponent component : getAllComponentsWithName(BasicEnemy)) {
-                            findComponent(Player).handleInteractionWith(component);
                             if (component.getActiveStatus()) {
+                                findComponent(Player).handleInteractionWith(component);
                                 component.handleInteractionWith(findComponent(Player));
                                 for (DinamicComponent otherComponent : getAllComponentsWithName(BasicEnemy)) {
                                     if (otherComponent.getActiveStatus()) {
@@ -58,21 +58,25 @@ final public class PlayScene extends Scene {
                     case PlayerDeath -> {
                         for (DinamicComponent component : getAllComponentsWithName(BasicEnemy)) {
                             if (component.getActiveStatus()) {
-                                component.notify(new Message(MessageNames.PlayerDeath, Player));
+                                component.notify(new Message(MessageType.PlayerDeath, Player));
                             }
                         }
                     }
                 }
             }
             case BasicEnemy -> {
-                if (message.getType() == MessageNames.HandleCollision) {
+                if (message.getType() == MessageType.HandleCollision) {
                     for (DinamicComponent component : getAllComponentsWithName(BasicEnemy)) {
-                        findComponent(Map).handleInteractionWith(component);
+                        if (component.getActiveStatus()) {
+                            findComponent(Map).handleInteractionWith(component);
+                        }
                     }
                 }
-                if (message.getType() == MessageNames.EnemyDeath){
+                if (message.getType() == MessageType.EnemyDeath) {
                     for (DinamicComponent component : getAllComponentsWithName(BasicEnemy)) {
-                        component.notify(message);
+                        if (component.getActiveStatus()) {
+                            component.notify(message);
+                        }
                     }
                 }
             }

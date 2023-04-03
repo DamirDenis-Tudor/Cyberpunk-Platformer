@@ -3,9 +3,9 @@ package Components.DinamicComponents.Characters.Animals;
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
-import Enums.AnimationNames;
-import Enums.ComponentNames;
-import Enums.MessageNames;
+import Enums.AnimationType;
+import Enums.ComponentType;
+import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
@@ -19,7 +19,7 @@ public class Animal extends DinamicComponent {
     public Animal(Scene scene, Coordinate<Integer> position) throws Exception {
         this.scene = scene;
 
-        animation = new Animation(AssetsDeposit.getInstance().getAnimation(AnimationNames.Dog1Idle));
+        animation = new Animation(AssetsDeposit.getInstance().getAnimation(AnimationType.Dog1Idle));
         animation.setPosition(position);
 
         // takes a "reference" of the animation rectangle
@@ -35,7 +35,7 @@ public class Animal extends DinamicComponent {
     public void update() throws Exception {
         collideBox.moveByY(8);
         animation.update();
-        scene.notify(new Message(MessageNames.HandleCollision , ComponentNames.GroundAnimal));
+        scene.notify(new Message(MessageType.HandleCollision , ComponentType.GroundAnimal));
     }
 
     @Override
@@ -44,8 +44,8 @@ public class Animal extends DinamicComponent {
     }
 
     @Override
-    public ComponentNames getType() {
-        return ComponentNames.GroundAnimal;
+    public ComponentType getType() {
+        return ComponentType.GroundAnimal;
     }
 
     @Override

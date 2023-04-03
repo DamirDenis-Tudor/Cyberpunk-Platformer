@@ -3,7 +3,6 @@ package Scenes;
 import Components.DinamicComponents.DinamicComponent;
 import Scenes.Messages.Message;
 import Enums.*;
-import Utils.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public abstract class Scene {
      * @param newScene scene to be activated
      * @throws Exception
      */
-    public void requestSceneChange(SceneNames newScene) throws Exception {
+    public void requestSceneChange(SceneType newScene) throws Exception {
         SceneHandler.getInstance().handleSceneChangeRequest(newScene);
     }
 
@@ -51,7 +50,7 @@ public abstract class Scene {
      * @param name to be found
      * @return founded component
      */
-    public DinamicComponent findComponent(ComponentNames name){
+    public DinamicComponent findComponent(ComponentType name){
         for (DinamicComponent dinamicComponent: components){
             if (name == dinamicComponent.getType()){
                 return dinamicComponent;
@@ -65,7 +64,7 @@ public abstract class Scene {
      * @param name given name
      * @return list of components
      */
-    public List<DinamicComponent> getAllComponentsWithName(ComponentNames name){
+    public List<DinamicComponent> getAllComponentsWithName(ComponentType name){
         List<DinamicComponent> searchedComponents= new ArrayList<>();
         for (DinamicComponent dinamicComponent: components){
             if (name == dinamicComponent.getType()){

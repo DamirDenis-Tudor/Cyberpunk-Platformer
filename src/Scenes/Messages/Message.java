@@ -1,22 +1,22 @@
 package Scenes.Messages;
 
-import Enums.ComponentNames;
-import Enums.MessageNames;
+import Enums.ComponentType;
+import Enums.MessageType;
 
 public class Message {
-    private MessageNames type;
-    private ComponentNames source;
+    private MessageType type;
+    private ComponentType source;
 
-    public Message(MessageNames type , ComponentNames source){
+    public Message(MessageType type , ComponentType source){
         this.type = type;
         this.source = source;
     }
 
-    public MessageNames getType(){
+    public MessageType getType(){
         return type;
     }
 
-    public ComponentNames getSource(){
+    public ComponentType getSource(){
         return source;
     }
 

@@ -1,6 +1,6 @@
 package Enums;
 
-public enum MessageNames {
+public enum MessageType {
     HandleCollision ,
     ActivateTopCollision ,
     ActivateBottomCollision,

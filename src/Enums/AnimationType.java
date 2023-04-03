@@ -1,6 +1,6 @@
 package Enums;
 
-public enum AnimationNames {
+public enum AnimationType {
     BikerPunch("BikerPunch"),
     BikerJump("BikerJump"),
     BikerIdle("BikerIdle"),
@@ -168,7 +168,7 @@ public enum AnimationNames {
 
     private final String stringValue;
 
-    AnimationNames(String s) {
+    AnimationType(String s) {
         stringValue = s;
     }
 

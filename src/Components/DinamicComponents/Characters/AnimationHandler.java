@@ -2,7 +2,7 @@ package Components.DinamicComponents.Characters;
 
 import Components.StaticComponents.AssetsDeposit;
 import Components.StaticComponents.Components.Animation;
-import Enums.AnimationNames;
+import Enums.AnimationType;
 import Utils.Coordinate;
 
 public class AnimationHandler {
@@ -19,7 +19,7 @@ public class AnimationHandler {
         animation.setPosition(position);
     }
 
-    public void changeAnimation(AnimationNames name , Coordinate<Integer> position) throws Exception {
+    public void changeAnimation(AnimationType name , Coordinate<Integer> position) throws Exception {
         // the animation will be change only if
         // is not equal with the old one
         if(animation.getType() != name) {

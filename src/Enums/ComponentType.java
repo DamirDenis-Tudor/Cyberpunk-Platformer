@@ -1,5 +1,5 @@
 package Enums;
 
-public enum ComponentNames {
+public enum ComponentType {
     Player , Map , GroundAnimal  , BasicEnemy
 }

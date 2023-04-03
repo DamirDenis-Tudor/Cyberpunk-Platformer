@@ -2,90 +2,105 @@ package Components.DinamicComponents.Characters.Enemies;
 
 import Components.DinamicComponents.Characters.AnimationHandler;
 import Components.DinamicComponents.DinamicComponent;
-import Enums.AnimationNames;
-import Enums.ComponentNames;
-import Enums.MessageNames;
+import Enums.AnimationType;
+import Enums.ComponentStatus;
+import Enums.ComponentType;
+import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BasicEnemy extends DinamicComponent {
     private final AnimationHandler animationHandler;
     private final TimersHandler timersHandler;
-    private boolean leftCollision = false;
-    private boolean rightCollsion = false;
-    private boolean bottomCollision = false;
-    private boolean hurt = false;
+    private final Map<ComponentStatus, Boolean> statuses;
     private int health = 100;
-    private boolean death = false;
-    private boolean firstHit = false;
-    private boolean attack = false;
-    private boolean hasDetectedPlayer = false;
-
-    private boolean hasEnemyCollision = false;
-    private boolean idle = false;
 
     public BasicEnemy(Scene scene, Coordinate<Integer> position) throws Exception {
 
         this.scene = scene;
         animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(AnimationType.Enemy1Idle, position);
+        collideBox = animationHandler.getAnimation().getRectangle();
+
         timersHandler = TimersHandler.getInstance();
-
         timersHandler.addTimer(new Timer(1f), "stan" + getId());
-
         timersHandler.addTimer(new Timer(0.2f), "lock_target" + getId());
 
-        animationHandler.changeAnimation(AnimationNames.Enemy1Idle, position);
-
-        // takes a "reference" of the animation rectangle
-        collideBox = animationHandler.getAnimation().getRectangle();
+        statuses = new HashMap<>();
+        statuses.put(ComponentStatus.BottomCollision, false);
+        statuses.put(ComponentStatus.LeftCollision, false);
+        statuses.put(ComponentStatus.RightCollision, false);
+        statuses.put(ComponentStatus.LeftCollisionWithOther, false);
+        statuses.put(ComponentStatus.RightCollisionWithOther, false);
+        statuses.put(ComponentStatus.HorizontalMove, false);
+        statuses.put(ComponentStatus.Hurt, false);
+        statuses.put(ComponentStatus.Death, false);
+        statuses.put(ComponentStatus.FirstHit, false);
+        statuses.put(ComponentStatus.Attack, false);
+        statuses.put(ComponentStatus.HasDetectedPlayer, false);
+        statuses.put(ComponentStatus.HasEnemyCollision, false);
+        statuses.put(ComponentStatus.Idle, false);
     }
 
     @Override
     public void notify(Message message) throws Exception {
         switch (message.getSource()) {
             case Map -> {
-                if (message.getType() == MessageNames.LeftCollision) {
-                    leftCollision = true;
-                    rightCollsion = false;
-                } else if (message.getType() == MessageNames.RightCollision) {
-                    rightCollsion = true;
-                    leftCollision = false;
-                } else if (message.getType() == MessageNames.ActivateBottomCollision) {
-                    bottomCollision = true;
+                switch (message.getType()) {
+                    case LeftCollision -> {
+                        statuses.put(ComponentStatus.LeftCollision, true);
+                        statuses.put(ComponentStatus.RightCollision, false);
+                    }
+                    case RightCollision -> {
+                        statuses.put(ComponentStatus.LeftCollision, false);
+                        statuses.put(ComponentStatus.RightCollision, true);
+                    }
+                    case ActivateBottomCollision -> statuses.put(ComponentStatus.BottomCollision, true);
                 }
             }
             case BasicEnemy -> {
-                hasEnemyCollision = false;
-                if (message.getType() == MessageNames.LeftCollisionWithOther) {
-                    leftCollision = true;
-                    rightCollsion = false;
-                    hasEnemyCollision = true;
-                } else if (message.getType() == MessageNames.RightCollisionWithOther) {
-                    rightCollsion = true;
-                    leftCollision = false;
-                    hasEnemyCollision = true;
-                } else if (message.getType() == MessageNames.EnemyDeath) {
-                    hasEnemyCollision = false;
+                switch (message.getType()) {
+                    case LeftCollisionWithOther -> {
+                        statuses.put(ComponentStatus.LeftCollisionWithOther, true);
+                        statuses.put(ComponentStatus.RightCollisionWithOther, false);
+                        statuses.put(ComponentStatus.LeftCollision, true);
+                        statuses.put(ComponentStatus.RightCollision, false);
+                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    }
+                    case RightCollisionWithOther -> {
+                        statuses.put(ComponentStatus.RightCollisionWithOther, true);
+                        statuses.put(ComponentStatus.LeftCollisionWithOther, false);
+                        statuses.put(ComponentStatus.LeftCollision, false);
+                        statuses.put(ComponentStatus.RightCollision, true);
+                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    }
+                    case EnemyDeath -> statuses.put(ComponentStatus.HasEnemyCollision, false);
                 }
             }
             case Player -> {
-                if (message.getType() == MessageNames.Attack) {
-                    animationHandler.changeAnimation(AnimationNames.Enemy1Hurt, collideBox.getPosition());
-                    animationHandler.getAnimation().setRepeats(4);
-                    hurt = true;
-                    health -= 20;
-                    if (health <= 0) {
-                        scene.notify(new Message(MessageNames.EnemyDeath , ComponentNames.BasicEnemy));
-                        death = true;
-                        setActiveStatus(false);
+                switch (message.getType()) {
+                    case Attack -> {
+                        animationHandler.changeAnimation(AnimationType.Enemy1Hurt, collideBox.getPosition());
+                        animationHandler.getAnimation().setRepeats(4);
+                        statuses.put(ComponentStatus.Hurt, true);
+                        health -= 40;
+                        if (health <= 0) {
+                            statuses.put(ComponentStatus.Death, true);
+                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.BasicEnemy));
+                            setActiveStatus(false);
+                        }
                     }
-                } else if (message.getType() == MessageNames.PlayerDeath) {
-                    hasDetectedPlayer = false;
-                    idle = false;
-                    attack = false;
+                    case PlayerDeath -> {
+                        statuses.put(ComponentStatus.HasDetectedPlayer, false);
+                        statuses.put(ComponentStatus.Idle, false);
+                        statuses.put(ComponentStatus.Attack, false);
+                    }
                 }
             }
         }
@@ -93,51 +108,52 @@ public class BasicEnemy extends DinamicComponent {
 
     @Override
     public void handleInteractionWith(DinamicComponent component) throws Exception {
-        //   System.out.println("Enemy:"+getId() +" handle interation");
-        if (component.getActiveStatus()) {
-            switch (component.getType()) {
-                case Player -> {
-                    hasDetectedPlayer = true;
-                    if (collideBox.intersects(component.getCollideBox()) && !hurt) {
-                        attack = true;
-                        if (!timersHandler.getTimer("lock_target" + getId()).getTimerState() && !firstHit) {
-                            firstHit = true;
-                            component.notify(new Message(MessageNames.Attack, ComponentNames.BasicEnemy));
-                        }
-                    } else {
-                        if (attack && animationHandler.getAnimation().animationIsOver()) {
-                            attack = false;
-                        }
+        switch (component.getType()) {
+            case Player -> {
+                statuses.put(ComponentStatus.HasDetectedPlayer, true);
+                if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
+                    statuses.put(ComponentStatus.Attack, true);
+                    if (!timersHandler.getTimer("lock_target" + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
+                        statuses.put(ComponentStatus.FirstHit, true);
+                        component.notify(new Message(MessageType.Attack, ComponentType.BasicEnemy));
                     }
-                    if (!hurt && !hasEnemyCollision && collideBox.getMinY() < component.getCollideBox().getCenterY() && collideBox.getMaxY() > component.getCollideBox().getCenterY()) {
-                        if (collideBox.getCenterX() - component.getCollideBox().getCenterX() > 0) {
-                            if (!animationHandler.getAnimation().getDirection() && leftCollision) {
-                                idle = true;
-                            } else {
-                                rightCollsion = true;
-                                leftCollision = false;
-                            }
-                        } else if (collideBox.getCenterX() - component.getCollideBox().getCenterX() < 0) {
-                            if (animationHandler.getAnimation().getDirection() && rightCollsion) {
-                                idle = true;
-                            } else {
-                                leftCollision = true;
-                                rightCollsion = false;
-                            }
+                } else if (collideBox.getMinY() < component.getCollideBox().getCenterY() && collideBox.getMaxY() > component.getCollideBox().getCenterY()) {
+                    if (collideBox.getCenterX() - component.getCollideBox().getCenterX() > 0) {
+                        if (!animationHandler.getAnimation().getDirection() &&
+                                statuses.get(ComponentStatus.LeftCollision) &&
+                                !statuses.get(ComponentStatus.LeftCollisionWithOther)) {
+                            statuses.put(ComponentStatus.Idle, true);
+                        } else {
+                            statuses.put(ComponentStatus.RightCollision, true);
+                            statuses.put(ComponentStatus.LeftCollision, false);
+                        }
+                    } else if (collideBox.getCenterX() - component.getCollideBox().getCenterX() < 0) {
+                        if (animationHandler.getAnimation().getDirection() &&
+                                statuses.get(ComponentStatus.RightCollision) &&
+                                !statuses.get(ComponentStatus.RightCollisionWithOther)) {
+                            statuses.put(ComponentStatus.Idle, true);
+                        } else {
+                            statuses.put(ComponentStatus.RightCollision, false);
+                            statuses.put(ComponentStatus.LeftCollision, true);
                         }
                     } else {
-                        idle = false;
-                        hasDetectedPlayer = false;
+                        statuses.put(ComponentStatus.Idle, false);
                     }
                 }
-                case BasicEnemy -> {
-                    if (component.getCollideBox().intersects(collideBox) && !hasDetectedPlayer) {
-                        if (component.getCollideBox().getDx() > 0) {
-                            component.notify(new Message(MessageNames.LeftCollisionWithOther, ComponentNames.BasicEnemy));
-                        } else if (component.getCollideBox().getDx() < 0) {
-                            component.notify(new Message(MessageNames.RightCollisionWithOther, ComponentNames.BasicEnemy));
-                        }
-                    }
+                if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
+                    statuses.put(ComponentStatus.Attack, false);
+                }
+            }
+            case BasicEnemy -> {
+                collideBox.solveCollision(component.getCollideBox());
+                if (collideBox.getDx() > 0) {
+                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.BasicEnemy));
+                    statuses.put(ComponentStatus.LeftCollision, true);
+                    statuses.put(ComponentStatus.RightCollision, false);
+                } else if (collideBox.getDx() < 0) {
+                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.BasicEnemy));
+                    statuses.put(ComponentStatus.RightCollision, true);
+                    statuses.put(ComponentStatus.LeftCollision, false);
                 }
             }
         }
@@ -145,45 +161,49 @@ public class BasicEnemy extends DinamicComponent {
 
     @Override
     public void update() throws Exception {
-        if (!bottomCollision) {
+        if (!statuses.get(ComponentStatus.BottomCollision)) {
             collideBox.moveByY(8);
         }
-        boolean horizontalMove = false;
-        if (!attack && !hurt && !idle) {
-            if (!leftCollision) {
-                horizontalMove = true;
+        if (!statuses.get(ComponentStatus.Attack) &&
+                !statuses.get(ComponentStatus.Hurt) &&
+                !statuses.get(ComponentStatus.Idle)) {
+
+            if (!statuses.get(ComponentStatus.LeftCollision)) {
+                statuses.put(ComponentStatus.HorizontalMove, true);
                 animationHandler.getAnimation().setDirection(false);
                 collideBox.moveByX(-1);
-            } else if (!rightCollsion) {
-                horizontalMove = true;
+            } else if (!statuses.get(ComponentStatus.RightCollision)) {
+                statuses.put(ComponentStatus.HorizontalMove, true);
                 animationHandler.getAnimation().setDirection(true);
                 collideBox.moveByX(1);
             }
+        } else {
+            statuses.put(ComponentStatus.HorizontalMove, false);
         }
 
-        if (death) {
+        if (statuses.get(ComponentStatus.Death)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(AnimationNames.Enemy1Death, collideBox.getPosition());
+            animationHandler.changeAnimation(AnimationType.Enemy1Death, collideBox.getPosition());
         } else {
-            if (hurt) {
+            if (statuses.get(ComponentStatus.Hurt)) {
                 if (animationHandler.getAnimation().repeatsAreOver()) {
-                    hurt = false;
+                    statuses.put(ComponentStatus.Hurt, false);
                 }
-            } else if (attack) {
-                animationHandler.changeAnimation(AnimationNames.Enemy1Attack, collideBox.getPosition());
+            } else if (statuses.get(ComponentStatus.Attack)) {
+                animationHandler.changeAnimation(AnimationType.Enemy1Attack, collideBox.getPosition());
                 if (animationHandler.getAnimation().animationIsOver()) {
-                    firstHit = false;
+                    statuses.put(ComponentStatus.FirstHit, false);
                 }
-            } else if (idle) {
-                animationHandler.changeAnimation(AnimationNames.Enemy1Idle, collideBox.getPosition());
-            } else if (horizontalMove) {
-                animationHandler.changeAnimation(AnimationNames.Enemy1Walk, collideBox.getPosition());
+            } else if (statuses.get(ComponentStatus.Idle)) {
+                animationHandler.changeAnimation(AnimationType.Enemy1Idle, collideBox.getPosition());
+            } else if (statuses.get(ComponentStatus.HorizontalMove)) {
+                animationHandler.changeAnimation(AnimationType.Enemy1Walk, collideBox.getPosition());
             }
         }
         animationHandler.update();
-        scene.notify(new Message(MessageNames.HandleCollision, ComponentNames.BasicEnemy));
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.BasicEnemy));
     }
 
     @Override
@@ -192,9 +212,8 @@ public class BasicEnemy extends DinamicComponent {
     }
 
     @Override
-    public ComponentNames getType() {
-        return ComponentNames.BasicEnemy;
+    public ComponentType getType() {
+        return ComponentType.BasicEnemy;
     }
-
 
 }

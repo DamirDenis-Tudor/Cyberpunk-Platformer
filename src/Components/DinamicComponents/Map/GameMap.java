@@ -2,8 +2,8 @@ package Components.DinamicComponents.Map;
 
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.Components.ParallaxWallpaper;
-import Enums.ComponentNames;
-import Enums.MessageNames;
+import Enums.ComponentType;
+import Enums.MessageType;
 import Scenes.Messages.Message;
 import Utils.Coordinate;
 import Utils.Rectangle;
@@ -198,7 +198,7 @@ public class GameMap extends DinamicComponent {
 
     @Override
     public void notify(Message message) {
-        if (message.getSource() == ComponentNames.Player) {
+        if (message.getSource() == ComponentType.Player) {
             //wasGroundCollision = MessageNames.ActivateBottomCollision == message.getType();
         }
     }
@@ -252,8 +252,8 @@ public class GameMap extends DinamicComponent {
     }
 
     @Override
-    public ComponentNames getType() {
-        return ComponentNames.Map;
+    public ComponentType getType() {
+        return ComponentType.Map;
     }
 
     /**
@@ -305,16 +305,16 @@ public class GameMap extends DinamicComponent {
 
         // notify the component
         if (wasGroundCollision) {
-            component.notify(new Message(MessageNames.ActivateBottomCollision, ComponentNames.Map));
+            component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map));
         } else {
-            component.notify(new Message(MessageNames.DeactivateBottomCollision, ComponentNames.Map));
+            component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map));
         }
         if (wasTopCollision) {
-            component.notify(new Message(MessageNames.ActivateTopCollision, ComponentNames.Map));
+            component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map));
         }
 
         // particular behavior for some components
-        if (component.getType() == ComponentNames.BasicEnemy) {
+        if (component.getType() == ComponentType.BasicEnemy) {
             // collision verification is necessary to prevent components from falling off the platform
             if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
                 wasLeftCollision = true;
@@ -324,9 +324,9 @@ public class GameMap extends DinamicComponent {
 
             // notify the component
             if (wasLeftCollision) {
-                component.notify(new Message(MessageNames.LeftCollision, ComponentNames.Map));
+                component.notify(new Message(MessageType.LeftCollision, ComponentType.Map));
             } else if (wasRightCollision) {
-                component.notify(new Message(MessageNames.RightCollision, ComponentNames.Map));
+                component.notify(new Message(MessageType.RightCollision, ComponentType.Map));
             }
         }
     }

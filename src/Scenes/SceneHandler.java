@@ -8,9 +8,9 @@ import Scenes.InMenu.InitGameScene;
 import Scenes.InMenu.LogoStartScene;
 import Scenes.InMenu.MainMenuScene;
 import Scenes.InMenu.SettingsScene;
-import Enums.SceneNames;
+import Enums.SceneType;
 
-import static Enums.SceneNames.*;
+import static Enums.SceneType.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class SceneHandler {
     static SceneHandler instance;
-    private final Map<SceneNames, Scene> scenes;
+    private final Map<SceneType, Scene> scenes;
     private Scene activeScene;
 
     private SceneHandler() throws Exception {
@@ -61,12 +61,12 @@ public class SceneHandler {
      * @return identifier of active scene
      * @throws Exception message
      */
-    public SceneNames getActiveSceneID() throws Exception {
+    public SceneType getActiveSceneID() throws Exception {
         if (activeScene == null){
             throw new NullPointerException("Error - active scene is null.");
         }
 
-        for (Map.Entry<SceneNames, Scene> entry: scenes.entrySet()) {
+        for (Map.Entry<SceneType, Scene> entry: scenes.entrySet()) {
             if (entry.getValue() == activeScene){
                 return entry.getKey();
             }
@@ -80,7 +80,7 @@ public class SceneHandler {
      * belong to the current active state.
      * @param newScene
      */
-    public void handleSceneChangeRequest(SceneNames newScene) throws Exception {
+    public void handleSceneChangeRequest(SceneType newScene) throws Exception {
         if(scenes.containsKey(newScene)){
             activeScene = scenes.get(newScene);
         }else {

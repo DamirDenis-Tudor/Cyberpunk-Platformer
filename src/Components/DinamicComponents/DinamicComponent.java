@@ -1,6 +1,6 @@
 package Components.DinamicComponents;
 
-import Enums.ComponentNames;
+import Enums.ComponentType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Rectangle;
@@ -28,7 +28,7 @@ public abstract class DinamicComponent{
     public abstract void handleInteractionWith(DinamicComponent component) throws Exception;
     public abstract void update() throws Exception;
     public abstract void draw();
-    public abstract ComponentNames getType();
+    public abstract ComponentType getType();
     public Rectangle getCollideBox() {
         return collideBox;
     }

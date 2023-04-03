@@ -1,10 +1,10 @@
 package Enums;
 
-public enum MapNames {
+public enum MapType {
     GreenCityMap("GreenCity"),
     IndustrialCity("IndustrialCityMap");
     private final String stringValue;
-    MapNames(String s) {
+    MapType(String s) {
         stringValue = s;
     }
     public String getStringValue() {

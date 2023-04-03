@@ -1,7 +1,7 @@
 package Components.StaticComponents.Components;
 
 import Components.StaticComponents.StaticComponent;
-import Enums.AnimationNames;
+import Enums.AnimationType;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
@@ -28,7 +28,7 @@ public class Animation implements StaticComponent {
     private int activeImageIndex;
     private boolean direction = false;
     private Rectangle rectangle;
-    private AnimationNames type;
+    private AnimationType type;
     private boolean lock = false;
     private int repeats = 0;
 
@@ -48,7 +48,7 @@ public class Animation implements StaticComponent {
      * @param type
      * @throws Exception
      */
-    public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationNames type ) throws Exception {
+    public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationType type ) throws Exception {
         this.type = type;
         activeImageIndex = 0;
         this.width = (int)(width*mapScale);
@@ -135,7 +135,7 @@ public class Animation implements StaticComponent {
         return rectangle;
     }
 
-    public AnimationNames getType() {
+    public AnimationType getType() {
         return type;
     }
 
