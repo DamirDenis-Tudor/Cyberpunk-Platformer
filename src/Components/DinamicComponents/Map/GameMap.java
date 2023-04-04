@@ -1,7 +1,7 @@
 package Components.DinamicComponents.Map;
 
 import Components.DinamicComponents.DinamicComponent;
-import Components.StaticComponents.Components.ParallaxWallpaper;
+import Components.StaticComponents.ParallaxWallpaper;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -36,7 +36,7 @@ public class GameMap extends DinamicComponent {
     private String[][] tilesIndexes; // indexes for tiles
     private String[][] objectsIndexes; // indexes for objects
     private ParallaxWallpaper background; // parallax background
-    private Map<String, List<Coordinate<Integer>>> entitiesCoordinates; // map of the preloaded entities
+    private Map<String, List<Rectangle>> entitiesCoordinates; // map of the preloaded entities
 
     boolean wasGroundCollision = false;
     boolean wasTopCollision = false;
@@ -176,20 +176,20 @@ public class GameMap extends DinamicComponent {
                 Element objectgroupElement = (Element) objectgroupNode;
                 String objectgroupName = objectgroupElement.getAttribute("name");
                 NodeList objectList = objectgroupElement.getElementsByTagName("object");
-                List<Coordinate<Integer>> list = new ArrayList<>();
+                List<Rectangle> list = new ArrayList<>();
 
                 for (int objectIndex = 0; objectIndex < objectList.getLength(); ++objectIndex) {
                     Node objectNode = objectList.item(objectIndex);
                     Element objectElement = (Element) objectNode;
                     int x = (int) (Float.parseFloat(objectElement.getAttributeNode("x").getValue()) * mapScale);
                     int y = (int) (Float.parseFloat(objectElement.getAttributeNode("y").getValue()) * mapScale);
-
-                    list.add(new Coordinate<>(x, y));
+                    int w = (int) (Float.parseFloat(objectElement.getAttributeNode("width").getValue()) * mapScale);
+                    int h = (int) (Float.parseFloat(objectElement.getAttributeNode("height").getValue()) * mapScale);
+                    list.add(new Rectangle(new Coordinate<Integer>(x,y),w, h));
 
                     entitiesCoordinates.put(objectgroupName, list);
                 }
             }
-            System.out.println();
 
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
@@ -228,7 +228,7 @@ public class GameMap extends DinamicComponent {
                     int dimH = asset.getHeight();
 
                     gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
-                 //   gameWindow.getGraphics().drawRect(xPos, yPos, dimW, dimH);
+                    //   gameWindow.getGraphics().drawRect(xPos, yPos, dimW, dimH);
                 }
             }
         }
@@ -265,7 +265,18 @@ public class GameMap extends DinamicComponent {
     public void handleInteractionWith(DinamicComponent component) throws Exception {
         Rectangle rectangle = component.getCollideBox();
 
-        // first of all wee need to place the component
+        // fist of all we need to check if the player is on a ladder
+        if (component.getType() == ComponentType.Player) {
+            for (Rectangle ladder : entitiesCoordinates.get("ladders")){
+                if(rectangle.intersects(ladder)){
+                    component.notify(new Message(MessageType.IsOnLadder , ComponentType.Map));
+                    return;
+                }
+            }
+            component.notify(new Message(MessageType.IsNoLongerOnLadder , ComponentType.Map));
+        }
+
+        // if not we need to place the component
         // into a specific area of map => clamping
         int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 1);
         int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 2);
@@ -314,7 +325,7 @@ public class GameMap extends DinamicComponent {
         }
 
         // particular behavior for some components
-        if (component.getType() == ComponentType.BasicEnemy) {
+        if (component.getType() != ComponentType.Player) {
             // collision verification is necessary to prevent components from falling off the platform
             if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
                 wasLeftCollision = true;
@@ -342,19 +353,31 @@ public class GameMap extends DinamicComponent {
     }
 
     public Coordinate<Integer> getPlayerPosition() {
-        return entitiesCoordinates.get("player").get(0);
+        return entitiesCoordinates.get("player").get(0).getPosition();
     }
 
     public List<Coordinate<Integer>> getEnemiesPositions() {
-        return entitiesCoordinates.get("enemies");
+        List<Coordinate<Integer>> coordinates = new ArrayList<>();
+        for (Rectangle rectangle:entitiesCoordinates.get("enemies")) {
+            coordinates.add(rectangle.getPosition());
+        }
+        return coordinates;
     }
 
     public List<Coordinate<Integer>> getAnimalsPositions() {
-        return entitiesCoordinates.get("animals");
+        List<Coordinate<Integer>> coordinates = new ArrayList<>();
+        for (Rectangle rectangle:entitiesCoordinates.get("animals")) {
+            coordinates.add(rectangle.getPosition());
+        }
+        return coordinates;
     }
 
     public List<Coordinate<Integer>> getChestsPositions() {
-        return entitiesCoordinates.get("chests");
+        List<Coordinate<Integer>> coordinates = new ArrayList<>();
+        for (Rectangle rectangle:entitiesCoordinates.get("chests")) {
+            coordinates.add(rectangle.getPosition());
+        }
+        return coordinates;
     }
 
 }

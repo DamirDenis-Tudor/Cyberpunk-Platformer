@@ -5,6 +5,8 @@ public enum ComponentStatus {
     TopCollision ,
     RightCollision,
     LeftCollision,
+    IsOnLadder,
+    IsMovingOnLadder,
     RightCollisionWithOther,
     LeftCollisionWithOther,
     HorizontalMove,

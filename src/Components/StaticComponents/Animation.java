@@ -1,6 +1,5 @@
-package Components.StaticComponents.Components;
+package Components.StaticComponents;
 
-import Components.StaticComponents.StaticComponent;
 import Enums.AnimationType;
 import Timing.Timer;
 import Timing.TimersHandler;
@@ -20,7 +19,7 @@ import static Utils.Constants.mapScale;
 public class Animation implements StaticComponent {
     private static int idCounter = 0;
     private String timerId;
-    private TimersHandler timersHandler = TimersHandler.getInstance();
+    private final TimersHandler timersHandler = TimersHandler.getInstance();
     private GameWindow gameWindow = GameWindow.getInstance();
     private List<BufferedImage> images;
     private int width;
@@ -149,6 +148,7 @@ public class Animation implements StaticComponent {
     public void lockAtLastFrame(){
         lock = true;
     }
+    public void unlockAtLastFrame() {lock = false;}
 
     public void setRepeats(int number){
         if(currentCount == repeats) {

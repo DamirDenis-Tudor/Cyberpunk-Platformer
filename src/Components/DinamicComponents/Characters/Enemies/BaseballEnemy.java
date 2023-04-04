@@ -1,11 +1,8 @@
 package Components.DinamicComponents.Characters.Enemies;
 
-import Components.DinamicComponents.Characters.AnimationHandler;
+import Components.StaticComponents.AnimationHandler;
 import Components.DinamicComponents.DinamicComponent;
-import Enums.AnimationType;
-import Enums.ComponentStatus;
-import Enums.ComponentType;
-import Enums.MessageType;
+import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
@@ -15,13 +12,15 @@ import Utils.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BasicEnemy extends DinamicComponent {
+import Enums.TimerType;
+
+public class BaseballEnemy extends DinamicComponent {
     private final AnimationHandler animationHandler;
     private final TimersHandler timersHandler;
     private final Map<ComponentStatus, Boolean> statuses;
     private int health = 100;
 
-    public BasicEnemy(Scene scene, Coordinate<Integer> position) throws Exception {
+    public BaseballEnemy(Scene scene, Coordinate<Integer> position) throws Exception {
 
         this.scene = scene;
         animationHandler = new AnimationHandler();
@@ -29,8 +28,9 @@ public class BasicEnemy extends DinamicComponent {
         collideBox = animationHandler.getAnimation().getRectangle();
 
         timersHandler = TimersHandler.getInstance();
-        timersHandler.addTimer(new Timer(1f), "stan" + getId());
-        timersHandler.addTimer(new Timer(0.2f), "lock_target" + getId());
+        timersHandler.addTimer(new Timer(1f), TimerType.HitStan.toString() + getId());
+        timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
+
 
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.BottomCollision, false);
@@ -43,7 +43,6 @@ public class BasicEnemy extends DinamicComponent {
         statuses.put(ComponentStatus.Death, false);
         statuses.put(ComponentStatus.FirstHit, false);
         statuses.put(ComponentStatus.Attack, false);
-        statuses.put(ComponentStatus.HasDetectedPlayer, false);
         statuses.put(ComponentStatus.HasEnemyCollision, false);
         statuses.put(ComponentStatus.Idle, false);
     }
@@ -64,7 +63,7 @@ public class BasicEnemy extends DinamicComponent {
                     case ActivateBottomCollision -> statuses.put(ComponentStatus.BottomCollision, true);
                 }
             }
-            case BasicEnemy -> {
+            case BaseballEnemy -> {
                 switch (message.getType()) {
                     case LeftCollisionWithOther -> {
                         statuses.put(ComponentStatus.LeftCollisionWithOther, true);
@@ -92,7 +91,7 @@ public class BasicEnemy extends DinamicComponent {
                         health -= 40;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
-                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.BasicEnemy));
+                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.BaseballEnemy));
                             setActiveStatus(false);
                         }
                     }
@@ -110,14 +109,17 @@ public class BasicEnemy extends DinamicComponent {
     public void handleInteractionWith(DinamicComponent component) throws Exception {
         switch (component.getType()) {
             case Player -> {
-                statuses.put(ComponentStatus.HasDetectedPlayer, true);
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
                     statuses.put(ComponentStatus.Attack, true);
-                    if (!timersHandler.getTimer("lock_target" + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
+                    if (!timersHandler.getTimer(TimerType.LockTarget.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
                         statuses.put(ComponentStatus.FirstHit, true);
-                        component.notify(new Message(MessageType.Attack, ComponentType.BasicEnemy));
+                        component.notify(new Message(MessageType.Attack, ComponentType.BaseballEnemy));
                     }
-                } else if (collideBox.getMinY() < component.getCollideBox().getCenterY() && collideBox.getMaxY() > component.getCollideBox().getCenterY()) {
+                } else if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
+                    statuses.put(ComponentStatus.Attack, false);
+                }
+
+                if (!statuses.get(ComponentStatus.HasEnemyCollision) && collideBox.getMinY() < component.getCollideBox().getCenterY() && collideBox.getMaxY() > component.getCollideBox().getCenterY()) {
                     if (collideBox.getCenterX() - component.getCollideBox().getCenterX() > 0) {
                         if (!animationHandler.getAnimation().getDirection() &&
                                 statuses.get(ComponentStatus.LeftCollision) &&
@@ -136,24 +138,23 @@ public class BasicEnemy extends DinamicComponent {
                             statuses.put(ComponentStatus.RightCollision, false);
                             statuses.put(ComponentStatus.LeftCollision, true);
                         }
-                    } else {
-                        statuses.put(ComponentStatus.Idle, false);
                     }
-                }
-                if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
-                    statuses.put(ComponentStatus.Attack, false);
+                } else {
+                    statuses.put(ComponentStatus.Idle, false);
                 }
             }
-            case BasicEnemy -> {
+            case BaseballEnemy -> {
                 collideBox.solveCollision(component.getCollideBox());
                 if (collideBox.getDx() > 0) {
-                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.BasicEnemy));
+                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.BaseballEnemy));
                     statuses.put(ComponentStatus.LeftCollision, true);
                     statuses.put(ComponentStatus.RightCollision, false);
+                    statuses.put(ComponentStatus.HasEnemyCollision, true);
                 } else if (collideBox.getDx() < 0) {
-                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.BasicEnemy));
+                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.BaseballEnemy));
                     statuses.put(ComponentStatus.RightCollision, true);
                     statuses.put(ComponentStatus.LeftCollision, false);
+                    statuses.put(ComponentStatus.HasEnemyCollision, true);
                 }
             }
         }
@@ -203,7 +204,7 @@ public class BasicEnemy extends DinamicComponent {
             }
         }
         animationHandler.update();
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.BasicEnemy));
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.BaseballEnemy));
     }
 
     @Override
@@ -213,7 +214,7 @@ public class BasicEnemy extends DinamicComponent {
 
     @Override
     public ComponentType getType() {
-        return ComponentType.BasicEnemy;
+        return ComponentType.BaseballEnemy;
     }
 
 }

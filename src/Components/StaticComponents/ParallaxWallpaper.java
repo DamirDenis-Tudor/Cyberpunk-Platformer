@@ -1,4 +1,4 @@
-package Components.StaticComponents.Components;
+package Components.StaticComponents;
 
 import Components.StaticComponents.StaticComponent;
 import Window.GameWindow;

@@ -1,6 +1,4 @@
 package Components.StaticComponents;
-
-import Components.StaticComponents.Components.Animation;
 import Components.DinamicComponents.Map.GameMap;
 import Enums.AnimationType;
 import Enums.MapType;

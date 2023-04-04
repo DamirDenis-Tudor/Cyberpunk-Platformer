@@ -5,6 +5,8 @@ public enum MessageType {
     ActivateTopCollision ,
     ActivateBottomCollision,
     DeactivateBottomCollision,
+    IsOnLadder,
+    IsNoLongerOnLadder,
     LeftCollision,
     RightCollision,
     LeftCollisionWithOther,

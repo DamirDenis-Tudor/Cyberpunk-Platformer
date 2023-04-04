@@ -1,11 +1,12 @@
-package Components.DinamicComponents.Characters;
+package Components.StaticComponents;
 
 import Components.StaticComponents.AssetsDeposit;
-import Components.StaticComponents.Components.Animation;
+import Components.StaticComponents.Animation;
+import Components.StaticComponents.StaticComponent;
 import Enums.AnimationType;
 import Utils.Coordinate;
 
-public class AnimationHandler {
+public class AnimationHandler implements StaticComponent {
     private Animation animation;
 
     public AnimationHandler(){

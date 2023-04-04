@@ -1,6 +1,7 @@
 package Components.DinamicComponents.Characters;
 
 import Components.DinamicComponents.DinamicComponent;
+import Components.StaticComponents.AnimationHandler;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -18,16 +19,16 @@ import java.util.Map;
 
 import static Utils.Constants.velocity;
 
-public class Player extends DinamicComponent {
+public class Player extends DinamicComponent{
     private final KeyboardInput keyboardInput;
-    private final TimersHandler timersHandler;
     private final Camera camera;
+    private final TimersHandler timersHandler;
     private final AnimationHandler animationHandler;
     private final Map<ComponentStatus, Boolean> statuses;
+    private int health = 100;
     private Integer jumpsCounter = 0;
     private final AnimationType[] attackCombo;
     private int attackComboIndex = 0;
-    private int health = 100;
 
     public Player(Scene scene, Coordinate<Integer> position) throws Exception {
         this.scene = scene;
@@ -52,11 +53,13 @@ public class Player extends DinamicComponent {
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.BottomCollision, false);
         statuses.put(ComponentStatus.TopCollision, false);
+        statuses.put(ComponentStatus.IsOnLadder , false);
         statuses.put(ComponentStatus.HorizontalMove, false);
         statuses.put(ComponentStatus.Hurt, false);
         statuses.put(ComponentStatus.Death, false);
         statuses.put(ComponentStatus.FirstHit, false);
         statuses.put(ComponentStatus.Attack, false);
+        statuses.put(ComponentStatus.IsMovingOnLadder, false);
     }
 
     @Override
@@ -71,9 +74,14 @@ public class Player extends DinamicComponent {
                     }
                     case DeactivateBottomCollision -> statuses.put(ComponentStatus.BottomCollision, false);
                     case ActivateTopCollision -> statuses.put(ComponentStatus.TopCollision, true);
+                    case IsOnLadder -> {
+                        statuses.put(ComponentStatus.IsOnLadder , true);
+                        jumpsCounter = 1;
+                    }
+                    case IsNoLongerOnLadder -> statuses.put(ComponentStatus.IsOnLadder , false);
                 }
             }
-            case BasicEnemy -> {
+            case BaseballEnemy, SkaterEnemy, AnimalEnemy-> {
                 if (message.getType() == MessageType.Attack && !statuses.get(ComponentStatus.Attack)) {
                     animationHandler.changeAnimation(AnimationType.BikerHurt, collideBox.getPosition());
                     animationHandler.getAnimation().setRepeats(2);
@@ -95,7 +103,7 @@ public class Player extends DinamicComponent {
             case Map -> {
 
             }
-            case BasicEnemy -> {
+            case BaseballEnemy, SkaterEnemy,AnimalEnemy -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.Attack) &&
                         !statuses.get(ComponentStatus.FirstHit)) {
@@ -110,15 +118,22 @@ public class Player extends DinamicComponent {
     public void update() throws Exception {
         // horizontal movement
         statuses.put(ComponentStatus.HorizontalMove, false);
-
         if ((!statuses.get(ComponentStatus.Attack)) || jumpsCounter != 0) {
             if (keyboardInput.getKeyD()) {
                 animationHandler.getAnimation().setDirection(true);
-                collideBox.moveByX(velocity);
+                if(statuses.get(ComponentStatus.IsOnLadder)){
+                    collideBox.moveByX(5);
+                }else {
+                    collideBox.moveByX(5);
+                }
                 statuses.put(ComponentStatus.HorizontalMove, true);
             } else if (keyboardInput.getKeyA()) {
                 animationHandler.getAnimation().setDirection(false);
-                collideBox.moveByX(-velocity);
+                if(statuses.get(ComponentStatus.IsOnLadder)){
+                    collideBox.moveByX(-5);
+                }else {
+                    collideBox.moveByX(-5);
+                }
                 statuses.put(ComponentStatus.HorizontalMove, true);
             }
         }
@@ -127,42 +142,50 @@ public class Player extends DinamicComponent {
         // this was a method appropriate to my system
         boolean jumpingTimer = timersHandler.getTimer(getType().name()).getTimerState();
 
-        // -> If the player is on the ground, the space key has been pressed,
-        //    and the timer is off, then we can start the "jump".
-        // -> Or if the timer is off, double jump hasn't occurred and the space key
-        //    has been released and then pressed again => jump
-        if ((statuses.get(ComponentStatus.BottomCollision) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
-                (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())) {
+        // jumping logic
+        if (!statuses.get(ComponentStatus.IsOnLadder) &&
+                ((statuses.get(ComponentStatus.BottomCollision) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
+                (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace()))) {
             timersHandler.getTimer(getType().name()).resetTimer();
             jumpsCounter++;
         }
 
-        // if the timer in on and top collision hasn't occurred then move up
+        // movement on jumping logic
         if (jumpingTimer && !statuses.get(ComponentStatus.TopCollision)) {
             if (jumpsCounter == 1) {
                 collideBox.moveByY(-7);
             } else {
                 collideBox.moveByY(-9);
             }
-        } // indeed move down
-        else if (!statuses.get(ComponentStatus.BottomCollision) || statuses.get(ComponentStatus.TopCollision)) {
+        } else if (!statuses.get(ComponentStatus.IsOnLadder)&&
+                (!statuses.get(ComponentStatus.BottomCollision) || statuses.get(ComponentStatus.TopCollision))) {
             collideBox.moveByY(9);
         }
 
         // if the top collision has occurred then stop timer earlier
-        if (statuses.get(ComponentStatus.TopCollision) && jumpsCounter == 2) {
+        if (statuses.get(ComponentStatus.IsOnLadder) || (statuses.get(ComponentStatus.TopCollision) && jumpsCounter == 2)) {
             timersHandler.getTimer(getType().name()).finishEarlier();
         }
 
-        // make a request to handle the collisions
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player));
-
-        // attack event register
-        if (keyboardInput.getKeyE() && !keyboardInput.isPreviousKeyE()) {
+        // attack event logic
+        if (!statuses.get(ComponentStatus.IsOnLadder) && keyboardInput.getKeyE() && !keyboardInput.isPreviousKeyE()) {
             statuses.put(ComponentStatus.Attack, true);
         }
 
-        // combo attack animation display
+        // climb on ladder logic
+        if(statuses.get(ComponentStatus.IsOnLadder)) {
+            if (keyboardInput.getPreviousKeyW()) {
+                collideBox.moveByY(-2);
+                statuses.put(ComponentStatus.IsMovingOnLadder , true);
+            } else if(keyboardInput.getKeyS()){
+                collideBox.moveByY(2);
+                statuses.put(ComponentStatus.IsMovingOnLadder , true);
+            }else {
+                statuses.put(ComponentStatus.IsMovingOnLadder , false);
+            }
+        }
+
+        // combo attack animation logic
         if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
             statuses.put(ComponentStatus.Attack, false);
             statuses.put(ComponentStatus.FirstHit, false);
@@ -180,7 +203,14 @@ public class Player extends DinamicComponent {
             }
             animationHandler.changeAnimation(AnimationType.BikerDeath, collideBox.getPosition());
         } else {
-            if (jumpsCounter == 0) { // not jump
+            if (statuses.get(ComponentStatus.IsOnLadder)) {
+                animationHandler.changeAnimation(AnimationType.BikerClimb, collideBox.getPosition());
+                if(statuses.get(ComponentStatus.IsMovingOnLadder)){
+                    animationHandler.getAnimation().unlockAtLastFrame();
+                }else {
+                    animationHandler.getAnimation().lockAtLastFrame();
+                }
+            } else if (jumpsCounter == 0) {
                 if (statuses.get(ComponentStatus.Attack)) {
                     animationHandler.changeAnimation(attackCombo[attackComboIndex], collideBox.getPosition());
                 } else if (statuses.get(ComponentStatus.Hurt)) {
@@ -203,6 +233,7 @@ public class Player extends DinamicComponent {
 
         camera.setTargetPosition(collideBox.getMinX());
         animationHandler.update();
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player));
     }
     @Override
     public void draw() {
