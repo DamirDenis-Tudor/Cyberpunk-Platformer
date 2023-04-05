@@ -56,6 +56,8 @@ public class Game implements Runnable {
 
                     sceneHandler.getActiveScene().update();
 
+                    camera.update();
+
                     sceneHandler.getActiveScene().draw();
 
                     window.show();

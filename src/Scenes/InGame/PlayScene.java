@@ -1,9 +1,7 @@
 package Scenes.InGame;
 
-import Components.DinamicComponents.Characters.Enemies.AnimalEnemy;
-import Components.DinamicComponents.Characters.Enemies.BaseballEnemy;
-import Components.DinamicComponents.Characters.Enemies.SkaterEnemy;
-import Components.DinamicComponents.Characters.Player;
+import Components.DinamicComponents.Enemy;
+import Components.DinamicComponents.Player;
 import Components.DinamicComponents.DinamicComponent;
 import Components.DinamicComponents.Map.GameMap;
 import Components.StaticComponents.AssetsDeposit;
@@ -30,11 +28,12 @@ final public class PlayScene extends Scene {
 
         Random rand = new Random(1000);
         for (Coordinate<Integer> position : map.getEnemiesPositions()) {
-            if (rand.nextBoolean()) {
-                addComponent(new SkaterEnemy(this, position));
-            } else {
-                addComponent(new BaseballEnemy(this, position));
+            ComponentType type = null;
+            switch (rand.nextInt(2)) {
+                case 0 -> type = BaseballEnemy;
+                case 1 -> type = SkaterEnemy;
             }
+            addComponent(new Enemy(this, position, type));
         }
         for (Coordinate<Integer> position : map.getAnimalsPositions()) {
             ComponentType type = null;
@@ -44,9 +43,9 @@ final public class PlayScene extends Scene {
                 case 2 -> type = Cat1;
                 case 3 -> type = Cat2;
             }
-            addComponent(new AnimalEnemy(this, position, type));
+            addComponent(new Enemy(this, position, type));
         }
-        addComponent(new Player(this, map.getPlayerPosition()));
+        addComponent(new Player(this, map.getPlayerPosition() , Punk));
     }
 
     @Override
@@ -59,19 +58,7 @@ final public class PlayScene extends Scene {
                 switch (message.getType()) {
                     case HandleCollision -> {
                         findComponent(Map).handleInteractionWith(findComponent(Player));
-                        for (DinamicComponent component : getAllComponentsWithName(BaseballEnemy)) {
-                            if (component.getActiveStatus()) {
-                                findComponent(Player).handleInteractionWith(component);
-                                component.handleInteractionWith(findComponent(Player));
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(SkaterEnemy)) {
-                            if (component.getActiveStatus()) {
-                                findComponent(Player).handleInteractionWith(component);
-                                component.handleInteractionWith(findComponent(Player));
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(AnimalEnemy)) {
+                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 findComponent(Player).handleInteractionWith(component);
                                 component.handleInteractionWith(findComponent(Player));
@@ -79,17 +66,7 @@ final public class PlayScene extends Scene {
                         }
                     }
                     case PlayerDeath -> {
-                        for (DinamicComponent component : getAllComponentsWithName(BaseballEnemy)) {
-                            if (component.getActiveStatus()) {
-                                component.notify(new Message(MessageType.PlayerDeath, Player));
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(AnimalEnemy)) {
-                            if (component.getActiveStatus()) {
-                                component.notify(new Message(MessageType.PlayerDeath, Player));
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(SkaterEnemy)) {
+                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 component.notify(new Message(MessageType.PlayerDeath, Player));
                             }
@@ -97,48 +74,24 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-            case BaseballEnemy, SkaterEnemy, AnimalEnemy -> {
+            case Enemy -> {
                 switch (message.getType()) {
                     case HandleCollision -> {
-                        for (DinamicComponent component : getAllComponentsWithName(message.getSource())) {
+                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 findComponent(Map).handleInteractionWith(component);
-                            }
-                            for (DinamicComponent otherComponent : getAllComponentsWithName(BaseballEnemy)) {
-                                if (otherComponent.getActiveStatus()) {
-                                    if (component != otherComponent) {
-                                        component.handleInteractionWith(otherComponent);
-                                    }
-                                }
-                            }
-                            for (DinamicComponent otherComponent : getAllComponentsWithName(SkaterEnemy)) {
-                                if (otherComponent.getActiveStatus()) {
-                                    if (component != otherComponent) {
-                                        component.handleInteractionWith(otherComponent);
-                                    }
-                                }
-                            }
-                            for (DinamicComponent otherComponent : getAllComponentsWithName(AnimalEnemy)) {
-                                if (otherComponent.getActiveStatus()) {
-                                    if (component != otherComponent) {
-                                        component.handleInteractionWith(otherComponent);
+                                for (DinamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
+                                    if (otherComponent.getActiveStatus()) {
+                                        if (component != otherComponent) {
+                                            component.handleInteractionWith(otherComponent);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                     case EnemyDeath -> {
-                        for (DinamicComponent component : getAllComponentsWithName(BaseballEnemy)) {
-                            if (component.getActiveStatus()) {
-                                component.notify(message);
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(SkaterEnemy)) {
-                            if (component.getActiveStatus()) {
-                                component.notify(message);
-                            }
-                        }
-                        for (DinamicComponent component : getAllComponentsWithName(AnimalEnemy)) {
+                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 component.notify(message);
                             }

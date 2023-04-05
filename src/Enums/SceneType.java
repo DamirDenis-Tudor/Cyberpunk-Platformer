@@ -8,5 +8,5 @@ public enum SceneType {
     InitGameScene,
     LogoStartScene,
     MainMenuScene,
-    SettingsScene;
+    SettingsScene
 }

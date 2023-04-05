@@ -14,7 +14,6 @@ public enum ComponentStatus {
     Hurt,
     FirstHit,
     Death,
-    HasDetectedPlayer,
     HasEnemyCollision,
     Idle,
 }

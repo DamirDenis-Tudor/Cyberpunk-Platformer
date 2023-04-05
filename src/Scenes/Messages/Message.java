@@ -4,8 +4,8 @@ import Enums.ComponentType;
 import Enums.MessageType;
 
 public class Message {
-    private MessageType type;
-    private ComponentType source;
+    private final MessageType type;
+    private final ComponentType source;
 
     public Message(MessageType type , ComponentType source){
         this.type = type;

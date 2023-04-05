@@ -1,8 +1,8 @@
 package Utils;
 
 public class Rectangle {
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private Coordinate<Integer> position;
 
     private double dx = 0.0, dy = 0.0;

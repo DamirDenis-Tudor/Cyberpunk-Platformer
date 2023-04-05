@@ -1,11 +1,8 @@
-package Components.DinamicComponents.Characters;
+package Components.DinamicComponents;
 
 import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AnimationHandler;
-import Enums.AnimationType;
-import Enums.ComponentStatus;
-import Enums.ComponentType;
-import Enums.MessageType;
+import Enums.*;
 import Input.KeyboardInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -17,20 +14,19 @@ import Window.Camera;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Utils.Constants.velocity;
-
 public class Player extends DinamicComponent{
-    private final KeyboardInput keyboardInput;
-    private final Camera camera;
     private final TimersHandler timersHandler;
     private final AnimationHandler animationHandler;
+    private final KeyboardInput keyboardInput;
+    private final Camera camera;
     private final Map<ComponentStatus, Boolean> statuses;
+    private final Map<GeneralAnimationTypes, AnimationType> animationsType;
     private int health = 100;
     private Integer jumpsCounter = 0;
     private final AnimationType[] attackCombo;
     private int attackComboIndex = 0;
 
-    public Player(Scene scene, Coordinate<Integer> position) throws Exception {
+    public Player(Scene scene, Coordinate<Integer> position , ComponentType type) throws Exception {
         this.scene = scene;
 
         keyboardInput = KeyboardInput.getInstance();
@@ -38,17 +34,12 @@ public class Player extends DinamicComponent{
         timersHandler = TimersHandler.getInstance();
         timersHandler.addTimer(new Timer(0.30f), getType().name());
 
-        camera = Camera.getInstance();
-        camera.setPastTargetPosition(position.getPosX());
-
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.BikerIdle, position);
         collideBox = animationHandler.getAnimation().getRectangle();
 
-        attackCombo = new AnimationType[3];
-        attackCombo[0] = AnimationType.BikerAttack1;
-        attackCombo[1] = AnimationType.BikerAttack2;
-        attackCombo[2] = AnimationType.BikerAttack3;
+        camera = Camera.getInstance();
+        camera.setFocusComponentPosition(collideBox.getPosition());
 
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.BottomCollision, false);
@@ -60,6 +51,50 @@ public class Player extends DinamicComponent{
         statuses.put(ComponentStatus.FirstHit, false);
         statuses.put(ComponentStatus.Attack, false);
         statuses.put(ComponentStatus.IsMovingOnLadder, false);
+
+        animationsType = new HashMap<>();
+        attackCombo = new AnimationType[3];
+        switch (type) {
+            case Biker -> {
+                attackCombo[0] = AnimationType.BikerAttack1;
+                attackCombo[1] = AnimationType.BikerAttack2;
+                attackCombo[2] = AnimationType.BikerAttack3;
+                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.BikerIdle);
+                animationsType.put(GeneralAnimationTypes.Run, AnimationType.BikerRun);
+                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.BikerAttack1);
+                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.BikerHurt);
+                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.BikerClimb);
+                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.BikerJump);
+                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.BikerDoubleJump);
+                animationsType.put(GeneralAnimationTypes.Death, AnimationType.BikerDeath);
+            }
+            case Cyborg -> {
+                attackCombo[0] = AnimationType.CyborgAttack1;
+                attackCombo[1] = AnimationType.CyborgAttack2;
+                attackCombo[2] = AnimationType.CyborgAttack3;
+                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.CyborgIdle);
+                animationsType.put(GeneralAnimationTypes.Run, AnimationType.CyborgRun);
+                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.CyborgAttack1);
+                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.CyborgHurt);
+                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.CyborgClimb);
+                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.CyborgJump);
+                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.CyborgDoubleJump);
+                animationsType.put(GeneralAnimationTypes.Death, AnimationType.CyborgDeath);
+            }
+            case Punk -> {
+                attackCombo[0] = AnimationType.PunkAttack1;
+                attackCombo[1] = AnimationType.PunkAttack2;
+                attackCombo[2] = AnimationType.PunkAttack3;
+                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.PunkIdle);
+                animationsType.put(GeneralAnimationTypes.Run, AnimationType.PunkRun);
+                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.PunkAttack1);
+                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.PunkHurt);
+                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.PunkClimb);
+                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.PunkJump);
+                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.PunkDoubleJump);
+                animationsType.put(GeneralAnimationTypes.Death, AnimationType.PunkDeath);
+            }
+        }
     }
 
     @Override
@@ -81,9 +116,9 @@ public class Player extends DinamicComponent{
                     case IsNoLongerOnLadder -> statuses.put(ComponentStatus.IsOnLadder , false);
                 }
             }
-            case BaseballEnemy, SkaterEnemy, AnimalEnemy-> {
+            case Enemy-> {
                 if (message.getType() == MessageType.Attack && !statuses.get(ComponentStatus.Attack)) {
-                    animationHandler.changeAnimation(AnimationType.BikerHurt, collideBox.getPosition());
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
                     animationHandler.getAnimation().setRepeats(2);
                     statuses.put(ComponentStatus.Hurt, true);
                     health -= 1;
@@ -103,7 +138,7 @@ public class Player extends DinamicComponent{
             case Map -> {
 
             }
-            case BaseballEnemy, SkaterEnemy,AnimalEnemy -> {
+            case Enemy -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.Attack) &&
                         !statuses.get(ComponentStatus.FirstHit)) {
@@ -189,7 +224,7 @@ public class Player extends DinamicComponent{
         if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
             statuses.put(ComponentStatus.Attack, false);
             statuses.put(ComponentStatus.FirstHit, false);
-
+            animationsType.put(GeneralAnimationTypes.Attack , attackCombo[attackComboIndex]);
             attackComboIndex++;
             if (attackComboIndex > 2) {
                 attackComboIndex = 0;
@@ -201,37 +236,35 @@ public class Player extends DinamicComponent{
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(AnimationType.BikerDeath, collideBox.getPosition());
+            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Death), collideBox.getPosition());
         } else {
             if (statuses.get(ComponentStatus.IsOnLadder)) {
-                animationHandler.changeAnimation(AnimationType.BikerClimb, collideBox.getPosition());
-                if(statuses.get(ComponentStatus.IsMovingOnLadder)){
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Climb), collideBox.getPosition());
+                if (statuses.get(ComponentStatus.IsMovingOnLadder)) {
                     animationHandler.getAnimation().unlockAtLastFrame();
-                }else {
+                } else {
                     animationHandler.getAnimation().lockAtLastFrame();
                 }
             } else if (jumpsCounter == 0) {
                 if (statuses.get(ComponentStatus.Attack)) {
-                    animationHandler.changeAnimation(attackCombo[attackComboIndex], collideBox.getPosition());
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
                 } else if (statuses.get(ComponentStatus.Hurt)) {
                     if (animationHandler.getAnimation().repeatsAreOver()) {
                         statuses.put(ComponentStatus.Hurt, false);
                     }
                 } else {
                     if (statuses.get(ComponentStatus.HorizontalMove)) {
-                        animationHandler.changeAnimation(AnimationType.BikerRun, collideBox.getPosition());
+                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Run), collideBox.getPosition());
                     } else {
-                        animationHandler.changeAnimation(AnimationType.BikerIdle, collideBox.getPosition());
+                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
                     }
                 }
             } else if (jumpsCounter == 1) { // simple jump
-                animationHandler.changeAnimation(AnimationType.BikerJump, collideBox.getPosition());
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Jump), collideBox.getPosition());
             } else if (jumpsCounter == 2) { // double jump
-                animationHandler.changeAnimation(AnimationType.BikerDoubleJump, collideBox.getPosition());
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DoubleJump), collideBox.getPosition());
             }
         }
-
-        camera.setTargetPosition(collideBox.getMinX());
         animationHandler.update();
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player));
     }

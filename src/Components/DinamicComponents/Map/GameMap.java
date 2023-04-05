@@ -35,6 +35,8 @@ public class GameMap extends DinamicComponent {
     private Map<String, MapAsset> objects; // String - id , Object
     private String[][] tilesIndexes; // indexes for tiles
     private String[][] objectsIndexes; // indexes for objects
+
+    private String[][] decorsIndexes; // indexes for objects
     private ParallaxWallpaper background; // parallax background
     private Map<String, List<Rectangle>> entitiesCoordinates; // map of the preloaded entities
 
@@ -125,7 +127,6 @@ public class GameMap extends DinamicComponent {
                 objects.put(objectId, new MapAsset(objectSource, objectWidth, objectHeight));
             }
 
-
             // -------------------------------------
             // it's the time to load the
             // first layer(tiles layer) matrix of indexes
@@ -164,6 +165,22 @@ public class GameMap extends DinamicComponent {
             }
 
             // -------------------------------------
+            // it's the time to load the
+            // third layer(objects layer) matrix of indexes
+            // ->>>>hereeeee
+            String decorBuffer = root.getElementsByTagName("data").item(2).
+                    getFirstChild().getTextContent();
+
+            String[] decorsRows = decorBuffer.split("\n"); // split the string into rows
+
+            decorsIndexes = new String[height][width];
+
+            for (int i = 0; i < height; i++) {
+                String[] decorsCols = decorsRows[i + 1].split(",");
+                System.arraycopy(decorsCols, 0, decorsIndexes[i], 0, width);
+            }
+
+            // -------------------------------------
             // few more code and the map is finally added
             // now load the predefined positions
 
@@ -190,7 +207,6 @@ public class GameMap extends DinamicComponent {
                     entitiesCoordinates.put(objectgroupName, list);
                 }
             }
-
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
@@ -218,31 +234,27 @@ public class GameMap extends DinamicComponent {
         /*
          * drawing the tiles
          */
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; j++) {
-                if (!Objects.equals(tilesIndexes[i][j], "0")) {
-                    MapAsset asset = tiles.get(tilesIndexes[i][j]);
-                    int xPos = j * mapDim + Camera.getInstance().getCurrentXoffset();
-                    int yPos = i * mapDim;
-                    int dimW = asset.getWidth();
-                    int dimH = asset.getHeight();
-
-                    gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
-                    //   gameWindow.getGraphics().drawRect(xPos, yPos, dimW, dimH);
-                }
-            }
-        }
+        drawLayer(tilesIndexes , tiles);
 
         /*
          * drawing the objects
          */
+        drawLayer(objectsIndexes , objects);
+
+        /*
+        * drawing decorations
+        */
+        drawLayer(decorsIndexes , objects);
+    }
+
+    private void drawLayer(String[][] decorsIndexes , Map<String, MapAsset> types) {
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; j++) {
-                if (!Objects.equals(objectsIndexes[i][j], "0")) {
-                    MapAsset asset = objects.get(objectsIndexes[i][j]);
+                if (!Objects.equals(decorsIndexes[i][j], "0")) {
+                    MapAsset asset = types.get(decorsIndexes[i][j]);
                     int dimW = asset.getWidth();
                     int dimH = asset.getHeight();
-                    int xPos = j * mapDim + Camera.getInstance().getCurrentXoffset();
+                    int xPos = j * mapDim + Camera.getInstance().getCurrentOffset();
                     int yPos = i * mapDim - dimH + mapDim;
 
                     gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
@@ -380,4 +392,7 @@ public class GameMap extends DinamicComponent {
         return coordinates;
     }
 
+    public int getWidth() {
+        return width;
+    }
 }

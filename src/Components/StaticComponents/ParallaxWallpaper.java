@@ -1,6 +1,5 @@
 package Components.StaticComponents;
 
-import Components.StaticComponents.StaticComponent;
 import Window.GameWindow;
 import Window.Camera;
 import Input.KeyboardInput;
@@ -48,9 +47,9 @@ public class ParallaxWallpaper implements StaticComponent {
     }
 
     private int scrollingDirection() {
-        if (camera.getCurrentXoffset() - camera.getPastOffset() > 0) {
+        if (camera.getCurrentOffset() - camera.getPastOffset() > 0) {
             return 1;
-        } else if (camera.getCurrentXoffset() - camera.getPastOffset() < 0) {
+        } else if (camera.getCurrentOffset() - camera.getPastOffset() < 0) {
             return -1;
         }
         return 0;
