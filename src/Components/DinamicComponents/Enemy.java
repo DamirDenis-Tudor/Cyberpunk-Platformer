@@ -11,7 +11,7 @@ import Utils.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Enemy extends DinamicComponent {
+public class Enemy extends DynamicComponent {
     protected final AnimationHandler animationHandler;
     protected final TimersHandler timersHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
@@ -139,7 +139,7 @@ public class Enemy extends DinamicComponent {
                         health -= 40;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
-                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy));
+                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy , getId()));
                             setActiveStatus(false);
                         }
                     }
@@ -153,14 +153,14 @@ public class Enemy extends DinamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DinamicComponent component) throws Exception {
+    public void handleInteractionWith(DynamicComponent component) throws Exception {
         switch (component.getType()) {
             case Player -> {
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
                     statuses.put(ComponentStatus.Attack, true);
                     if (!timersHandler.getTimer(TimerType.LockTarget.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
                         statuses.put(ComponentStatus.FirstHit, true);
-                        component.notify(new Message(MessageType.Attack, ComponentType.Enemy));
+                        component.notify(new Message(MessageType.Attack, ComponentType.Enemy , getId()));
                     }
                 } else if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
                     statuses.put(ComponentStatus.Attack, false);
@@ -191,12 +191,12 @@ public class Enemy extends DinamicComponent {
             case Enemy -> {
                 collideBox.solveCollision(component.getCollideBox());
                 if (collideBox.getDx() > 0) {
-                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy));
+                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy,getId()));
                     statuses.put(ComponentStatus.LeftCollision, true);
                     statuses.put(ComponentStatus.RightCollision, false);
                     statuses.put(ComponentStatus.HasEnemyCollision, true);
                 } else if (collideBox.getDx() < 0) {
-                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy));
+                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy,getId()));
                     statuses.put(ComponentStatus.RightCollision, true);
                     statuses.put(ComponentStatus.LeftCollision, false);
                     statuses.put(ComponentStatus.HasEnemyCollision, true);
@@ -252,7 +252,7 @@ public class Enemy extends DinamicComponent {
 
         handleAnimations();
 
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Enemy));
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Enemy,getId()));
         animationHandler.update();
     }
 

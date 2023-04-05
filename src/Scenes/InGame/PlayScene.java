@@ -1,12 +1,15 @@
 package Scenes.InGame;
 
 import Components.DinamicComponents.Enemy;
+import Components.DinamicComponents.Items.Chest;
+import Components.DinamicComponents.Items.Gun;
 import Components.DinamicComponents.Player;
-import Components.DinamicComponents.DinamicComponent;
+import Components.DinamicComponents.DynamicComponent;
 import Components.DinamicComponents.Map.GameMap;
 import Components.StaticComponents.AssetsDeposit;
 import Enums.ComponentType;
 import Enums.MessageType;
+import Enums.Weapon;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
@@ -15,9 +18,9 @@ import java.util.Random;
 
 import static Enums.ComponentType.*;
 import static Enums.MapType.GreenCityMap;
-
+// TODO : Narator(DynamicComponent) -> for tutorial
 final public class PlayScene extends Scene {
-
+    Random rand = new Random(1000);
     public PlayScene() throws Exception {
         super();
         /*
@@ -26,7 +29,6 @@ final public class PlayScene extends Scene {
         GameMap map = AssetsDeposit.getInstance().getGameMap(GreenCityMap);
         addComponent(map);
 
-        Random rand = new Random(1000);
         for (Coordinate<Integer> position : map.getEnemiesPositions()) {
             ComponentType type = null;
             switch (rand.nextInt(2)) {
@@ -45,7 +47,13 @@ final public class PlayScene extends Scene {
             }
             addComponent(new Enemy(this, position, type));
         }
-        addComponent(new Player(this, map.getPlayerPosition() , Punk));
+
+        for (Coordinate<Integer> position : map.getChestsPositions()) {
+            addComponent(new Chest(this, position));
+        }
+
+
+        addComponent(new Player(this, map.getPlayerPosition(), Punk));
     }
 
     @Override
@@ -58,7 +66,7 @@ final public class PlayScene extends Scene {
                 switch (message.getType()) {
                     case HandleCollision -> {
                         findComponent(Map).handleInteractionWith(findComponent(Player));
-                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 findComponent(Player).handleInteractionWith(component);
                                 component.handleInteractionWith(findComponent(Player));
@@ -66,9 +74,9 @@ final public class PlayScene extends Scene {
                         }
                     }
                     case PlayerDeath -> {
-                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
-                                component.notify(new Message(MessageType.PlayerDeath, Player));
+                                component.notify(new Message(MessageType.PlayerDeath, Player, message.getComponentId()));
                             }
                         }
                     }
@@ -77,25 +85,59 @@ final public class PlayScene extends Scene {
             case Enemy -> {
                 switch (message.getType()) {
                     case HandleCollision -> {
-                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
-                            if (component.getActiveStatus()) {
-                                findComponent(Map).handleInteractionWith(component);
-                                for (DinamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
-                                    if (otherComponent.getActiveStatus()) {
-                                        if (component != otherComponent) {
-                                            component.handleInteractionWith(otherComponent);
-                                        }
+                        DynamicComponent component = findComponentWithId(message.getComponentId());
+                        if (findComponentWithId(message.getComponentId()).getActiveStatus()) {
+                            findComponent(Map).handleInteractionWith(component);
+                            for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
+                                if (otherComponent.getActiveStatus()) {
+                                    if (component != otherComponent) {
+                                        component.handleInteractionWith(otherComponent);
                                     }
                                 }
                             }
                         }
                     }
                     case EnemyDeath -> {
-                        for (DinamicComponent component : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
-                                component.notify(message);
+                                findComponentWithId(message.getComponentId()).notify(message);
                             }
                         }
+                    }
+                }
+            }
+            case Chest -> {
+                switch (message.getType()) {
+                    case HandleCollision ->
+                            findComponent(Player).handleInteractionWith(findComponentWithId(message.getComponentId()));
+                    case SpawnGun -> {
+                        Weapon type = null;
+                        switch (rand.nextInt(10)){
+                            case 0-> type = Weapon.Gun1;
+                            case 1-> type = Weapon.Gun2;
+                            case 2-> type = Weapon.Gun3;
+                            case 3-> type = Weapon.Gun4;
+                            case 4-> type = Weapon.Gun5;
+                            case 5-> type = Weapon.Gun6;
+                            case 6-> type = Weapon.Gun7;
+                            case 7-> type = Weapon.Gun8;
+                            case 8-> type = Weapon.Gun9;
+                            case 9-> type = Weapon.Gun10;
+                        }
+                        addComponent(new Gun(this, AssetsDeposit.getInstance().getGun(type),
+                                findComponentWithId(message.getComponentId()).getCollideBox().getPosition()));
+                    }
+                }
+            }
+
+            case Gun ->{
+                switch (message.getType()){
+                    case HandleCollision -> {
+                        findComponent(Player).handleInteractionWith(findComponentWithId(message.getComponentId()));
+                        findComponentWithId(message.getComponentId()).handleInteractionWith(findComponent(Player));
+                    }
+                    case LaunchBullet -> {
+                        System.out.println("lauch bullet");
                     }
                 }
             }

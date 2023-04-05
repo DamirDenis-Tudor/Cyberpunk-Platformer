@@ -92,7 +92,7 @@ public class AssetsDeposit {
         guns = new HashMap<>();
         bullets = new HashMap<>();
 
-        document = builder.parse(new File("src/Resources/in_game_assets/Weapons&Buletts.tsx"));
+        document = builder.parse(new File("src/Resources/in_game_assets/weapons&buletts.tsx"));
 
         root = document.getDocumentElement();
 
@@ -107,7 +107,7 @@ public class AssetsDeposit {
             int width = Integer.parseInt(imageElement.getAttribute("width"));
             int height = Integer.parseInt(imageElement.getAttribute("height"));
 
-            Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , width, height);
+            Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , (int)(width*1.5), (int)(height*1.5));
 
             if(id.contains("Gun")){
                 guns.put(Weapon.valueOf(id),new Gun(ImageIO.read(new File(source)) , boxBounding));
@@ -135,5 +135,7 @@ public class AssetsDeposit {
         return animations.get(name);
     }
 
-    //public Animation getGun
+    public Gun getGun(Weapon name){
+        return guns.get(name);}
+    public Bullet getBullet(Weapon name){return bullets.get(name);}
 }

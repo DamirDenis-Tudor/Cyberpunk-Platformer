@@ -11,13 +11,13 @@ import Utils.Rectangle;
  * Additionally, it provides the capability for the object to be recognized by an identifier.
  * As a result, access to the physical object is not necessary as the object can be identified solely by its identifier.
  */
-public abstract class DinamicComponent{
+public abstract class DynamicComponent {
     protected Scene scene = null;
     protected Rectangle collideBox;
     private static int idCounter = 0;
     private int id=0;
     private boolean active = true;
-    public DinamicComponent(){
+    public DynamicComponent(){
         id=idCounter;
         idCounter++;
     }
@@ -25,7 +25,7 @@ public abstract class DinamicComponent{
         return id;
     }
     public abstract void  notify(Message message) throws Exception;
-    public abstract void handleInteractionWith(DinamicComponent component) throws Exception;
+    public abstract void handleInteractionWith(DynamicComponent component) throws Exception;
     public abstract void update() throws Exception;
     public abstract void draw();
     public abstract ComponentType getType();

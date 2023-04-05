@@ -13,6 +13,10 @@ public enum MessageType {
     RightCollisionWithOther,
     EnemyDeath,
     Attack,
-    PlayerDeath
-
+    PlayerDeath,
+    ReadyToBeOpened,
+    SpawnGun,
+    IsPickedUp,
+    LaunchBullet,
+    ChangeDirection
 }

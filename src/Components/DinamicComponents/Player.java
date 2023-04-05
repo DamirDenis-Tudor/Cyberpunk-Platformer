@@ -1,6 +1,5 @@
 package Components.DinamicComponents;
 
-import Components.DinamicComponents.DinamicComponent;
 import Components.StaticComponents.AnimationHandler;
 import Enums.*;
 import Input.KeyboardInput;
@@ -14,7 +13,7 @@ import Window.Camera;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Player extends DinamicComponent{
+public class Player extends DynamicComponent {
     private final TimersHandler timersHandler;
     private final AnimationHandler animationHandler;
     private final KeyboardInput keyboardInput;
@@ -51,6 +50,7 @@ public class Player extends DinamicComponent{
         statuses.put(ComponentStatus.FirstHit, false);
         statuses.put(ComponentStatus.Attack, false);
         statuses.put(ComponentStatus.IsMovingOnLadder, false);
+        statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
 
         animationsType = new HashMap<>();
         attackCombo = new AnimationType[3];
@@ -125,7 +125,7 @@ public class Player extends DinamicComponent{
                     if (health <= 0) {
                         statuses.put(ComponentStatus.Death, true);
                         setActiveStatus(false);
-                        scene.notify(new Message(MessageType.PlayerDeath, ComponentType.Player));
+                        scene.notify(new Message(MessageType.PlayerDeath, ComponentType.Player,getId()));
                     }
                 }
             }
@@ -133,17 +133,24 @@ public class Player extends DinamicComponent{
     }
 
     @Override
-    public void handleInteractionWith(DinamicComponent component) throws Exception {
+    public void handleInteractionWith(DynamicComponent component) throws Exception {
         switch (component.getType()) {
-            case Map -> {
-
-            }
             case Enemy -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.Attack) &&
                         !statuses.get(ComponentStatus.FirstHit)) {
-                    component.notify(new Message(MessageType.Attack, ComponentType.Player));
+                    component.notify(new Message(MessageType.Attack, ComponentType.Player,getId()));
                     statuses.put(ComponentStatus.FirstHit, true);
+                }
+            }
+            case Chest -> {
+                if(collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TryingToOpenOrPickSomething)) {
+                    component.notify(new Message(MessageType.ReadyToBeOpened , ComponentType.Player,getId()));
+                }
+            }
+            case Gun -> {
+                if(collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TryingToOpenOrPickSomething)) {
+                    component.notify(new Message(MessageType.IsPickedUp , ComponentType.Player,getId()));
                 }
             }
         }
@@ -207,6 +214,13 @@ public class Player extends DinamicComponent{
             statuses.put(ComponentStatus.Attack, true);
         }
 
+        // open chest logic
+        if(keyboardInput.getKeyQ()){
+            statuses.put(ComponentStatus.TryingToOpenOrPickSomething, true);
+        }else {
+            statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
+        }
+
         // climb on ladder logic
         if(statuses.get(ComponentStatus.IsOnLadder)) {
             if (keyboardInput.getPreviousKeyW()) {
@@ -241,7 +255,7 @@ public class Player extends DinamicComponent{
             if (statuses.get(ComponentStatus.IsOnLadder)) {
                 animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Climb), collideBox.getPosition());
                 if (statuses.get(ComponentStatus.IsMovingOnLadder)) {
-                    animationHandler.getAnimation().unlockAtLastFrame();
+                    animationHandler.getAnimation().unlock();
                 } else {
                     animationHandler.getAnimation().lockAtLastFrame();
                 }
@@ -266,7 +280,7 @@ public class Player extends DinamicComponent{
             }
         }
         animationHandler.update();
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player));
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player,getId()));
     }
     @Override
     public void draw() {

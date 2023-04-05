@@ -1,6 +1,6 @@
 package Components.DinamicComponents.Map;
 
-import Components.DinamicComponents.DinamicComponent;
+import Components.DinamicComponents.DynamicComponent;
 import Components.StaticComponents.ParallaxWallpaper;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -27,7 +27,7 @@ import static Utils.Constants.mapScale;
  * This class contains all the information about the game map:
  * matrix of objects|tiles, dimensions, predefined object positions.
  */
-public class GameMap extends DinamicComponent {
+public class GameMap extends DynamicComponent {
     private final GameWindow gameWindow = GameWindow.getInstance();
     private int width; // lines
     private int height; // columns
@@ -206,6 +206,9 @@ public class GameMap extends DinamicComponent {
 
                     entitiesCoordinates.put(objectgroupName, list);
                 }
+
+                // for an efficient drawing we must construct the mapAssets objects
+                // TODO
             }
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
@@ -213,11 +216,7 @@ public class GameMap extends DinamicComponent {
     }
 
     @Override
-    public void notify(Message message) {
-        if (message.getSource() == ComponentType.Player) {
-            //wasGroundCollision = MessageNames.ActivateBottomCollision == message.getType();
-        }
-    }
+    public void notify(Message message) {}
 
     @Override
     public void update() throws Exception {
@@ -274,18 +273,18 @@ public class GameMap extends DinamicComponent {
      * @param component interacts with
      */
     @Override
-    public void handleInteractionWith(DinamicComponent component) throws Exception {
+    public void handleInteractionWith(DynamicComponent component) throws Exception {
         Rectangle rectangle = component.getCollideBox();
 
         // fist of all we need to check if the player is on a ladder
         if (component.getType() == ComponentType.Player) {
             for (Rectangle ladder : entitiesCoordinates.get("ladders")){
                 if(rectangle.intersects(ladder)){
-                    component.notify(new Message(MessageType.IsOnLadder , ComponentType.Map));
+                    component.notify(new Message(MessageType.IsOnLadder , ComponentType.Map,getId()));
                     return;
                 }
             }
-            component.notify(new Message(MessageType.IsNoLongerOnLadder , ComponentType.Map));
+            component.notify(new Message(MessageType.IsNoLongerOnLadder , ComponentType.Map,getId()));
         }
 
         // if not we need to place the component
@@ -328,12 +327,12 @@ public class GameMap extends DinamicComponent {
 
         // notify the component
         if (wasGroundCollision) {
-            component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map));
+            component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map,getId()));
         } else {
-            component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map));
+            component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map,getId()));
         }
         if (wasTopCollision) {
-            component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map));
+            component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map,getId()));
         }
 
         // particular behavior for some components
@@ -347,9 +346,9 @@ public class GameMap extends DinamicComponent {
 
             // notify the component
             if (wasLeftCollision) {
-                component.notify(new Message(MessageType.LeftCollision, ComponentType.Map));
+                component.notify(new Message(MessageType.LeftCollision, ComponentType.Map,getId()));
             } else if (wasRightCollision) {
-                component.notify(new Message(MessageType.RightCollision, ComponentType.Map));
+                component.notify(new Message(MessageType.RightCollision, ComponentType.Map,getId()));
             }
         }
     }

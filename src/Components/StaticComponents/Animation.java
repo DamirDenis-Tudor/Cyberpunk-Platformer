@@ -145,10 +145,16 @@ public class Animation implements StaticComponent {
         return true;
     }
 
+    public void lockAtFistFrame(){
+        lock = true;
+        activeImageIndex = 0;
+    }
     public void lockAtLastFrame(){
         lock = true;
+        activeImageIndex = images.size()-1;
     }
-    public void unlockAtLastFrame() {lock = false;}
+
+    public void unlock() {lock = false;}
 
     public void setRepeats(int number){
         if(currentCount == repeats) {

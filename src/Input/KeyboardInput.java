@@ -5,22 +5,18 @@ import java.awt.event.KeyListener;
 
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;
-
     private final boolean[] keyCodes;
     private boolean keyW;
     private boolean keyA;
     private boolean keyS;
     private boolean keyD;
-
     private boolean keyE;
+    private boolean keyQ;
     private boolean space;
-
     private boolean previousKeyW;
     private boolean previousKeyA;
     private boolean previousKeyS;
-
     private boolean previousKeyD;
-
     private boolean previousKeyE;
     private boolean previousSpace;
 
@@ -32,6 +28,7 @@ public class KeyboardInput implements KeyListener {
         keyS = false;
         keyD = false;
         keyE = false;
+        keyQ = false;
         space = false;
         previousSpace = false;
     }
@@ -55,6 +52,7 @@ public class KeyboardInput implements KeyListener {
         keyS = keyCodes[KeyEvent.VK_S];
         keyD = keyCodes[KeyEvent.VK_D];
         keyE = keyCodes[KeyEvent.VK_E];
+        keyQ = keyCodes[KeyEvent.VK_Q];
         space = keyCodes[KeyEvent.VK_SPACE];
     }
 
@@ -89,6 +87,10 @@ public class KeyboardInput implements KeyListener {
         return keyD;
     }
 
+    public boolean getKeyQ() {
+        return keyQ;
+    }
+
     public boolean getKeyE() {
         return keyE;
     }
@@ -117,6 +119,7 @@ public class KeyboardInput implements KeyListener {
     public boolean getPreviousSpace() {
         return previousSpace;
     }
+
     public boolean isPreviousKeyE() {
         return previousKeyE;
     }

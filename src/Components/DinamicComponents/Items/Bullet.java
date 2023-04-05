@@ -1,6 +1,6 @@
 package Components.DinamicComponents.Items;
 
-import Components.DinamicComponents.DinamicComponent;
+import Components.DinamicComponents.DynamicComponent;
 import Enums.ComponentType;
 import Scenes.Messages.Message;
 import Utils.Rectangle;
@@ -8,7 +8,7 @@ import Utils.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Bullet extends DinamicComponent {
+public class Bullet extends DynamicComponent {
     private final BufferedImage image;
 
     public Bullet(BufferedImage image, Rectangle collideBox) throws IOException {
@@ -22,7 +22,7 @@ public class Bullet extends DinamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DinamicComponent component) throws Exception {
+    public void handleInteractionWith(DynamicComponent component) throws Exception {
 
     }
 

@@ -16,4 +16,10 @@ public enum ComponentStatus {
     Death,
     HasEnemyCollision,
     Idle,
+    TryingToOpenOrPickSomething,
+    IsOpened,
+    HasDropedWeapon,
+    IsPickedUp,
+    HasLaunchedBullet,
+    Hide
 }

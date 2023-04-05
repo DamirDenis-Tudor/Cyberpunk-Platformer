@@ -7,9 +7,12 @@ public class Message {
     private final MessageType type;
     private final ComponentType source;
 
-    public Message(MessageType type , ComponentType source){
+    private final int componentId;
+
+    public Message(MessageType type , ComponentType source , int componentId){
         this.type = type;
         this.source = source;
+        this.componentId = componentId;
     }
 
     public MessageType getType(){
@@ -20,4 +23,7 @@ public class Message {
         return source;
     }
 
+    public int getComponentId() {
+        return componentId;
+    }
 }

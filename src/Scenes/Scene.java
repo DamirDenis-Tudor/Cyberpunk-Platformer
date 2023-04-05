@@ -1,6 +1,6 @@
 package Scenes;
 
-import Components.DinamicComponents.DinamicComponent;
+import Components.DinamicComponents.DynamicComponent;
 import Scenes.Messages.Message;
 import Enums.*;
 
@@ -8,24 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class contains a several DinamicComponents(specific to a scene).
+ * This class contains a several DynamicComponents(specific to a scene).
  * It actualizes them, and it handles different kinds of request.
- * Note : each DinamicComponent has a reference to its scene.(see the Mediator Design Pattern)
+ * Note : each DynamicComponent has a reference to its scene.(see the Mediator Design Pattern)
  */
 public abstract class Scene {
-    protected List<DinamicComponent> components;
+    protected List<DynamicComponent> components;
     public Scene() {
         components = new ArrayList<>();
     }
 
     public void update() throws Exception {
-        for (DinamicComponent component : components) {
-            component.update();
+        for (int index = 0; index < components.size() ; index++) {
+            components.get(index).update();
         }
     }
     public void draw() {
-        for (DinamicComponent component : components) {
-            component.draw();
+        for (int index = 0; index < components.size() ; index++) {
+            components.get(index).draw();
         }
     }
 
@@ -41,7 +41,7 @@ public abstract class Scene {
     /**
      * @param component to be added
      */
-    public void addComponent(DinamicComponent component) {
+    public void addComponent(DynamicComponent component) {
         components.add(component);
     }
 
@@ -50,9 +50,23 @@ public abstract class Scene {
      * @param name to be found
      * @return founded component
      */
-    public DinamicComponent findComponent(ComponentType name){
-        for (DinamicComponent dinamicComponent: components){
+    public DynamicComponent findComponent(ComponentType name){
+        for (DynamicComponent dinamicComponent: components){
             if (name == dinamicComponent.getType()){
+                return dinamicComponent;
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public DynamicComponent findComponentWithId(int id){
+        for (DynamicComponent dinamicComponent: components){
+            if (id == dinamicComponent.getId()){
                 return dinamicComponent;
             }
         }
@@ -64,9 +78,9 @@ public abstract class Scene {
      * @param name given name
      * @return list of components
      */
-    public List<DinamicComponent> getAllComponentsWithName(ComponentType name){
-        List<DinamicComponent> searchedComponents= new ArrayList<>();
-        for (DinamicComponent dinamicComponent: components){
+    public List<DynamicComponent> getAllComponentsWithName(ComponentType name){
+        List<DynamicComponent> searchedComponents= new ArrayList<>();
+        for (DynamicComponent dinamicComponent: components){
             if (name == dinamicComponent.getType()){
                 searchedComponents.add(dinamicComponent);
             }
