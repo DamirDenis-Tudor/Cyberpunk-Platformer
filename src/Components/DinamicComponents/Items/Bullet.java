@@ -1,5 +1,6 @@
-package Components.DinamicComponents;
+package Components.DinamicComponents.Items;
 
+import Components.DinamicComponents.DynamicComponent;
 import Components.StaticComponents.ImageWrapper;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -42,16 +43,16 @@ public class Bullet extends DynamicComponent {
 
     @Override
     public void notify(Message message) throws Exception {
-        switch (message.source()) {
+        switch (message.getSource()) {
             case Gun -> {
-                if (message.type() == MessageType.BulletLauchLeft) {
+                if (message.getType() == MessageType.BulletLauchLeft) {
                     direction = false;
-                } else if (message.type() == MessageType.BulletLaunchRight) {
+                } else if (message.getType() == MessageType.BulletLaunchRight) {
                     direction = true;
                 }
             }
             case Map ->{
-                if(message.type() == MessageType.HasCollision){
+                if(message.getType() == MessageType.HasCollision){
                     scene.notify(new Message(MessageType.Destroy , ComponentType.Bullet , getId()));
                 }
             }
@@ -67,13 +68,14 @@ public class Bullet extends DynamicComponent {
             }
         }
     }
+
     @Override
     public void update() throws Exception {
         if (direction) {
             xOffset = -5;
             collideBox.moveByX(10);
         } else {
-            xOffset = -35;
+            xOffset = -30;
             collideBox.moveByX(-10);
         }
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Bullet, getId()));

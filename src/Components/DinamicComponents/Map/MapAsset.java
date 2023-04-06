@@ -1,4 +1,4 @@
-package Components.StaticComponents;
+package Components.DinamicComponents.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -7,7 +7,7 @@ import java.io.IOException;
 
 /**
  * This class is a simple BufferedImage with some dimensions.
- * Its purpose is in Game map class.
+ * Is very useful in GameMap.
  */
 public class MapAsset {
     private final BufferedImage image;

@@ -3,9 +3,6 @@ package Input;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-/**
- * THis class register different keyboard events.
- */
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;
     private final boolean[] keyCodes;
@@ -36,9 +33,6 @@ public class KeyboardInput implements KeyListener {
         previousSpace = false;
     }
 
-    /**
-     * @return shared instance
-     */
     public static KeyboardInput getInstance() {
         if (instance == null) {
             instance = new KeyboardInput();
@@ -76,6 +70,7 @@ public class KeyboardInput implements KeyListener {
     public void keyTyped(KeyEvent e) {
 
     }
+
     public boolean getKeyW() {
         return keyW;
     }

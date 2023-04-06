@@ -1,9 +1,5 @@
 package Enums;
 
-/**
- *  This class has all the animation names loaded and is used because, initially, the animations are loaded from a file using a string as an identifier.
- *  It would be time-consuming to have to recall each animation name individually, so having them all loaded in the class is more efficient.
- */
 public enum AnimationType {
     BikerPunch("BikerPunch"),
     BikerJump("BikerJump"),
@@ -177,10 +173,8 @@ public enum AnimationType {
     PunkJumpGun("PunkJumpGun"),
     CyborgIdleGun("CyborgIdleGun"),
     CyborgRunGun("CyborgRunGun"),
-    CyborgJumpGun("CyborgJumpGun"),
-    Helicopter("Helicopter"),
-    Airplane("Airplane"),
-    AirplaneBomb("AirplaneBomb");
+    CyborgJumpGun("CyborgJumpGun");
+
     private final String stringValue;
 
     AnimationType(String s) {

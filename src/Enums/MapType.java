@@ -1,8 +1,5 @@
 package Enums;
 
-/**
- *
- */
 public enum MapType {
     GreenCityMap("GreenCity"),
     IndustrialCity("IndustrialCityMap");

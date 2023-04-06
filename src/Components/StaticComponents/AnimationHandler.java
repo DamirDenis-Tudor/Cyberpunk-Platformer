@@ -6,9 +6,6 @@ import Components.StaticComponents.StaticComponent;
 import Enums.AnimationType;
 import Utils.Coordinate;
 
-/**
- * This class encapsulates the animation behavior, and its main feature is handling the animation changes.
- */
 public class AnimationHandler implements StaticComponent {
     private Animation animation;
 
@@ -24,7 +21,8 @@ public class AnimationHandler implements StaticComponent {
     }
 
     public void changeAnimation(AnimationType name , Coordinate<Integer> position) throws Exception {
-        // the animation will be change only is not equal with the current one
+        // the animation will be change only if
+        // is not equal with the old one
         if(animation.getType() != name) {
             boolean direction = animation.getDirection();
             animation = new Animation(AssetsDeposit.getInstance().getAnimation(name));

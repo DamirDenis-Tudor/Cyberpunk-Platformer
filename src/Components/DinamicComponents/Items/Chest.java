@@ -1,5 +1,6 @@
-package Components.DinamicComponents;
+package Components.DinamicComponents.Items;
 
+import Components.DinamicComponents.DynamicComponent;
 import Components.StaticComponents.AnimationHandler;
 import Enums.*;
 import Scenes.Messages.Message;
@@ -9,9 +10,7 @@ import Utils.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class encapsulate the behavior of a chest.
- */
+
 public class Chest extends DynamicComponent {
     AnimationHandler animationHandler;
     private final Map<ComponentStatus, Boolean> statuses;
@@ -20,24 +19,20 @@ public class Chest extends DynamicComponent {
         super();
         this.scene = scene;
 
-        // chest statuses
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.IsOpened, false);
         statuses.put(ComponentStatus.HasDroppedWeapon, false);
 
-        // chest animation
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Chest1, position);
-        // lock at first frame -> chest in locked
         animationHandler.getAnimation().lockAtFistFrame();
-
         collideBox = animationHandler.getAnimation().getRectangle();
     }
 
     @Override
     public void notify(Message message) throws Exception {
-        if (message.source() == ComponentType.Player) {
-            if (message.type() == MessageType.ReadyToBeOpened && !statuses.get(ComponentStatus.IsOpened)) {
+        if (message.getSource() == ComponentType.Player) {
+            if (message.getType() == MessageType.ReadyToBeOpened && !statuses.get(ComponentStatus.IsOpened)) {
                 statuses.put(ComponentStatus.IsOpened, true);
                 animationHandler.getAnimation().unlock();
             }

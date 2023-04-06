@@ -1,8 +1,5 @@
 package Enums;
 
-/**
- * This class facilitates component interaction by providing flexibility in adding new behavioral interactions.
- */
 public enum MessageType {
     HandleCollision ,
     HasCollision,
