@@ -1,5 +1,9 @@
 package Enums;
 
+/**
+ * This class contains all possible component statuses, providing flexibility for implementing game logic.
+ * Each component will have a map of statuses represented by boolean values.
+ */
 public enum ComponentStatus {
     BottomCollision,
     TopCollision,
@@ -22,5 +26,6 @@ public enum ComponentStatus {
     HasDroppedWeapon,
     IsPickedUp,
     HasLaunchedBullet,
-    Hide
+    Hide,
+    IsOnPlatform
 }

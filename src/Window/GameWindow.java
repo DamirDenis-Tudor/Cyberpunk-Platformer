@@ -18,7 +18,7 @@ public class GameWindow {
     private final String windowTitle;
     private final int windowWidth;
     private final int windowHeight;
-    private Canvas canvas; // cavas is over the frame
+    private Canvas canvas; // canvas is over the frame
 
     /**
      * This constructor initialize the properties.
@@ -42,40 +42,27 @@ public class GameWindow {
      */
     private void buildGameWindow() {
         windowFrame = new JFrame(windowTitle);
-
         windowFrame.setSize(windowWidth, windowHeight);
-
         windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         windowFrame.setState(Frame.NORMAL);
-
         windowFrame.setUndecorated(true);
-
         windowFrame.setResizable(false);
-
         windowFrame.setLocationRelativeTo(null);
-
         windowFrame.setVisible(true);
 
         canvas = new Canvas();
-
         canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
         canvas.setMaximumSize(new Dimension(windowWidth, windowHeight));
         canvas.setMinimumSize(new Dimension(windowWidth, windowHeight));
-
         canvas.addKeyListener(KeyboardInput.getInstance());
-
         canvas.addMouseListener(MouseInput.getInstance());
 
         windowFrame.add(canvas);
-
         windowFrame.pack();
 
         canvas.createBufferStrategy(3);
 
         Toolkit.getDefaultToolkit().sync();
-
-
     }
 
 

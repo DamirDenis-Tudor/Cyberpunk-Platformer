@@ -16,9 +16,12 @@ import java.util.List;
 
 import static Utils.Constants.mapScale;
 
+/**
+ * This class encapsulates the animation behavior.It has a default constructor, an initialization constructor and a copy one.
+ */
 public class Animation implements StaticComponent {
-    private static int idCounter = 0;
-    private String timerId;
+    private static int idCounter = 1000; // at each frame this counter increments
+    private String timerId; // changing image timer
     private final TimersHandler timersHandler = TimersHandler.getInstance();
     private GameWindow gameWindow = GameWindow.getInstance();
     private List<BufferedImage> images;
@@ -30,7 +33,6 @@ public class Animation implements StaticComponent {
     private AnimationType type;
     private boolean lock = false;
     private int repeats = 0;
-
     private int currentCount = 0;
 
     public Animation(){
@@ -39,13 +41,13 @@ public class Animation implements StaticComponent {
 
     /**
      *
-     * @param path
-     * @param spriteSheetWidth
-     * @param width
-     * @param height
-     * @param box
-     * @param type
-     * @throws Exception
+     * @param path where the animation sprite sheet is found
+     * @param spriteSheetWidth width of the sprite-sheet
+     * @param width width of the image
+     * @param height height of the image
+     * @param box colliding box
+     * @param type type of the animation
+     * @throws Exception when fail to load image
      */
     public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationType type ) throws Exception {
         this.type = type;
@@ -64,18 +66,20 @@ public class Animation implements StaticComponent {
 
     /**
      *
-     * @param animation
-     * @throws Exception
+     * @param animation to be copied
+     * @throws Exception timer exception
      */
     public Animation(Animation animation) throws Exception {
         idCounter++;
-        // create a timer for the animation each time when we copy it
+
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.06F), timerId);
+        timersHandler.addTimer(new Timer(0.06F),timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
+        // images will be shared
         this.images = animation.images;
 
+        // but the boxes are individual
         this.rectangle = new Rectangle(animation.rectangle);
 
         this.height = animation.height;
@@ -99,7 +103,6 @@ public class Animation implements StaticComponent {
                     currentCount ++;
                 }
             }
-
         }
     }
 

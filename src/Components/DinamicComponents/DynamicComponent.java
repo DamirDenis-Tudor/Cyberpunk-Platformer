@@ -12,6 +12,7 @@ import Utils.Rectangle;
  * As a result, access to the physical object is not necessary as the object can be identified solely by its identifier.
  */
 public abstract class DynamicComponent {
+
     protected Scene scene = null;
     protected Rectangle collideBox;
     private static int idCounter = 0;
@@ -28,17 +29,12 @@ public abstract class DynamicComponent {
     public abstract void handleInteractionWith(DynamicComponent component) throws Exception;
     public abstract void update() throws Exception;
     public abstract void draw();
-
     public abstract ComponentType getSubType();
     public abstract ComponentType getBaseType();
     public Rectangle getCollideBox() {
         return collideBox;
     }
-
-    public boolean getActiveStatus(){
-        return active;
-    }
-
+    public boolean getActiveStatus(){return active;}
     public void setActiveStatus(boolean value){
         active = value;
     }
