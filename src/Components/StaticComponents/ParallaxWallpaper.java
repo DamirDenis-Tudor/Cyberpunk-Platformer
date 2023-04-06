@@ -16,9 +16,7 @@ import java.util.List;
 public class ParallaxWallpaper implements StaticComponent {
 
     private final GameWindow gameWindow;
-
     private final Camera camera;
-    private final KeyboardInput keyboardInput;
     private final List<BufferedImage> images;
     private final List<Integer> velocities;
     private final List<Integer> background1Position;
@@ -29,7 +27,6 @@ public class ParallaxWallpaper implements StaticComponent {
 
     public ParallaxWallpaper() {
         gameWindow = GameWindow.getInstance();
-        keyboardInput = KeyboardInput.getInstance();
         camera = Camera.getInstance();
         images = new ArrayList<>();
 

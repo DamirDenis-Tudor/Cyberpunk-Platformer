@@ -1,7 +1,7 @@
 package Components.StaticComponents;
-import Components.DinamicComponents.Items.Bullet;
-import Components.DinamicComponents.Items.Gun;
-import Components.DinamicComponents.Map.GameMap;
+import Components.DinamicComponents.Bullet;
+import Components.DinamicComponents.Gun;
+import Components.DinamicComponents.GameMap;
 import Enums.AnimationType;
 import Enums.MapType;
 import Enums.ComponentType;
@@ -25,7 +25,7 @@ import static Utils.Constants.mapScale;
 import java.util.Map;
 
 /**
- * Here will load predifined maps , animations , and so on
+ * This class has predefined maps, animations and so on.
  */
 public class AssetsDeposit {
     private static AssetsDeposit instance = null;
@@ -33,8 +33,12 @@ public class AssetsDeposit {
     private final Map <AnimationType, Animation> animations;
     private final Map<ComponentType , Gun> guns;
     private final Map<ComponentType , Bullet> bullets;
-
     private final Map<ComponentType , ComponentType> gunsBulletsRelation;
+
+    /**
+     * this constructor loads all the assets.
+     * @throws Exception
+     */
     private AssetsDeposit() throws Exception {
 
         // -----------------------load game maps
@@ -107,8 +111,6 @@ public class AssetsDeposit {
             int width = Integer.parseInt(imageElement.getAttribute("width"));
             int height = Integer.parseInt(imageElement.getAttribute("height"));
 
-
-
             if(id.contains("Gun")){
                 Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , (int)(width), (int)(height));
                 guns.put(ComponentType.valueOf(id),new Gun(ImageIO.read(new File(source)) , boxBounding));
@@ -119,9 +121,6 @@ public class AssetsDeposit {
         }
     }
 
-    /**
-     * @return
-     */
     public static AssetsDeposit getInstance() throws Exception {
         if (instance == null) {
             instance = new AssetsDeposit();
@@ -137,9 +136,23 @@ public class AssetsDeposit {
         return animations.get(name);
     }
 
+    /**
+     * @param name bun type
+     * @return Gun object
+     */
     public Gun getGun(ComponentType name){
-        return guns.get(name);}
+        return guns.get(name);
+    }
+
+    /**
+     * @param name bullet type
+     * @return Bullet object
+     */
     public Bullet getBulletByGunName(ComponentType name){return bullets.get(gunsBulletsRelation.get(name));}
 
+    /**
+     * @param name gun type
+     * @return bullet type associated with gun
+     */
     public ComponentType getBulletType(ComponentType name){return gunsBulletsRelation.get(name);}
 }

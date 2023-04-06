@@ -61,7 +61,6 @@ public class Timer {
     }
 
     /**
-     *
      * @return current timer situation
      */
     public float getRemainingTime() {
@@ -69,8 +68,7 @@ public class Timer {
     }
 
     /**
-     *
-     * @return
+     * @return timer stopping duration
      */
     public float getDuration() {
         return duration;

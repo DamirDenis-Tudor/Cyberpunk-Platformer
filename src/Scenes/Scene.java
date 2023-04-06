@@ -45,11 +45,18 @@ public abstract class Scene {
         components.add(component);
     }
 
+    /**
+     * @param component to be removed
+     */
     public void removeComponent(DynamicComponent component){components.remove(component);}
 
+    /**
+     * @param component to be checked
+     * @return return the existence status
+     */
     public boolean stillExists(DynamicComponent component){return components.contains(component);}
     /**
-     * this method search for a specific component by an indentifier
+     * this method search for a specific component by an identifier
      * @param name to be found
      * @return founded component
      */
@@ -63,9 +70,8 @@ public abstract class Scene {
     }
 
     /**
-     *
-     * @param id
-     * @return
+     * @param id specific identifier of the component
+     * @return null or founded component
      */
     public DynamicComponent findComponentWithId(int id){
         for (DynamicComponent dinamicComponent: components){
@@ -83,9 +89,9 @@ public abstract class Scene {
      */
     public List<DynamicComponent> getAllComponentsWithName(ComponentType name){
         List<DynamicComponent> searchedComponents= new ArrayList<>();
-        for (DynamicComponent dinamicComponent: components){
-            if (name == dinamicComponent.getBaseType()){
-                searchedComponents.add(dinamicComponent);
+        for (DynamicComponent dynamicComponent: components){
+            if (name == dynamicComponent.getBaseType()){
+                searchedComponents.add(dynamicComponent);
             }
         }
         return searchedComponents;

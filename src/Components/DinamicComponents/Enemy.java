@@ -11,6 +11,12 @@ import Utils.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static Utils.Constants.*;
+
+/**
+ * This class describes a basic enemy behavior.
+ * Read the code it describes itself.
+ */
 public class Enemy extends DynamicComponent {
     protected final AnimationHandler animationHandler;
     protected final TimersHandler timersHandler;
@@ -45,7 +51,7 @@ public class Enemy extends DynamicComponent {
 
         switch (type){
             case Dog1 -> {
-                velocity = 2;
+                velocity = animalEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Dog1Idle);
                 animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Dog1Walk);
                 animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Dog1Attack);
@@ -53,7 +59,7 @@ public class Enemy extends DynamicComponent {
                 animationsType.put(GeneralAnimationTypes.Death , AnimationType.Dog1Death);
             }
             case Dog2 ->{
-                velocity = 2;
+                velocity = animalEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Dog2Idle);
                 animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Dog2Walk);
                 animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Dog2Attack);
@@ -61,7 +67,7 @@ public class Enemy extends DynamicComponent {
                 animationsType.put(GeneralAnimationTypes.Death , AnimationType.Dog2Death);
             }
             case Cat1 -> {
-                velocity = 2;
+                velocity = animalEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Cat1Idle);
                 animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Cat1Walk);
                 animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Cat1Attack);
@@ -69,7 +75,7 @@ public class Enemy extends DynamicComponent {
                 animationsType.put(GeneralAnimationTypes.Death , AnimationType.Cat1Death);
             }
             case Cat2 -> {
-                velocity = 2;
+                velocity = animalEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Cat2Idle);
                 animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Cat2Walk);
                 animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Cat2Attack);
@@ -78,7 +84,7 @@ public class Enemy extends DynamicComponent {
             }
 
             case BaseballEnemy -> {
-                velocity = 1;
+                velocity = baseballEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy1Idle);
                 animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy1Walk);
                 animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy1Attack);
@@ -87,7 +93,7 @@ public class Enemy extends DynamicComponent {
             }
 
             case SkaterEnemy -> {
-                velocity = 3;
+                velocity = skaterEnemyVelocity;
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy3Idle);
                 animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy3Walk);
                 animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy3Attack);
@@ -101,9 +107,9 @@ public class Enemy extends DynamicComponent {
     }
     @Override
     public void notify(Message message) throws Exception {
-        switch (message.getSource()) {
+        switch (message.source()) {
             case Map -> {
-                switch (message.getType()) {
+                switch (message.type()) {
                     case LeftCollision -> {
                         statuses.put(ComponentStatus.LeftCollision, true);
                         statuses.put(ComponentStatus.RightCollision, false);
@@ -116,7 +122,7 @@ public class Enemy extends DynamicComponent {
                 }
             }
             case Enemy -> {
-                switch (message.getType()) {
+                switch (message.type()) {
                     case LeftCollisionWithOther -> {
                         statuses.put(ComponentStatus.LeftCollision, true);
                         statuses.put(ComponentStatus.RightCollision, false);
@@ -131,7 +137,7 @@ public class Enemy extends DynamicComponent {
                 }
             }
             case Player,Bullet-> {
-                switch (message.getType()) {
+                switch (message.type()) {
                     case Attack,HasCollision -> {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);

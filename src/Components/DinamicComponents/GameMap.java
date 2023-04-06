@@ -1,6 +1,7 @@
-package Components.DinamicComponents.Map;
+package Components.DinamicComponents;
 
 import Components.DinamicComponents.DynamicComponent;
+import Components.StaticComponents.MapAsset;
 import Components.StaticComponents.ParallaxWallpaper;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -281,7 +282,7 @@ public class GameMap extends DynamicComponent {
     public void handleInteractionWith(DynamicComponent component) throws Exception {
         Rectangle rectangle = component.getCollideBox();
 
-        // fist of all we need to check if the player is on a ladder
+        // if the message is from player => check if is on a ladder
         if (component.getBaseType() == ComponentType.Player) {
             for (Rectangle ladder : entitiesCoordinates.get("ladders")){
                 if(rectangle.intersects(ladder)){
@@ -291,6 +292,8 @@ public class GameMap extends DynamicComponent {
             }
             component.notify(new Message(MessageType.IsNoLongerOnLadder , ComponentType.Map,getId()));
         }
+
+        // if the message is from bullet => check if it has collision
         if(component.getBaseType() == ComponentType.Bullet){
             int x = component.getCollideBox().getMinX() / mapDim;
             int y = component.getCollideBox().getCenterY() / mapDim;
@@ -299,8 +302,8 @@ public class GameMap extends DynamicComponent {
             }
             return;
         }
-        // if not we need to place the component
-        // into a specific area of map => clamping
+
+        // the message is from a component that has map collision and needs recalibraion
         int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 1);
         int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 2);
         int yStart = Math.max(0, rectangle.getPosition().getPosY() / mapDim - 1);
@@ -316,7 +319,6 @@ public class GameMap extends DynamicComponent {
             for (int x = xStart; x < xEnd; x++) {
                 if (!Objects.equals(tilesIndexes[y][x], "0")) {
                     Rectangle tileRect = getRectangle(x, y);
-
 
                     // solve the collision and save the offsets
                     rectangle.solveCollision(tileRect);
@@ -338,23 +340,27 @@ public class GameMap extends DynamicComponent {
             }
         }
 
-        // notify the component
-        if (wasGroundCollision) {
-            component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map,getId()));
-        } else {
-            component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map,getId()));
-        }
-        if (wasTopCollision) {
-            component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map,getId()));
+        if(component.getBaseType() != ComponentType.Platform) {
+            // notify the component
+            if (wasGroundCollision) {
+                component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
+            } else {
+                component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map, getId()));
+            }
+            if (wasTopCollision) {
+                component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map, getId()));
+            }
         }
 
         // particular behavior for some components
         if (component.getBaseType() != ComponentType.Player) {
-            // collision verification is necessary to prevent components from falling off the platform
-            if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
-                wasLeftCollision = true;
-            } else if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMinX() / mapDim + 1], "0")) {
-                wasRightCollision = true;
+            if(component.getBaseType() != ComponentType.Platform) {
+                // collision verification is necessary to prevent components from falling off the platform
+                if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
+                    wasLeftCollision = true;
+                } else if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMinX() / mapDim + 1], "0")) {
+                    wasRightCollision = true;
+                }
             }
 
             // notify the component
@@ -403,6 +409,16 @@ public class GameMap extends DynamicComponent {
         }
         return coordinates;
     }
+
+    public List<Coordinate<Integer>> getPlatformsPositions() {
+        List<Coordinate<Integer>> coordinates = new ArrayList<>();
+        for (Rectangle rectangle:entitiesCoordinates.get("platforms")) {
+            coordinates.add(rectangle.getPosition());
+        }
+        return coordinates;
+    }
+
+    public int getHeight() {return height;}
 
     public int getWidth() {
         return width;

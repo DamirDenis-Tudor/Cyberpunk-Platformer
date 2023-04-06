@@ -5,11 +5,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- *
+ * This class handle mouse events.
  */
 public class MouseInput implements MouseListener {
     private static MouseInput instance;
-
     private boolean isLeftMousePressed;
     private boolean isRightMousePressed;
     private boolean isLeftMouseClicked;

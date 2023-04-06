@@ -22,7 +22,6 @@ public class SceneHandler {
     static SceneHandler instance;
     private final Map<SceneType, Scene> scenes;
     private Scene activeScene;
-
     private SceneHandler() throws Exception {
         scenes = new HashMap<>();
         scenes.put(LogoStartScene          , new LogoStartScene());
@@ -56,8 +55,7 @@ public class SceneHandler {
     }
 
     /**
-     * This method iterates the map until a scene is equal
-     * (has the same address with the active one.
+     * This method iterates the map until a scene is equal with the active one.
      * @return identifier of active scene
      * @throws Exception message
      */
@@ -78,7 +76,7 @@ public class SceneHandler {
      * This method handles the scene change request .
      * It can change the active state if the new scene not
      * belong to the current active state.
-     * @param newScene
+     * @param newScene scene to be activated
      */
     public void handleSceneChangeRequest(SceneType newScene) throws Exception {
         if(scenes.containsKey(newScene)){

@@ -1,19 +1,16 @@
 package Components.StaticComponents;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
-
-import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.GameWindow;
 import Window.Camera;
 
-import javax.swing.plaf.PanelUI;
-
+/**
+ * This class wraps BufferedImage objects and provides the flexibility required for drawing images in code positioning calibration.
+ */
 public class ImageWrapper {
-    GameWindow gameWindow ;
-    Camera camera;
-    private BufferedImage image;
+    private final GameWindow gameWindow ;
+    private final Camera camera;
+    private final BufferedImage image;
 
     public ImageWrapper(BufferedImage image){
         gameWindow = GameWindow.getInstance();
@@ -25,8 +22,7 @@ public class ImageWrapper {
         if (direction) { // right
             gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,box.getWidth() , box.getHeight() , null);
         }else {
-            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX + 5 , box.getMinY()+offsetY,-box.getWidth() , box.getHeight() , null);
+            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,-box.getWidth() , box.getHeight() , null);
         }
     }
-
 }

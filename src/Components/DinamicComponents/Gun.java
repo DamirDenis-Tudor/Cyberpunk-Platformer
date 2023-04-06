@@ -1,6 +1,5 @@
-package Components.DinamicComponents.Items;
+package Components.DinamicComponents;
 
-import Components.DinamicComponents.DynamicComponent;
 import Components.StaticComponents.ImageWrapper;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -45,15 +44,21 @@ public class Gun extends DynamicComponent {
 
     @Override
     public void notify(Message message) throws Exception {
-        if (message.getSource() == ComponentType.Player) {
-            switch (message.getType()) {
+        if (message.source() == ComponentType.Player) {
+            switch (message.type()) {
                 case IsPickedUp -> statuses.put(ComponentStatus.IsPickedUp, true);
                 case LaunchBullet -> statuses.put(ComponentStatus.HasLaunchedBullet, true);
                 case PlayerDirectionLeft -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) direction = false;
+                    if (statuses.get(ComponentStatus.IsPickedUp)) {
+                        direction = false;
+                        xOffset = 25;
+                    }
                 }
                 case PLayerDirectionRight -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) direction = true;
+                    if (statuses.get(ComponentStatus.IsPickedUp)) {
+                        direction = true;
+                        xOffset = 22;
+                    }
                 }
                 case HideGun -> {
                     if (statuses.get(ComponentStatus.IsPickedUp)) statuses.put(ComponentStatus.Hide, true);
@@ -65,8 +70,7 @@ public class Gun extends DynamicComponent {
                     if (statuses.get(ComponentStatus.IsPickedUp)){
                         if(direction){
                             scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.Gun, getId()));
-                        }
-                        else {
+                        } else {
                             scene.notify(new Message(MessageType.BulletLauchLeft, ComponentType.Gun, getId()));
                         }
                     }
@@ -80,7 +84,6 @@ public class Gun extends DynamicComponent {
         if (component.getBaseType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.IsPickedUp)) {
                 collideBox.setPosition(component.getCollideBox().getPosition());
-                xOffset = component.getCollideBox().getWidth() / 2 - collideBox.getWidth() / 2 + 12;
                 yOffset = component.getCollideBox().getHeight() / 2 - 2;
             }
         }
