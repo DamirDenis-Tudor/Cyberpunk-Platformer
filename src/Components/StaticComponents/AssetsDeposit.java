@@ -4,7 +4,7 @@ import Components.DinamicComponents.Items.Gun;
 import Components.DinamicComponents.Map.GameMap;
 import Enums.AnimationType;
 import Enums.MapType;
-import Enums.Weapon;
+import Enums.ComponentType;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -31,10 +31,10 @@ public class AssetsDeposit {
     private static AssetsDeposit instance = null;
     private final Map<MapType, GameMap> gameMaps;
     private final Map <AnimationType, Animation> animations;
-    private final Map<Weapon , Gun> guns;
-    private final Map<Weapon , Bullet> bullets;
+    private final Map<ComponentType , Gun> guns;
+    private final Map<ComponentType , Bullet> bullets;
 
-    private final Map<Weapon , Weapon> gunsBulletsRelation;
+    private final Map<ComponentType , ComponentType> gunsBulletsRelation;
     private AssetsDeposit() throws Exception {
 
         // -----------------------load game maps
@@ -73,20 +73,20 @@ public class AssetsDeposit {
             animations.put(AnimationType.valueOf(id), new Animation(source , spriteSheetWidth , width ,height , boxBounding, AnimationType.valueOf(id) ));
         }
 
-        // -----------------------load game weapons
+        // -----------------------load game ComponentTypes
         // first of all let's make a mapping that describes
         // the bullet-gun relationship
         gunsBulletsRelation = new HashMap<>();
-        gunsBulletsRelation.put(Weapon.Gun1 , Weapon.Bullet1);
-        gunsBulletsRelation.put(Weapon.Gun2 , Weapon.Bullet2);
-        gunsBulletsRelation.put(Weapon.Gun3 , Weapon.Bullet3);
-        gunsBulletsRelation.put(Weapon.Gun4 , Weapon.Bullet4);
-        gunsBulletsRelation.put(Weapon.Gun5 , Weapon.Bullet5);
-        gunsBulletsRelation.put(Weapon.Gun6 , Weapon.Bullet6);
-        gunsBulletsRelation.put(Weapon.Gun7 , Weapon.Bullet7);
-        gunsBulletsRelation.put(Weapon.Gun8 , Weapon.Bullet8);
-        gunsBulletsRelation.put(Weapon.Gun9 , Weapon.Bullet9);
-        gunsBulletsRelation.put(Weapon.Gun10 , Weapon.Bullet10);
+        gunsBulletsRelation.put(ComponentType.Gun1 , ComponentType.Bullet1);
+        gunsBulletsRelation.put(ComponentType.Gun2 , ComponentType.Bullet2);
+        gunsBulletsRelation.put(ComponentType.Gun3 , ComponentType.Bullet3);
+        gunsBulletsRelation.put(ComponentType.Gun4 , ComponentType.Bullet4);
+        gunsBulletsRelation.put(ComponentType.Gun5 , ComponentType.Bullet5);
+        gunsBulletsRelation.put(ComponentType.Gun6 , ComponentType.Bullet6);
+        gunsBulletsRelation.put(ComponentType.Gun7 , ComponentType.Bullet7);
+        gunsBulletsRelation.put(ComponentType.Gun8 , ComponentType.Bullet8);
+        gunsBulletsRelation.put(ComponentType.Gun9 , ComponentType.Bullet9);
+        gunsBulletsRelation.put(ComponentType.Gun10 , ComponentType.Bullet10);
 
 
         guns = new HashMap<>();
@@ -107,12 +107,14 @@ public class AssetsDeposit {
             int width = Integer.parseInt(imageElement.getAttribute("width"));
             int height = Integer.parseInt(imageElement.getAttribute("height"));
 
-            Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , (int)(width*1.5), (int)(height*1.5));
+
 
             if(id.contains("Gun")){
-                guns.put(Weapon.valueOf(id),new Gun(ImageIO.read(new File(source)) , boxBounding));
+                Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , (int)(width), (int)(height));
+                guns.put(ComponentType.valueOf(id),new Gun(ImageIO.read(new File(source)) , boxBounding));
             }else {
-                bullets.put(Weapon.valueOf(id),new Bullet(ImageIO.read(new File(source)) , boxBounding));
+                Rectangle boxBounding = new Rectangle(new Coordinate<>(0,0) , (int)(width*2), (int)(height*2));
+                bullets.put(ComponentType.valueOf(id),new Bullet(ImageIO.read(new File(source)) , boxBounding));
             }
         }
     }
@@ -135,7 +137,9 @@ public class AssetsDeposit {
         return animations.get(name);
     }
 
-    public Gun getGun(Weapon name){
+    public Gun getGun(ComponentType name){
         return guns.get(name);}
-    public Bullet getBullet(Weapon name){return bullets.get(name);}
+    public Bullet getBulletByGunName(ComponentType name){return bullets.get(gunsBulletsRelation.get(name));}
+
+    public ComponentType getBulletType(ComponentType name){return gunsBulletsRelation.get(name);}
 }

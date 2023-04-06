@@ -1,8 +1,8 @@
 package Enums;
 
 public enum ComponentStatus {
-    BottomCollision ,
-    TopCollision ,
+    BottomCollision,
+    TopCollision,
     RightCollision,
     LeftCollision,
     IsOnLadder,
@@ -10,15 +10,16 @@ public enum ComponentStatus {
     RightCollisionWithOther,
     LeftCollisionWithOther,
     HorizontalMove,
-    Attack ,
+    Attack,
     Hurt,
     FirstHit,
     Death,
     HasEnemyCollision,
     Idle,
     TryingToOpenOrPickSomething,
+    GunPicked,
     IsOpened,
-    HasDropedWeapon,
+    HasDroppedWeapon,
     IsPickedUp,
     HasLaunchedBullet,
     Hide

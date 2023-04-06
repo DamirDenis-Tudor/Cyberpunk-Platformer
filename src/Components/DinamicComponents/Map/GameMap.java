@@ -246,6 +246,11 @@ public class GameMap extends DynamicComponent {
         drawLayer(decorsIndexes , objects);
     }
 
+    @Override
+    public ComponentType getSubType() {
+        return null;
+    }
+
     private void drawLayer(String[][] decorsIndexes , Map<String, MapAsset> types) {
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; j++) {
@@ -263,7 +268,7 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getType() {
+    public ComponentType getBaseType() {
         return ComponentType.Map;
     }
 
@@ -277,7 +282,7 @@ public class GameMap extends DynamicComponent {
         Rectangle rectangle = component.getCollideBox();
 
         // fist of all we need to check if the player is on a ladder
-        if (component.getType() == ComponentType.Player) {
+        if (component.getBaseType() == ComponentType.Player) {
             for (Rectangle ladder : entitiesCoordinates.get("ladders")){
                 if(rectangle.intersects(ladder)){
                     component.notify(new Message(MessageType.IsOnLadder , ComponentType.Map,getId()));
@@ -286,7 +291,14 @@ public class GameMap extends DynamicComponent {
             }
             component.notify(new Message(MessageType.IsNoLongerOnLadder , ComponentType.Map,getId()));
         }
-
+        if(component.getBaseType() == ComponentType.Bullet){
+            int x = component.getCollideBox().getMinX() / mapDim;
+            int y = component.getCollideBox().getCenterY() / mapDim;
+            if( x <= 0 || x > width-1 || !Objects.equals(tilesIndexes[y][x], "0")){
+                component.notify(new Message(MessageType.HasCollision, ComponentType.Map, getId()));
+            }
+            return;
+        }
         // if not we need to place the component
         // into a specific area of map => clamping
         int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 1);
@@ -304,8 +316,9 @@ public class GameMap extends DynamicComponent {
             for (int x = xStart; x < xEnd; x++) {
                 if (!Objects.equals(tilesIndexes[y][x], "0")) {
                     Rectangle tileRect = getRectangle(x, y);
-                    // solve the collision and save the offsets
 
+
+                    // solve the collision and save the offsets
                     rectangle.solveCollision(tileRect);
 
                     // determine vertical collision type
@@ -336,7 +349,7 @@ public class GameMap extends DynamicComponent {
         }
 
         // particular behavior for some components
-        if (component.getType() != ComponentType.Player) {
+        if (component.getBaseType() != ComponentType.Player) {
             // collision verification is necessary to prevent components from falling off the platform
             if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
                 wasLeftCollision = true;

@@ -10,8 +10,8 @@ public class KeyboardInput implements KeyListener {
     private boolean keyA;
     private boolean keyS;
     private boolean keyD;
-    private boolean keyE;
-    private boolean keyQ;
+    private boolean keyEnter;
+    private boolean keyShift;
     private boolean space;
     private boolean previousKeyW;
     private boolean previousKeyA;
@@ -27,8 +27,8 @@ public class KeyboardInput implements KeyListener {
         keyA = false;
         keyS = false;
         keyD = false;
-        keyE = false;
-        keyQ = false;
+        keyEnter = false;
+        keyShift = false;
         space = false;
         previousSpace = false;
     }
@@ -46,13 +46,13 @@ public class KeyboardInput implements KeyListener {
         previousKeyW = keyW;
         previousKeyS = keyS;
         previousKeyD = keyD;
-        previousKeyE = keyE;
+        previousKeyE = keyEnter;
         keyW = keyCodes[KeyEvent.VK_W];
         keyA = keyCodes[KeyEvent.VK_A];
         keyS = keyCodes[KeyEvent.VK_S];
         keyD = keyCodes[KeyEvent.VK_D];
-        keyE = keyCodes[KeyEvent.VK_E];
-        keyQ = keyCodes[KeyEvent.VK_Q];
+        keyEnter = keyCodes[KeyEvent.VK_ENTER];
+        keyShift = keyCodes[KeyEvent.VK_SHIFT];
         space = keyCodes[KeyEvent.VK_SPACE];
     }
 
@@ -87,12 +87,12 @@ public class KeyboardInput implements KeyListener {
         return keyD;
     }
 
-    public boolean getKeyQ() {
-        return keyQ;
+    public boolean getKeyShift() {
+        return keyShift;
     }
 
-    public boolean getKeyE() {
-        return keyE;
+    public boolean getKeyEnter() {
+        return keyEnter;
     }
 
 

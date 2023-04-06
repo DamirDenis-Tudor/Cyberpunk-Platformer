@@ -21,7 +21,7 @@ public class Chest extends DynamicComponent {
 
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.IsOpened, false);
-        statuses.put(ComponentStatus.HasDropedWeapon, false);
+        statuses.put(ComponentStatus.HasDroppedWeapon, false);
 
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Chest1, position);
@@ -46,9 +46,9 @@ public class Chest extends DynamicComponent {
     public void update() throws Exception {
         if (statuses.get(ComponentStatus.IsOpened) &&
                 animationHandler.getAnimation().animationIsOver() &&
-                !statuses.get(ComponentStatus.HasDropedWeapon)) {
+                !statuses.get(ComponentStatus.HasDroppedWeapon)) {
             animationHandler.getAnimation().lockAtLastFrame();
-            statuses.put(ComponentStatus.HasDropedWeapon ,true);
+            statuses.put(ComponentStatus.HasDroppedWeapon,true);
             scene.notify(new Message(MessageType.SpawnGun,ComponentType.Chest,getId()));
         }
         animationHandler.update();
@@ -61,7 +61,12 @@ public class Chest extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getType() {
+    public ComponentType getSubType() {
+        return null;
+    }
+
+    @Override
+    public ComponentType getBaseType() {
         return ComponentType.Chest;
     }
 }

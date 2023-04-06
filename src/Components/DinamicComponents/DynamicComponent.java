@@ -28,7 +28,9 @@ public abstract class DynamicComponent {
     public abstract void handleInteractionWith(DynamicComponent component) throws Exception;
     public abstract void update() throws Exception;
     public abstract void draw();
-    public abstract ComponentType getType();
+
+    public abstract ComponentType getSubType();
+    public abstract ComponentType getBaseType();
     public Rectangle getCollideBox() {
         return collideBox;
     }

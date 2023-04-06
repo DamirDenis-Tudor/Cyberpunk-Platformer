@@ -164,7 +164,16 @@ public enum AnimationType {
     Boss2Idle("Boss2Idle"),
     Boss2Hurt("Boss2Hurt"),
     Boss2Death("Boss2Death"),
-    Boss2Walk("Boss2Walk");
+    Boss2Walk("Boss2Walk"),
+    BikerIdleGun("BikerIdleGun"),
+    BikerJumpGun("BikerJumpGun"),
+    BikerRunGun("BikerRunGun"),
+    PunkIdleGun("PunkIdleGun"),
+    PunkRunGun("PunkRunGun"),
+    PunkJumpGun("PunkJumpGun"),
+    CyborgIdleGun("CyborgIdleGun"),
+    CyborgRunGun("CyborgRunGun"),
+    CyborgJumpGun("CyborgJumpGun");
 
     private final String stringValue;
 

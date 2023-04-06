@@ -106,8 +106,8 @@ public class GameWindow {
         return windowHeight;
     }
 
-    public Graphics getGraphics() {
-        return canvas.getBufferStrategy().getDrawGraphics();
+    public Graphics2D getGraphics() {
+        return (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
     }
 
     /**

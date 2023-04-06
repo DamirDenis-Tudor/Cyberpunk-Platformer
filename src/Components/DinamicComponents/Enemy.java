@@ -130,13 +130,13 @@ public class Enemy extends DynamicComponent {
                     case EnemyDeath -> statuses.put(ComponentStatus.HasEnemyCollision, false);
                 }
             }
-            case Player -> {
+            case Player,Bullet-> {
                 switch (message.getType()) {
-                    case Attack -> {
+                    case Attack,HasCollision -> {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
                         statuses.put(ComponentStatus.Hurt, true);
-                        health -= 40;
+                        health -= 25;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
                             scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy , getId()));
@@ -154,7 +154,7 @@ public class Enemy extends DynamicComponent {
 
     @Override
     public void handleInteractionWith(DynamicComponent component) throws Exception {
-        switch (component.getType()) {
+        switch (component.getBaseType()) {
             case Player -> {
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
                     statuses.put(ComponentStatus.Attack, true);
@@ -262,7 +262,12 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getType() {
+    public ComponentType getSubType() {
+        return null;
+    }
+
+    @Override
+    public ComponentType getBaseType() {
         return ComponentType.Enemy;
     }
 }

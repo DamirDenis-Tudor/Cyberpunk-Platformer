@@ -2,6 +2,8 @@ package Enums;
 
 public enum MessageType {
     HandleCollision ,
+    HasCollision,
+    Destroy,
     ActivateTopCollision ,
     ActivateBottomCollision,
     DeactivateBottomCollision,
@@ -18,5 +20,11 @@ public enum MessageType {
     SpawnGun,
     IsPickedUp,
     LaunchBullet,
-    ChangeDirection
+    PLayerDirectionRight,
+    PlayerDirectionLeft,
+    BulletLaunchRight,
+    BulletLauchLeft,
+    HideGun,
+    ShowGun,
+    Shoot
 }

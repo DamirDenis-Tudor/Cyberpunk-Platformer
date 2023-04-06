@@ -21,8 +21,12 @@ public class ImageWrapper {
         this.image = image;
     }
 
-    public void draw(Rectangle box , int offsetX , int offsetY){
-        gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,box.getWidth() , box.getHeight() , null);
+    public void draw(Rectangle box , int offsetX , int offsetY , boolean direction){
+        if (direction) { // right
+            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,box.getWidth() , box.getHeight() , null);
+        }else {
+            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX + 5 , box.getMinY()+offsetY,-box.getWidth() , box.getHeight() , null);
+        }
     }
 
 }

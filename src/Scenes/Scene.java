@@ -45,6 +45,9 @@ public abstract class Scene {
         components.add(component);
     }
 
+    public void removeComponent(DynamicComponent component){components.remove(component);}
+
+    public boolean stillExists(DynamicComponent component){return components.contains(component);}
     /**
      * this method search for a specific component by an indentifier
      * @param name to be found
@@ -52,7 +55,7 @@ public abstract class Scene {
      */
     public DynamicComponent findComponent(ComponentType name){
         for (DynamicComponent dinamicComponent: components){
-            if (name == dinamicComponent.getType()){
+            if (name == dinamicComponent.getBaseType()){
                 return dinamicComponent;
             }
         }
@@ -81,7 +84,7 @@ public abstract class Scene {
     public List<DynamicComponent> getAllComponentsWithName(ComponentType name){
         List<DynamicComponent> searchedComponents= new ArrayList<>();
         for (DynamicComponent dinamicComponent: components){
-            if (name == dinamicComponent.getType()){
+            if (name == dinamicComponent.getBaseType()){
                 searchedComponents.add(dinamicComponent);
             }
         }
