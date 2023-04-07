@@ -74,7 +74,7 @@ public class Rectangle {
         // check for overlap in the y-direction
         double y_overlap = Math.max(0, Math.min(getMaxY(), other.getMaxY()) - Math.max(getMinY(), other.getMinY()));
 
-        if (x_overlap * y_overlap > 0) {
+        if (x_overlap * y_overlap >= 0) {
 
             if (x_overlap < y_overlap) {
                 if (this.getCenterX() < other.getCenterX()) {

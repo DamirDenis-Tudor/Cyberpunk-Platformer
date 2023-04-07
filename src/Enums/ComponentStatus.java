@@ -27,5 +27,6 @@ public enum ComponentStatus {
     IsPickedUp,
     HasLaunchedBullet,
     Hide,
-    IsOnPlatform
+    OnHelicopter,
+    HasPlayer
 }

@@ -238,7 +238,7 @@ public class Enemy extends DynamicComponent {
     @Override
     public void update() throws Exception {
         if (!statuses.get(ComponentStatus.BottomCollision)) {
-            collideBox.moveByY(8);
+            collideBox.moveByY(gravitationForce);
         }
         if (!statuses.get(ComponentStatus.Hurt) &&
                 !statuses.get(ComponentStatus.Attack) &&

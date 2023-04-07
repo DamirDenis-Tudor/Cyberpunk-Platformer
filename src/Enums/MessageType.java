@@ -4,12 +4,13 @@ package Enums;
  * This class facilitates component interaction by providing flexibility in adding new behavioral interactions.
  */
 public enum MessageType {
-    HandleCollision ,
+    HandleCollision,
     HasCollision,
     Destroy,
-    ActivateTopCollision ,
+    ActivateTopCollision,
     ActivateBottomCollision,
     DeactivateBottomCollision,
+    FallingPossibility,
     IsOnLadder,
     IsNoLongerOnLadder,
     LeftCollision,
@@ -29,5 +30,7 @@ public enum MessageType {
     BulletLauchLeft,
     HideGun,
     ShowGun,
-    Shoot
+    Shoot,
+    OnPlatform,
+    OnHelicopter
 }

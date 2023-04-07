@@ -32,4 +32,8 @@ public class Coordinate <T>{
     public String toString() {
         return "X : " + posX + " , Y : " + posY;
     }
+
+    public boolean equals(Coordinate<T> obj) {
+        return obj.posX == posY && obj.posY == posY;
+    }
 }

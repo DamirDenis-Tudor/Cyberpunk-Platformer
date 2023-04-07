@@ -21,13 +21,14 @@ import static Enums.MapType.GreenCityMap;
  * This class encapsulates the relation between in game components like player, enemies, bullets, guns, chests, platforms, etc.
  */
 final public class PlayScene extends Scene {
-    Random rand = new Random(1000);
+    Random rand = new Random(1);
 
     public PlayScene() throws Exception {
         super();
 
         // add the components specific to the scene
-        GameMap map = AssetsDeposit.getInstance().getGameMap(GreenCityMap);
+        GameMap map = new GameMap(this,"src/Resources/maps/green_map.tmx");
+
         addComponent(map);
 
         //add basic enemies
@@ -62,6 +63,11 @@ final public class PlayScene extends Scene {
         for (Coordinate<Integer> position : map.getPlatformsPositions()) {
             addComponent(new Platform(this, position));
         }
+
+/*        // add helicopters
+        for (Coordinate<Integer> position : map.getHelicoptersPositions()) {
+            addComponent(new Helicopter(this, position));
+        }*/
 
         // add player
         addComponent(new Player(this, map.getPlayerPosition(), Cyborg));
@@ -157,7 +163,6 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-
             case Gun -> {
                 switch (message.type()) {
                     case HandleCollision -> {
@@ -172,7 +177,6 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-
             case Bullet -> {
                 switch (message.type()) {
                     case HandleCollision -> {
@@ -186,11 +190,26 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-
             case Platform -> {
                 if (message.type() == MessageType.HandleCollision) {
-                    findComponent(Map).handleInteractionWith(findComponentWithId(message.componentId()));
-                    findComponent(Player).handleInteractionWith(findComponentWithId(message.componentId()));
+                    DynamicComponent component = findComponentWithId(message.componentId());
+                    findComponent(Map).handleInteractionWith(component);
+                    // interaction with other enemies
+                    for (DynamicComponent otherComponent : getAllComponentsWithName(Platform)) {
+                        if (otherComponent.getActiveStatus()) {
+                            if (component != otherComponent) {
+                                component.handleInteractionWith(otherComponent);
+                            }
+                        }
+                    }
+                }
+            }
+            case Helicopter -> {
+                if (message.type() == MessageType.HandleCollision) {
+                    DynamicComponent component = findComponentWithId(message.componentId());
+                    findComponent(Map).handleInteractionWith(component);
+                    findComponent(Player).handleInteractionWith(component);
+                    component.handleInteractionWith(findComponent(Player));
                 }
             }
         }

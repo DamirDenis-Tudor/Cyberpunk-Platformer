@@ -71,10 +71,8 @@ public class GameWindow {
      */
     public static GameWindow getInstance() {
         if (instance == null) {
-            instance = new GameWindow("Cyberpunk",
-                    Toolkit.getDefaultToolkit().getScreenSize().width,
-                    Toolkit.getDefaultToolkit().getScreenSize().height);
-            //instance = new GameWindow("CyberPunk" , 1200 , 1200);
+             instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+            //instance = new GameWindow("CyberPunk" , 800 , 1200);
         }
         return instance;
     }

@@ -43,8 +43,8 @@ public class AssetsDeposit {
 
         // -----------------------load game maps
         gameMaps = new HashMap<>();
-        gameMaps.put(GreenCityMap , new GameMap("src/Resources/maps/green_map.tmx"));
-        gameMaps.put(IndustrialCity , new GameMap("src/Resources/maps/industrial_map.tmx"));
+        //gameMaps.put(GreenCityMap , new GameMap("src/Resources/maps/green_map.tmx"));
+        //gameMaps.put(IndustrialCity , new GameMap("src/Resources/maps/industrial_map.tmx"));
 
         // -----------------------load game animations
         animations = new HashMap<>();
@@ -128,7 +128,6 @@ public class AssetsDeposit {
         return instance;
     }
     public GameMap getGameMap(MapType name){
-        Camera.getInstance().setGameMapPixelDimension(gameMaps.get(name).getWidth()*mapDim);
         return gameMaps.get(name);
     }
 

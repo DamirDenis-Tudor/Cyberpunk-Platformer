@@ -34,13 +34,17 @@ public class ParallaxWallpaper implements StaticComponent {
         background2Position = new ArrayList<>();
 
         velocities = new ArrayList<>();
+        velocities.add(0);
+        velocities.add(1);
+        velocities.add(2);
+        velocities.add(3);
+        velocities.add(3);
     }
 
     public void addImage(BufferedImage image) {
         images.add(image);
         background1Position.add(0);
         background2Position.add(gameWindow.GetWndWidth());
-        velocities.add(images.size()-1);
     }
 
     private int scrollingDirection() {
@@ -54,17 +58,10 @@ public class ParallaxWallpaper implements StaticComponent {
 
     @Override
     public void update() throws Exception {
-        long now = System.nanoTime();
-        long deltaTime = now - lastUpdateTime;
-        lastUpdateTime = now;
-        double deltaSeconds = deltaTime / 1_000_000_000.0;
-        /*
-            TODO
-         */
         for (int index = 0; index < images.size(); index++) {
             int velocity = velocities.get(index);
             int direction = scrollingDirection();
-            int distance = (int) (velocity * direction * deltaSeconds * 60);
+            int distance = velocity * direction;
             background1Position.set(index, background1Position.get(index) + distance);
             background2Position.set(index, background2Position.get(index) + distance);
 

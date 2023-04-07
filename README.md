@@ -1,6 +1,6 @@
 # Cyberpunk 2030
 ## Current status:
-https://user-images.githubusercontent.com/101417927/229738253-2f754bb9-63bf-4a38-ba1e-8cbf5da75d73.mp4
+https://user-images.githubusercontent.com/101417927/230668643-49f9d444-d90e-460b-86c0-657507ec31a6.mp4
 
 -------
 # 1. Game arhitecture
@@ -10,8 +10,7 @@ https://user-images.githubusercontent.com/101417927/229738253-2f754bb9-63bf-4a38
 - ### In game interations 
 Dynamic components that can alter the game's guidelines will interact via the Mediator Design Pattern, providing elegant and well-structured code practices.
 
-![Screenshot from 2023-04-04 11-51-42](https://user-images.githubusercontent.com/101417927/229740095-090a8e9a-4b81-4396-923a-b2cf5b82b1dd.png)
-
+![diagram](https://user-images.githubusercontent.com/101417927/230668825-a2e3dc14-3266-4e0c-bc8f-3e016102440d.png)
 
 # 2. Story  
 

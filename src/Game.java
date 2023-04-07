@@ -52,11 +52,11 @@ public class Game implements Runnable {
 
                     keyboardInput.updateInputKey();
 
-                    window.clear();
-
                     sceneHandler.getActiveScene().update();
 
                     camera.update();
+
+                    window.clear();
 
                     sceneHandler.getActiveScene().draw();
 

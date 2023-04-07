@@ -33,7 +33,7 @@ public class Bullet extends DynamicComponent {
         this.subType = subType;
         this.imageWrapper = bullet.imageWrapper;
         this.collideBox = new Rectangle(bullet.collideBox);
-        this.collideBox.setPosition(new Coordinate<>(position.getPosX() + 40, position.getPosY() + 25));
+        this.collideBox.setPosition(new Coordinate<>(position.getPosX() + 40, position.getPosY() + 30));
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.IsPickedUp, false);
         statuses.put(ComponentStatus.HasLaunchedBullet, false);
