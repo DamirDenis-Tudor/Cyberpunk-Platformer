@@ -13,6 +13,8 @@ public enum ComponentStatus {
     IsMovingOnLadder,
     RightCollisionWithOther,
     LeftCollisionWithOther,
+    RightCollisionWithWall,
+    LeftCollisionWithWall,
     HorizontalMove,
     Attack,
     Hurt,
@@ -28,5 +30,7 @@ public enum ComponentStatus {
     HasLaunchedBullet,
     Hide,
     OnHelicopter,
-    HasPlayer
+    HasPlayer,
+    DetachedFromHelicopter,
+    HasDetectedPLayer
 }

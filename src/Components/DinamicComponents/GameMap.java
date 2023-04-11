@@ -314,7 +314,7 @@ public class GameMap extends DynamicComponent {
             }
         }
 
-        // if the message is from bullet => check if it has collision
+        // if the message is from bullet => check if it has a collision
         if (component.getBaseType() == ComponentType.Bullet) {
             int x = component.getCollideBox().getMinX() / mapDim;
             int y = component.getCollideBox().getCenterY() / mapDim;
@@ -380,6 +380,7 @@ public class GameMap extends DynamicComponent {
 
         // particular behavior for some components
         if (component.getBaseType() != ComponentType.Player) {
+
             if (component.getBaseType() != ComponentType.Platform) {
                 // collision verification is necessary to prevent components from falling off the platform
                 if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {

@@ -2,6 +2,7 @@ package Scenes.InGame;
 
 import Components.DinamicComponents.*;
 import Components.StaticComponents.AssetsDeposit;
+import Components.StaticComponents.CharacterisesGenerator;
 import Enums.MessageType;
 import Enums.ComponentType;
 import Scenes.Messages.Message;
@@ -21,7 +22,7 @@ import static Enums.MapType.GreenCityMap;
  * This class encapsulates the relation between in game components like player, enemies, bullets, guns, chests, platforms, etc.
  */
 final public class PlayScene extends Scene {
-    Random rand = new Random(1);
+    Random rand = new Random(4);
 
     public PlayScene() throws Exception {
         super();
@@ -31,12 +32,19 @@ final public class PlayScene extends Scene {
 
         addComponent(map);
 
+        //  add chests
+        for (Coordinate<Integer> position : map.getChestsPositions()) {
+            addComponent(new Chest(this, position));
+        }
+
         //add basic enemies
         for (Coordinate<Integer> position : map.getEnemiesPositions()) {
             ComponentType type = null;
-            switch (rand.nextInt(2)) {
+            switch (rand.nextInt(4)) {
                 case 0 -> type = BaseballEnemy;
                 case 1 -> type = SkaterEnemy;
+                case 2 -> type = GunnerEnemy;
+                case 3 -> type = MachineGunEnemy;
             }
             DynamicComponent comp = new Enemy(this, position, type);
             addComponent(comp);
@@ -54,23 +62,18 @@ final public class PlayScene extends Scene {
             addComponent(new Enemy(this, position, type));
         }
 
-        //  add chests
-        for (Coordinate<Integer> position : map.getChestsPositions()) {
-            addComponent(new Chest(this, position));
-        }
-
         // add platforms
         for (Coordinate<Integer> position : map.getPlatformsPositions()) {
             addComponent(new Platform(this, position));
         }
 
-/*        // add helicopters
+        // add helicopters
         for (Coordinate<Integer> position : map.getHelicoptersPositions()) {
             addComponent(new Helicopter(this, position));
-        }*/
+        }
 
         // add player
-        addComponent(new Player(this, map.getPlayerPosition(), Cyborg));
+        addComponent(new Player(this, map.getPlayerPosition(), Biker));
     }
 
     @Override
@@ -93,7 +96,6 @@ final public class PlayScene extends Scene {
                         for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
                                 findComponent(Player).handleInteractionWith(component);
-                                component.handleInteractionWith(findComponent(Player));
                             }
                         }
                     }
@@ -121,6 +123,8 @@ final public class PlayScene extends Scene {
                             // interaction with map
                             findComponent(Map).handleInteractionWith(component);
 
+                            component.handleInteractionWith(findComponent(Player));
+
                             // interaction with other enemies
                             for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
                                 if (otherComponent.getActiveStatus()) {
@@ -137,6 +141,15 @@ final public class PlayScene extends Scene {
                                 findComponentWithId(message.componentId()).notify(message);
                             }
                         }
+                    }
+                    case BulletLauchLeft,BulletLaunchRight ->{
+                        DynamicComponent component = findComponentWithId(message.componentId());
+
+                        DynamicComponent bullet = new Bullet(this, AssetsDeposit.getInstance().getBulletByGunName(CharacterisesGenerator.getGunTypeForEnemy(component.getSubType())),
+                                component.getCollideBox().getPosition(), Enemy);
+
+                        bullet.notify(new Message(message.type(), Gun, message.componentId()));
+                        addComponent(bullet);
                     }
                 }
             }
@@ -171,7 +184,7 @@ final public class PlayScene extends Scene {
                     case BulletLaunchRight, BulletLauchLeft -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
                         DynamicComponent bullet = new Bullet(this, AssetsDeposit.getInstance().getBulletByGunName(component.getSubType()),
-                                component.getCollideBox().getPosition(), AssetsDeposit.getInstance().getBulletType(component.getSubType()));
+                                component.getCollideBox().getPosition(), Player);
                         bullet.notify(new Message(message.type(), Gun, message.componentId()));
                         addComponent(bullet);
                     }
@@ -180,11 +193,15 @@ final public class PlayScene extends Scene {
             case Bullet -> {
                 switch (message.type()) {
                     case HandleCollision -> {
-                        findComponent(Map).handleInteractionWith(findComponentWithId(message.componentId()));
+                        DynamicComponent bullet = findComponentWithId(message.componentId());
+                        findComponent(Map).handleInteractionWith(bullet);
+                        if(stillExists(bullet) && bullet.getSubType() != findComponent(Player).getBaseType()){
+                            bullet.handleInteractionWith(findComponent(Player));
+                        }
                         for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
-                                if (!stillExists(findComponentWithId(message.componentId()))) return;
-                                findComponentWithId(message.componentId()).handleInteractionWith(component);
+                                if (!stillExists(bullet) || bullet.getSubType() == component.getBaseType()) return;
+                                bullet.handleInteractionWith(component);
                             }
                         }
                     }

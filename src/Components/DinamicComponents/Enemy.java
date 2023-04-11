@@ -1,6 +1,7 @@
 package Components.DinamicComponents;
 
 import Components.StaticComponents.AnimationHandler;
+import Components.StaticComponents.CharacterisesGenerator;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -33,78 +34,15 @@ public class Enemy extends DynamicComponent {
         timersHandler = TimersHandler.getInstance();
         timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
 
-        statuses = new HashMap<>();
-        statuses.put(ComponentStatus.BottomCollision, false);
-        statuses.put(ComponentStatus.LeftCollision, false);
-        statuses.put(ComponentStatus.RightCollision, false);
-        statuses.put(ComponentStatus.LeftCollisionWithOther, false);
-        statuses.put(ComponentStatus.RightCollisionWithOther, false);
-        statuses.put(ComponentStatus.HorizontalMove, false);
-        statuses.put(ComponentStatus.Hurt, false);
-        statuses.put(ComponentStatus.Death, false);
-        statuses.put(ComponentStatus.FirstHit, false);
-        statuses.put(ComponentStatus.Attack, false);
-        statuses.put(ComponentStatus.HasEnemyCollision, false);
-        statuses.put(ComponentStatus.Idle, false);
+        subtype = type;
+        velocity = CharacterisesGenerator.getVelocityFor(type);
+        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Enemy);
+        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type,getId());
 
-        animationsType = new HashMap<>();
-
-        switch (type){
-            case Dog1 -> {
-                velocity = animalEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Dog1Idle);
-                animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Dog1Walk);
-                animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Dog1Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt , AnimationType.Dog1Hurt);
-                animationsType.put(GeneralAnimationTypes.Death , AnimationType.Dog1Death);
-            }
-            case Dog2 ->{
-                velocity = animalEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Dog2Idle);
-                animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Dog2Walk);
-                animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Dog2Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt , AnimationType.Dog2Hurt);
-                animationsType.put(GeneralAnimationTypes.Death , AnimationType.Dog2Death);
-            }
-            case Cat1 -> {
-                velocity = animalEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Cat1Idle);
-                animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Cat1Walk);
-                animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Cat1Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt , AnimationType.Cat1Hurt);
-                animationsType.put(GeneralAnimationTypes.Death , AnimationType.Cat1Death);
-            }
-            case Cat2 -> {
-                velocity = animalEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle , AnimationType.Cat2Idle);
-                animationsType.put(GeneralAnimationTypes.Walk , AnimationType.Cat2Walk);
-                animationsType.put(GeneralAnimationTypes.Attack , AnimationType.Cat2Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt , AnimationType.Cat2Hurt);
-                animationsType.put(GeneralAnimationTypes.Death , AnimationType.Cat2Death);
-            }
-
-            case BaseballEnemy -> {
-                velocity = baseballEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy1Idle);
-                animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy1Walk);
-                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy1Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.Enemy1Hurt);
-                animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy1Death);
-            }
-
-            case SkaterEnemy -> {
-                velocity = skaterEnemyVelocity;
-                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy3Idle);
-                animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy3Walk);
-                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy3Attack);
-                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.Enemy3Hurt);
-                animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy3Death);
-
-            }
-        }
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), position);
         collideBox = animationHandler.getAnimation().getRectangle();
     }
+
     @Override
     public void notify(Message message) throws Exception {
         switch (message.source()) {
@@ -119,6 +57,7 @@ public class Enemy extends DynamicComponent {
                         statuses.put(ComponentStatus.RightCollision, true);
                     }
                     case ActivateBottomCollision -> statuses.put(ComponentStatus.BottomCollision, true);
+
                 }
             }
             case Enemy -> {
@@ -136,16 +75,16 @@ public class Enemy extends DynamicComponent {
                     case EnemyDeath -> statuses.put(ComponentStatus.HasEnemyCollision, false);
                 }
             }
-            case Player,Bullet-> {
+            case Player, Bullet -> {
                 switch (message.type()) {
-                    case Attack,HasCollision -> {
+                    case Attack, HasCollision -> {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
                         statuses.put(ComponentStatus.Hurt, true);
                         health -= 25;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
-                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy , getId()));
+                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy, getId()));
                             setActiveStatus(false);
                         }
                     }
@@ -166,17 +105,25 @@ public class Enemy extends DynamicComponent {
                     statuses.put(ComponentStatus.Attack, true);
                     if (!timersHandler.getTimer(TimerType.LockTarget.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
                         statuses.put(ComponentStatus.FirstHit, true);
-                        component.notify(new Message(MessageType.Attack, ComponentType.Enemy , getId()));
+                        component.notify(new Message(MessageType.Attack, ComponentType.Enemy, getId()));
                     }
                 } else if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
                     statuses.put(ComponentStatus.Attack, false);
                 }
 
-                if (!statuses.get(ComponentStatus.HasEnemyCollision) && collideBox.getMinY() < component.getCollideBox().getCenterY() && collideBox.getMaxY() > component.getCollideBox().getCenterY()) {
+                if ((!statuses.get(ComponentStatus.HasEnemyCollision) || subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) &&
+                        collideBox.getMinY() < component.getCollideBox().getCenterY() &&
+                        collideBox.getMaxY() > component.getCollideBox().getCenterY() &&
+                        collideBox.calculateDistanceWith(component.getCollideBox()) < enemyRange) {
+                    statuses.put(ComponentStatus.HasDetectedPLayer, true);
                     if (collideBox.getCenterX() - component.getCollideBox().getCenterX() > 0) {
                         if (!animationHandler.getAnimation().getDirection() &&
                                 statuses.get(ComponentStatus.LeftCollision)) {
-                            statuses.put(ComponentStatus.Idle, true);
+                            if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
+                                statuses.put(ComponentStatus.Attack, true);
+                            } else {
+                                statuses.put(ComponentStatus.Idle, true);
+                            }
                         } else {
                             statuses.put(ComponentStatus.RightCollision, true);
                             statuses.put(ComponentStatus.LeftCollision, false);
@@ -184,28 +131,40 @@ public class Enemy extends DynamicComponent {
                     } else if (collideBox.getCenterX() - component.getCollideBox().getCenterX() < 0) {
                         if (animationHandler.getAnimation().getDirection() &&
                                 statuses.get(ComponentStatus.RightCollision)) {
-                            statuses.put(ComponentStatus.Idle, true);
+                            if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
+                                statuses.put(ComponentStatus.Attack, true);
+                            } else {
+                                statuses.put(ComponentStatus.Idle, true);
+                            }
                         } else {
                             statuses.put(ComponentStatus.RightCollision, false);
                             statuses.put(ComponentStatus.LeftCollision, true);
                         }
+                    } else {
+                        statuses.put(ComponentStatus.HasDetectedPLayer, false);
                     }
                 } else {
                     statuses.put(ComponentStatus.Idle, false);
+                    statuses.put(ComponentStatus.HasDetectedPLayer, false);
+                    statuses.put(ComponentStatus.Attack, false);
                 }
             }
             case Enemy -> {
                 collideBox.solveCollision(component.getCollideBox());
                 if (collideBox.getDx() > 0) {
-                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy,getId()));
-                    statuses.put(ComponentStatus.LeftCollision, true);
-                    statuses.put(ComponentStatus.RightCollision, false);
-                    statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy, getId()));
+                    if (!((subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) && statuses.get(ComponentStatus.HasDetectedPLayer))) {
+                        statuses.put(ComponentStatus.LeftCollision, true);
+                        statuses.put(ComponentStatus.RightCollision, false);
+                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    }
                 } else if (collideBox.getDx() < 0) {
-                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy,getId()));
-                    statuses.put(ComponentStatus.RightCollision, true);
-                    statuses.put(ComponentStatus.LeftCollision, false);
-                    statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy, getId()));
+                    if (!((subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) && statuses.get(ComponentStatus.HasDetectedPLayer))) {
+                        statuses.put(ComponentStatus.RightCollision, true);
+                        statuses.put(ComponentStatus.LeftCollision, false);
+                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    }
                 }
             }
         }
@@ -223,6 +182,16 @@ public class Enemy extends DynamicComponent {
                     statuses.put(ComponentStatus.Hurt, false);
                 }
             } else if (statuses.get(ComponentStatus.Attack)) {
+                if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
+                    if (!timersHandler.getTimer(subtype.toString() + getId()).getTimerState()) {
+                        timersHandler.getTimer(subtype.toString() + getId()).resetTimer();
+                        if (animationHandler.getAnimation().getDirection()) {
+                            scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.Enemy, getId()));
+                        } else {
+                            scene.notify(new Message(MessageType.BulletLauchLeft, ComponentType.Enemy, getId()));
+                        }
+                    }
+                }
                 animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
                 if (animationHandler.getAnimation().animationIsOver()) {
                     statuses.put(ComponentStatus.FirstHit, false);
@@ -246,19 +215,31 @@ public class Enemy extends DynamicComponent {
             if (!statuses.get(ComponentStatus.LeftCollision)) {
                 statuses.put(ComponentStatus.HorizontalMove, true);
                 animationHandler.getAnimation().setDirection(false);
-                collideBox.moveByX(-velocity);
             } else if (!statuses.get(ComponentStatus.RightCollision)) {
                 statuses.put(ComponentStatus.HorizontalMove, true);
                 animationHandler.getAnimation().setDirection(true);
-                collideBox.moveByX(velocity);
             }
         } else {
             statuses.put(ComponentStatus.HorizontalMove, false);
         }
 
+        if (statuses.get(ComponentStatus.HorizontalMove)) {
+            if (statuses.get(ComponentStatus.HasDetectedPLayer) &&
+                    (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy)) {
+                statuses.put(ComponentStatus.HorizontalMove, false);
+                statuses.put(ComponentStatus.Attack, true);
+            } else {
+                if (animationHandler.getAnimation().getDirection()) {
+                    collideBox.moveByX(velocity);
+                } else {
+                    collideBox.moveByX(-velocity);
+                }
+            }
+        }
+
         handleAnimations();
 
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Enemy,getId()));
+        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Enemy, getId()));
         animationHandler.update();
     }
 
@@ -269,7 +250,7 @@ public class Enemy extends DynamicComponent {
 
     @Override
     public ComponentType getSubType() {
-        return null;
+        return subtype;
     }
 
     @Override

@@ -1,3 +1,5 @@
+import Utils.Coordinate;
+import Utils.Rectangle;
 
 public class Main {
     /**
@@ -10,6 +12,5 @@ public class Main {
         Game game = new Game();
 
         game.startGame();
-
     }
 }

@@ -1,6 +1,6 @@
 # Cyberpunk 2030
 ## Current status:
-https://user-images.githubusercontent.com/101417927/230668643-49f9d444-d90e-460b-86c0-657507ec31a6.mp4
+https://user-images.githubusercontent.com/101417927/231134413-a09e72d0-d80b-4d8e-8fa9-ca447853e726.mp4
 
 -------
 # 1. Game arhitecture

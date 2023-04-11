@@ -15,6 +15,7 @@ public abstract class DynamicComponent {
 
     protected Scene scene = null;
     protected Rectangle collideBox;
+    protected ComponentType subtype;
     private static int idCounter = 0;
     private int id=0;
     private boolean active = true;

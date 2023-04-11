@@ -1,6 +1,7 @@
 package Components.DinamicComponents;
 
 import Components.StaticComponents.AnimationHandler;
+import Components.StaticComponents.CharacterisesGenerator;
 import Enums.*;
 import Input.KeyboardInput;
 import Scenes.Messages.Message;
@@ -8,11 +9,10 @@ import Scenes.Scene;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
+import Utils.Rectangle;
 import Window.Camera;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static Utils.Constants.gravitationForce;
 import static Utils.Constants.playerVelocity;
@@ -25,7 +25,7 @@ public class Player extends DynamicComponent {
     private final Map<GeneralAnimationTypes, AnimationType> animationsType;
     private int health = 100;
     private Integer jumpsCounter = 0;
-    private final AnimationType[] attackCombo;
+    private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
 
     public Player(Scene scene, Coordinate<Integer> position, ComponentType type) throws Exception {
@@ -40,74 +40,11 @@ public class Player extends DynamicComponent {
         animationHandler.changeAnimation(AnimationType.BikerIdle, position);
         collideBox = animationHandler.getAnimation().getRectangle();
 
+        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Player);
+        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
+        attackCombo = CharacterisesGenerator.generateAttackComboFor(type);
+
         Camera.getInstance().setFocusComponentPosition(collideBox.getPosition());
-
-        statuses = new HashMap<>();
-        statuses.put(ComponentStatus.BottomCollision, false);
-        statuses.put(ComponentStatus.TopCollision, false);
-        statuses.put(ComponentStatus.IsOnLadder, false);
-        statuses.put(ComponentStatus.HorizontalMove, false);
-        statuses.put(ComponentStatus.Hurt, false);
-        statuses.put(ComponentStatus.Death, false);
-        statuses.put(ComponentStatus.FirstHit, false);
-        statuses.put(ComponentStatus.Attack, false);
-        statuses.put(ComponentStatus.IsMovingOnLadder, false);
-        statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
-        statuses.put(ComponentStatus.GunPicked, false);
-        statuses.put(ComponentStatus.OnHelicopter, false);
-
-        animationsType = new HashMap<>();
-        attackCombo = new AnimationType[3];
-        switch (type) {
-            case Biker -> {
-                attackCombo[0] = AnimationType.BikerAttack1;
-                attackCombo[1] = AnimationType.BikerAttack2;
-                attackCombo[2] = AnimationType.BikerAttack3;
-                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.BikerIdle);
-                animationsType.put(GeneralAnimationTypes.Run, AnimationType.BikerRun);
-                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.BikerAttack1);
-                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.BikerHurt);
-                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.BikerClimb);
-                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.BikerJump);
-                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.BikerDoubleJump);
-                animationsType.put(GeneralAnimationTypes.Death, AnimationType.BikerDeath);
-                animationsType.put(GeneralAnimationTypes.RunGun, AnimationType.BikerRunGun);
-                animationsType.put(GeneralAnimationTypes.IdleGun, AnimationType.BikerIdleGun);
-                animationsType.put(GeneralAnimationTypes.JumpGun, AnimationType.BikerJumpGun);
-            }
-            case Cyborg -> {
-                attackCombo[0] = AnimationType.CyborgAttack1;
-                attackCombo[1] = AnimationType.CyborgAttack2;
-                attackCombo[2] = AnimationType.CyborgAttack3;
-                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.CyborgIdle);
-                animationsType.put(GeneralAnimationTypes.Run, AnimationType.CyborgRun);
-                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.CyborgAttack1);
-                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.CyborgHurt);
-                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.CyborgClimb);
-                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.CyborgJump);
-                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.CyborgDoubleJump);
-                animationsType.put(GeneralAnimationTypes.Death, AnimationType.CyborgDeath);
-                animationsType.put(GeneralAnimationTypes.RunGun, AnimationType.CyborgRunGun);
-                animationsType.put(GeneralAnimationTypes.IdleGun, AnimationType.CyborgIdleGun);
-                animationsType.put(GeneralAnimationTypes.JumpGun, AnimationType.CyborgJumpGun);
-            }
-            case Punk -> {
-                attackCombo[0] = AnimationType.PunkAttack1;
-                attackCombo[1] = AnimationType.PunkAttack2;
-                attackCombo[2] = AnimationType.PunkAttack3;
-                animationsType.put(GeneralAnimationTypes.Idle, AnimationType.PunkIdle);
-                animationsType.put(GeneralAnimationTypes.Run, AnimationType.PunkRun);
-                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.PunkAttack1);
-                animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.PunkHurt);
-                animationsType.put(GeneralAnimationTypes.Climb, AnimationType.PunkClimb);
-                animationsType.put(GeneralAnimationTypes.Jump, AnimationType.PunkJump);
-                animationsType.put(GeneralAnimationTypes.DoubleJump, AnimationType.PunkDoubleJump);
-                animationsType.put(GeneralAnimationTypes.Death, AnimationType.PunkDeath);
-                animationsType.put(GeneralAnimationTypes.RunGun, AnimationType.PunkRunGun);
-                animationsType.put(GeneralAnimationTypes.IdleGun, AnimationType.PunkIdleGun);
-                animationsType.put(GeneralAnimationTypes.JumpGun, AnimationType.PunkJumpGun);
-            }
-        }
     }
 
     @Override
@@ -120,10 +57,14 @@ public class Player extends DynamicComponent {
                         if (message.type() == MessageType.ActivateBottomCollision && !statuses.get(ComponentStatus.BottomCollision)) {
                             jumpsCounter = 0;
                             statuses.put(ComponentStatus.BottomCollision, true);
+                            statuses.put(ComponentStatus.DetachedFromHelicopter, false);
                         }
                     }
                     case DeactivateBottomCollision -> {
                         statuses.put(ComponentStatus.BottomCollision, false);
+                        if (jumpsCounter == 0 && !statuses.get(ComponentStatus.OnHelicopter)) {
+                            jumpsCounter = 1;
+                        }
                     }
                     case ActivateTopCollision -> {
                         statuses.put(ComponentStatus.TopCollision, true);
@@ -135,11 +76,13 @@ public class Player extends DynamicComponent {
                     case IsNoLongerOnLadder -> statuses.put(ComponentStatus.IsOnLadder, false);
                 }
             }
-            case Enemy -> {
-                if (message.type() == MessageType.Attack && !statuses.get(ComponentStatus.Attack)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
-                    animationHandler.getAnimation().setRepeats(2);
-                    statuses.put(ComponentStatus.Hurt, true);
+            case Enemy, Bullet -> {
+                if (message.type() == MessageType.Attack) {
+                    if (!statuses.get(ComponentStatus.Attack)) {
+                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
+                        animationHandler.getAnimation().setRepeats(2);
+                        statuses.put(ComponentStatus.Hurt, true);
+                    }
                     health -= 1;
                     if (health <= 0) {
                         statuses.put(ComponentStatus.Death, true);
@@ -180,11 +123,73 @@ public class Player extends DynamicComponent {
                 }
             }
             case Helicopter -> {
-                if (collideBox.intersects(component.getCollideBox()) && !(statuses.get(ComponentStatus.OnHelicopter) && jumpsCounter > 0)){
+                Rectangle hookCollideBox = new Rectangle(
+                        new Coordinate<>(
+                                component.getCollideBox().getMinX() + 37,
+                                component.getCollideBox().getMaxY() - 47
+                        )
+                        , 55, 47
+                );
+
+                if (collideBox.intersects(hookCollideBox) &&
+                        !statuses.get(ComponentStatus.OnHelicopter) &&
+                        !statuses.get(ComponentStatus.DetachedFromHelicopter)) {
                     collideBox.solveCollision(component.getCollideBox());
+                    statuses.put(ComponentStatus.OnHelicopter, true);
+                    component.notify(new Message(MessageType.OnHelicopter, ComponentType.Player, getId()));
                     jumpsCounter = 0;
-                    component.notify(new Message(MessageType.OnHelicopter , ComponentType.Player , getId()));
+                } else if (statuses.get(ComponentStatus.DetachedFromHelicopter)) {
+                    statuses.put(ComponentStatus.OnHelicopter, false);
+                    component.notify(new Message(MessageType.DetachedFromHelicopter, ComponentType.Player, getId()));
                 }
+            }
+        }
+    }
+
+    protected void handleAnimations() throws Exception {
+        if (statuses.get(ComponentStatus.Death)) {
+            if (animationHandler.getAnimation().animationIsOver()) {
+                animationHandler.getAnimation().lockAtLastFrame();
+            }
+            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Death), collideBox.getPosition());
+        } else {
+            if (statuses.get(ComponentStatus.Hurt)) {
+                if (animationHandler.getAnimation().repeatsAreOver()) {
+                    statuses.put(ComponentStatus.Hurt, false);
+                }
+            } else if (statuses.get(ComponentStatus.IsOnLadder)) {
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Climb), collideBox.getPosition());
+                if (statuses.get(ComponentStatus.IsMovingOnLadder)) {
+                    animationHandler.getAnimation().unlock();
+                } else {
+                    animationHandler.getAnimation().lockAtLastFrame();
+                }
+            } else if (jumpsCounter == 0) {
+                if (statuses.get(ComponentStatus.Attack)) {
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
+                } else {
+                    if (statuses.get(ComponentStatus.HorizontalMove)) {
+                        if (statuses.get(ComponentStatus.GunPicked)) {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RunGun), collideBox.getPosition());
+                        } else {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Run), collideBox.getPosition());
+                        }
+                    } else {
+                        if (statuses.get(ComponentStatus.GunPicked)) {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IdleGun), collideBox.getPosition());
+                        } else {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+                        }
+                    }
+                }
+            } else if (jumpsCounter == 1) { // simple jump
+                if (statuses.get(ComponentStatus.GunPicked)) {
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JumpGun), collideBox.getPosition());
+                } else {
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Jump), collideBox.getPosition());
+                }
+            } else if (jumpsCounter == 2) { // double jump
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DoubleJump), collideBox.getPosition());
             }
         }
     }
@@ -194,22 +199,31 @@ public class Player extends DynamicComponent {
         // horizontal movement
         statuses.put(ComponentStatus.HorizontalMove, false);
         if (!statuses.get(ComponentStatus.Attack) || jumpsCounter != 0) {
-            statuses.put(ComponentStatus.OnHelicopter , false);
             if (keyboardInput.getKeyD()) {
                 if (!animationHandler.getAnimation().getDirection()) {
                     scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
                 }
                 animationHandler.getAnimation().setDirection(true);
-                collideBox.moveByX(playerVelocity);
                 statuses.put(ComponentStatus.HorizontalMove, true);
             } else if (keyboardInput.getKeyA()) {
                 if (animationHandler.getAnimation().getDirection()) {
                     scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
                 }
                 animationHandler.getAnimation().setDirection(false);
-                collideBox.moveByX(-playerVelocity);
                 statuses.put(ComponentStatus.HorizontalMove, true);
             }
+        }
+
+        if (!statuses.get(ComponentStatus.OnHelicopter)) {
+            if (statuses.get(ComponentStatus.HorizontalMove)) {
+                if (animationHandler.getAnimation().getDirection()) {
+                    collideBox.moveByX(playerVelocity);
+                } else {
+                    collideBox.moveByX(-playerVelocity);
+                }
+            }
+        } else {
+            statuses.put(ComponentStatus.HorizontalMove, false);
         }
 
         // max jump will be implemented with a timer
@@ -218,9 +232,19 @@ public class Player extends DynamicComponent {
 
         // jumping logic
         if (!statuses.get(ComponentStatus.IsOnLadder) && (((statuses.get(ComponentStatus.BottomCollision) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
-                (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())))|| statuses.get(ComponentStatus.OnHelicopter)) {
+                (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())))) {
             timersHandler.getTimer(this.getBaseType().name()).resetTimer();
             jumpsCounter++;
+        }
+
+        // jumping to detach logic from helicopter
+        if (statuses.get(ComponentStatus.OnHelicopter) && !jumpingTimer && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace()) {
+            statuses.put(ComponentStatus.DetachedFromHelicopter, true);
+            timersHandler.getTimer(this.getBaseType().name()).resetTimer();
+            jumpsCounter++;
+        }
+        if (statuses.get(ComponentStatus.DetachedFromHelicopter) && jumpsCounter == 2) {
+            statuses.put(ComponentStatus.DetachedFromHelicopter, false);
         }
 
         // movement on jumping logic
@@ -273,9 +297,9 @@ public class Player extends DynamicComponent {
         if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
             statuses.put(ComponentStatus.Attack, false);
             statuses.put(ComponentStatus.FirstHit, false);
-            animationsType.put(GeneralAnimationTypes.Attack, attackCombo[attackComboIndex]);
+            animationsType.put(GeneralAnimationTypes.Attack, attackCombo.get(attackComboIndex));
             attackComboIndex++;
-            if (attackComboIndex > 2) {
+            if (attackComboIndex > attackCombo.size() - 1) {
                 attackComboIndex = 0;
             }
 
@@ -291,53 +315,9 @@ public class Player extends DynamicComponent {
             }
         }
 
-        // animation logic
-        if (statuses.get(ComponentStatus.Death)) {
-            if (animationHandler.getAnimation().animationIsOver()) {
-                animationHandler.getAnimation().lockAtLastFrame();
-            }
-            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Death), collideBox.getPosition());
-        } else {
-            if (statuses.get(ComponentStatus.IsOnLadder)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Climb), collideBox.getPosition());
-                if (statuses.get(ComponentStatus.IsMovingOnLadder)) {
-                    animationHandler.getAnimation().unlock();
-                } else {
-                    animationHandler.getAnimation().lockAtLastFrame();
-                }
-            } else if (jumpsCounter == 0) {
-                if (statuses.get(ComponentStatus.Attack)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
-                } else if (statuses.get(ComponentStatus.Hurt)) {
-                    if (animationHandler.getAnimation().repeatsAreOver()) {
-                        statuses.put(ComponentStatus.Hurt, false);
-                    }
-                } else {
-                    if (statuses.get(ComponentStatus.HorizontalMove)) {
-                        if (statuses.get(ComponentStatus.GunPicked)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RunGun), collideBox.getPosition());
-                        } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Run), collideBox.getPosition());
-                        }
-                    } else {
-                        if (statuses.get(ComponentStatus.GunPicked)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IdleGun), collideBox.getPosition());
-                        } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
-                        }
-                    }
-                }
-            } else if (jumpsCounter == 1) { // simple jump
-                if (statuses.get(ComponentStatus.GunPicked)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JumpGun), collideBox.getPosition());
-                } else {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Jump), collideBox.getPosition());
-                }
-            } else if (jumpsCounter == 2) { // double jump
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DoubleJump), collideBox.getPosition());
-            }
-        }
-        System.out.println(jumpsCounter);
+        handleAnimations();
+
+        //System.out.println("OnH : " + statuses.get(ComponentStatus.OnHelicopter) + "| OUTh : " + statuses.get(ComponentStatus.DetachedFromHelicopter));
         animationHandler.update();
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player, getId()));
     }

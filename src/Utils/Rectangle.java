@@ -4,7 +4,6 @@ public class Rectangle {
     private final int width;
     private final int height;
     private Coordinate<Integer> position;
-
     private double dx = 0.0, dy = 0.0;
 
     public Rectangle(Coordinate<Integer> position, int width, int height) {
@@ -17,6 +16,8 @@ public class Rectangle {
         this.position = new Coordinate<Integer>(other.position);
         this.width = other.width;
         this.height = other.height;
+        this.dx = other.dx;
+        this.dy = other.dy;
     }
 
     public int getHeight() {
@@ -35,17 +36,13 @@ public class Rectangle {
         return position.getPosX();
     }
 
-    public Integer getMaxX() {
-        return position.getPosX() + width;
-    }
+    public Integer getMaxX() {return position.getPosX() + width;}
 
     public Integer getMinY() {
         return position.getPosY();
     }
 
-    public Integer getMaxY() {
-        return position.getPosY() + height;
-    }
+    public Integer getMaxY() {return position.getPosY() + height;}
 
     public Integer getCenterX() {
         return position.getPosX() + width / 2;
@@ -55,18 +52,26 @@ public class Rectangle {
         return position.getPosY() + height / 2;
     }
 
-    public void setPosition(Coordinate<Integer> position) {
-        this.position = position;
-    }
+    public void setPosition(Coordinate<Integer> position) {this.position = position;}
 
-    public void moveByX(int x) {
-        position.setX(position.getPosX() + x);
+    public Coordinate<Integer> getCopyCenteredPosition(){
+        return new Coordinate<>(getCenterX() , getCenterY());
     }
+    public void moveByX(int x) {position.setX(position.getPosX() + x);}
 
     public void moveByY(int y) {
         position.setY(position.getPosY() + y);
     }
 
+    public int calculateDistanceWith(Rectangle other){
+        return getCopyCenteredPosition().distance(other.getCopyCenteredPosition());
+    }
+
+    /**
+     * This method verifies if two rectangles intersect and save the offsets
+     * @param other intersection to be checked with
+     * @return intersection status
+     */
     public boolean intersects(Rectangle other) {
         // check for overlap in the x-direction
         double x_overlap = Math.max(0, Math.min(getMaxX(), other.getMaxX()) - Math.max(getMinX(), other.getMinX()));
@@ -96,12 +101,8 @@ public class Rectangle {
     }
 
     /**
-     * This method solves the collision with another rectangle.
-     *
-     * @param other rectangle
-     * @return vertical offset :<br><br/>
-     * negative -> bottom collision with "other" rectangle <br><br/>
-     * positive -> top collision with "other" rectangle
+     * This method solves the collision with another rectangle
+     * @param other collision to be solved with
      */
     public void solveCollision(Rectangle other) {
         dx = 0;

@@ -12,6 +12,7 @@ import Utils.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static Utils.Constants.helicopterVelocity;
 import static Utils.Constants.platformVelocity;
 
 public class Helicopter extends DynamicComponent {
@@ -49,7 +50,10 @@ public class Helicopter extends DynamicComponent {
             case Player -> {
                 if (message.type() == MessageType.OnHelicopter) {
                     statuses.put(ComponentStatus.HasPlayer, true);
+                } else if (message.type() == MessageType.DetachedFromHelicopter) {
+                    statuses.put(ComponentStatus.HasPlayer, false);
                 }
+
             }
         }
     }
@@ -59,7 +63,7 @@ public class Helicopter extends DynamicComponent {
         if (component.getBaseType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.HasPlayer)) {
                 component.getCollideBox().getPosition().setX(collideBox.getCenterX() - component.getCollideBox().getWidth() / 2);
-                component.getCollideBox().getPosition().setY(collideBox.getMaxY() - 25);
+                component.getCollideBox().getPosition().setY(collideBox.getMaxY()-28);
             }
         }
     }
@@ -67,9 +71,9 @@ public class Helicopter extends DynamicComponent {
     @Override
     public void update() throws Exception {
         if (!statuses.get(ComponentStatus.TopCollision)) {
-            collideBox.moveByY(-platformVelocity);
+            collideBox.moveByY(-helicopterVelocity);
         } else if (!statuses.get(ComponentStatus.BottomCollision)) {
-            collideBox.moveByY(platformVelocity);
+            collideBox.moveByY(helicopterVelocity);
         }
         if(initialPosition.getPosY() < collideBox.getPosition().getPosY()) {
             statuses.put(ComponentStatus.TopCollision, false);

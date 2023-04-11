@@ -149,9 +149,4 @@ public class AssetsDeposit {
      */
     public Bullet getBulletByGunName(ComponentType name){return bullets.get(gunsBulletsRelation.get(name));}
 
-    /**
-     * @param name gun type
-     * @return bullet type associated with gun
-     */
-    public ComponentType getBulletType(ComponentType name){return gunsBulletsRelation.get(name);}
 }

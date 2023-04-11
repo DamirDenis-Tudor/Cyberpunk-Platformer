@@ -60,9 +60,9 @@ public class Bullet extends DynamicComponent {
 
     @Override
     public void handleInteractionWith(DynamicComponent component) throws Exception {
-        if(component.getBaseType() == ComponentType.Enemy){
+        if(component.getBaseType() == ComponentType.Enemy || component.getBaseType() == ComponentType.Player){
             if(collideBox.intersects(component.getCollideBox())){
-                component.notify(new Message(MessageType.HasCollision , ComponentType.Bullet , getId()));
+                component.notify(new Message(MessageType.Attack , ComponentType.Bullet , getId()));
                 scene.notify(new Message(MessageType.Destroy , ComponentType.Bullet , getId()));
             }
         }

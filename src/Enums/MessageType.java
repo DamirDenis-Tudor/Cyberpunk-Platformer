@@ -10,13 +10,14 @@ public enum MessageType {
     ActivateTopCollision,
     ActivateBottomCollision,
     DeactivateBottomCollision,
-    FallingPossibility,
     IsOnLadder,
     IsNoLongerOnLadder,
     LeftCollision,
     RightCollision,
     LeftCollisionWithOther,
     RightCollisionWithOther,
+    LeftCollisionWithWall,
+    RightCollisionWithWall,
     EnemyDeath,
     Attack,
     PlayerDeath,
@@ -32,5 +33,6 @@ public enum MessageType {
     ShowGun,
     Shoot,
     OnPlatform,
-    OnHelicopter
+    OnHelicopter,
+    DetachedFromHelicopter
 }
