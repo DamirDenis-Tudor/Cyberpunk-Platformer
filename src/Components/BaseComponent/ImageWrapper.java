@@ -1,4 +1,4 @@
-package Components.StaticComponents;
+package Components.BaseComponent;
 import java.awt.image.BufferedImage;
 import Utils.Rectangle;
 import Window.GameWindow;

@@ -11,9 +11,15 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
 
-final public class SettingsScene extends Scene {
-    public SettingsScene(SceneHandler sceneHandler) {
+public class LoadScene extends Scene {
+    public LoadScene(SceneHandler sceneHandler) {
         super(sceneHandler);
+        components.add(new Button(this, ComponentType.LoadSave,
+                new Rectangle(new Coordinate<>(200, 200), 400, 100)));
+        components.add(new Button(this, ComponentType.DeleteSave,
+                new Rectangle(new Coordinate<>(200, 400), 400, 100)));
+        components.add(new Button(this, ComponentType.DeleteAllSaves,
+                new Rectangle(new Coordinate<>(200, 600), 400, 100)));
         components.add(new Button(this, ComponentType.Back,
                 new Rectangle(new Coordinate<>(200, 800), 400, 100)));
     }
@@ -27,6 +33,13 @@ final public class SettingsScene extends Scene {
             }
             case ButtonClicked -> {
                 switch (message.source()) {
+                    case LoadSave -> sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
+                    case DeleteSave -> {
+
+                    }
+                    case DeleteAllSaves -> {
+
+                    }
                     case Back -> sceneHandler.handleSceneChangeRequest(SceneType.MainMenuScene);
                 }
             }

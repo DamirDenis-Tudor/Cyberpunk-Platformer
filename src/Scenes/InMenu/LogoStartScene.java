@@ -2,9 +2,11 @@ package Scenes.InMenu;
 
 import Scenes.Messages.Message;
 import Scenes.Scene;
+import Scenes.SceneHandler;
 
 final public class LogoStartScene extends Scene {
-    public LogoStartScene() {
+    public LogoStartScene(SceneHandler sceneHandler) {
+        super(sceneHandler);
     }
 
     @Override

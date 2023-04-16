@@ -1,13 +1,12 @@
-package Components.StaticComponents;
-import Components.DinamicComponents.Bullet;
-import Components.DinamicComponents.Gun;
-import Components.DinamicComponents.GameMap;
+package Components.BaseComponent;
+import Components.DynamicComponents.GameItems.Bullet;
+import Components.DynamicComponents.GameItems.Gun;
+import Components.DynamicComponents.Map.GameMap;
 import Enums.AnimationType;
 import Enums.MapType;
 import Enums.ComponentType;
 import Utils.Coordinate;
 import Utils.Rectangle;
-import Window.Camera;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -18,8 +17,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.HashMap;
 
-import static Enums.MapType.*;
-import static Utils.Constants.mapDim;
 import static Utils.Constants.mapScale;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package Components.StaticComponents;
+package Components.BaseComponent;
 
 import Enums.AnimationType;
 import Enums.ComponentStatus;

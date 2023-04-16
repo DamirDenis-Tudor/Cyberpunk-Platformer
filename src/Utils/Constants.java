@@ -13,6 +13,8 @@ public record Constants() {
     public static final int helicopterVelocity = 3;
     public static final int enemyRange = 10 * mapDim;
 
+    public static final int bulletMaxRange = 20 * mapDim;
+
 }
 
 

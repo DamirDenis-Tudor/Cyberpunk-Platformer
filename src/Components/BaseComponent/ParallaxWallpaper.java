@@ -1,8 +1,8 @@
-package Components.StaticComponents;
+package Components.BaseComponent;
 
+import Components.StaticComponent;
 import Window.GameWindow;
 import Window.Camera;
-import Input.KeyboardInput;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

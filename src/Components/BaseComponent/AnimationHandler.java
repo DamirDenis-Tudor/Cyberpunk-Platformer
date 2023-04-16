@@ -1,8 +1,6 @@
-package Components.StaticComponents;
+package Components.BaseComponent;
 
-import Components.StaticComponents.AssetsDeposit;
-import Components.StaticComponents.Animation;
-import Components.StaticComponents.StaticComponent;
+import Components.StaticComponent;
 import Enums.AnimationType;
 import Utils.Coordinate;
 

@@ -1,7 +1,8 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.Characters;
 
-import Components.StaticComponents.AnimationHandler;
-import Components.StaticComponents.CharacterisesGenerator;
+import Components.BaseComponent.AnimationHandler;
+import Components.BaseComponent.CharacterisesGenerator;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -9,7 +10,6 @@ import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static Utils.Constants.*;
@@ -37,7 +37,7 @@ public class Enemy extends DynamicComponent {
         subtype = type;
         velocity = CharacterisesGenerator.getVelocityFor(type);
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Enemy);
-        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type,getId());
+        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
 
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), position);
         collideBox = animationHandler.getAnimation().getRectangle();
@@ -72,7 +72,6 @@ public class Enemy extends DynamicComponent {
                         statuses.put(ComponentStatus.RightCollision, true);
                         statuses.put(ComponentStatus.HasEnemyCollision, true);
                     }
-                    case EnemyDeath -> statuses.put(ComponentStatus.HasEnemyCollision, false);
                 }
             }
             case Player, Bullet -> {
@@ -84,8 +83,8 @@ public class Enemy extends DynamicComponent {
                         health -= 25;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
-                            scene.notify(new Message(MessageType.EnemyDeath, ComponentType.Enemy, getId()));
                             setActiveStatus(false);
+                            scene.notify(new Message(MessageType.Destroy, ComponentType.Enemy, getId()));
                         }
                     }
                     case PlayerDeath -> {
@@ -98,8 +97,9 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
-        switch (component.getBaseType()) {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent)object;
+        switch (component.getGeneralType()) {
             case Player -> {
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
                     statuses.put(ComponentStatus.Attack, true);
@@ -146,25 +146,28 @@ public class Enemy extends DynamicComponent {
                 } else {
                     statuses.put(ComponentStatus.Idle, false);
                     statuses.put(ComponentStatus.HasDetectedPLayer, false);
-                    statuses.put(ComponentStatus.Attack, false);
                 }
             }
             case Enemy -> {
-                collideBox.solveCollision(component.getCollideBox());
-                if (collideBox.getDx() > 0) {
-                    component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy, getId()));
-                    if (!((subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) && statuses.get(ComponentStatus.HasDetectedPLayer))) {
-                        statuses.put(ComponentStatus.LeftCollision, true);
-                        statuses.put(ComponentStatus.RightCollision, false);
-                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                if (collideBox.intersects(component.getCollideBox())) {
+                    collideBox.solveCollision(component.getCollideBox());
+                    if (collideBox.getDx() > 0) {
+                        component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.Enemy, getId()));
+                        if (!(statuses.get(ComponentStatus.HasDetectedPLayer))) {
+                            statuses.put(ComponentStatus.LeftCollision, true);
+                            statuses.put(ComponentStatus.RightCollision, false);
+                            statuses.put(ComponentStatus.HasEnemyCollision, true);
+                        }
+                    } else if (collideBox.getDx() < 0) {
+                        component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy, getId()));
+                        if (!(statuses.get(ComponentStatus.HasDetectedPLayer))) {
+                            statuses.put(ComponentStatus.RightCollision, true);
+                            statuses.put(ComponentStatus.LeftCollision, false);
+                            statuses.put(ComponentStatus.HasEnemyCollision, true);
+                        }
                     }
-                } else if (collideBox.getDx() < 0) {
-                    component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.Enemy, getId()));
-                    if (!((subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) && statuses.get(ComponentStatus.HasDetectedPLayer))) {
-                        statuses.put(ComponentStatus.RightCollision, true);
-                        statuses.put(ComponentStatus.LeftCollision, false);
-                        statuses.put(ComponentStatus.HasEnemyCollision, true);
-                    }
+                } else {
+                    statuses.put(ComponentStatus.HasEnemyCollision, false);
                 }
             }
         }
@@ -188,7 +191,7 @@ public class Enemy extends DynamicComponent {
                         if (animationHandler.getAnimation().getDirection()) {
                             scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.Enemy, getId()));
                         } else {
-                            scene.notify(new Message(MessageType.BulletLauchLeft, ComponentType.Enemy, getId()));
+                            scene.notify(new Message(MessageType.BulletLaunchLeft, ComponentType.Enemy, getId()));
                         }
                     }
                 }
@@ -249,12 +252,12 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return subtype;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Enemy;
     }
 }

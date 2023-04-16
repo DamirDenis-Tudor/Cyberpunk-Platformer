@@ -1,6 +1,7 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.Map;
 
-import Components.StaticComponents.AnimationHandler;
+import Components.BaseComponent.AnimationHandler;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -13,12 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static Utils.Constants.helicopterVelocity;
-import static Utils.Constants.platformVelocity;
 
 public class Helicopter extends DynamicComponent {
     protected final AnimationHandler animationHandler;
-    protected final Map<ComponentStatus, Boolean> statuses;
 
+    protected final Map<ComponentStatus, Boolean> statuses;
     private final Coordinate<Integer> initialPosition;
 
     public Helicopter(Scene scene, Coordinate<Integer> position) throws Exception {
@@ -59,8 +59,9 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
-        if (component.getBaseType() == ComponentType.Player) {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent) object;
+        if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.HasPlayer)) {
                 component.getCollideBox().getPosition().setX(collideBox.getCenterX() - component.getCollideBox().getWidth() / 2);
                 component.getCollideBox().getPosition().setY(collideBox.getMaxY()-28);
@@ -90,12 +91,12 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return null;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Helicopter;
     }
 }

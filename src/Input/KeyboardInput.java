@@ -9,6 +9,9 @@ import java.awt.event.KeyListener;
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;
     private final boolean[] keyCodes;
+
+    private boolean esc;
+    private boolean previousEsc;
     private boolean keyW;
     private boolean keyA;
     private boolean keyS;
@@ -30,6 +33,8 @@ public class KeyboardInput implements KeyListener {
         keyA = false;
         keyS = false;
         keyD = false;
+        esc = false;
+        previousEsc = false;
         keyEnter = false;
         keyShift = false;
         space = false;
@@ -53,6 +58,7 @@ public class KeyboardInput implements KeyListener {
         previousKeyS = keyS;
         previousKeyD = keyD;
         previousKeyE = keyEnter;
+        previousEsc = esc;
         keyW = keyCodes[KeyEvent.VK_W];
         keyA = keyCodes[KeyEvent.VK_A];
         keyS = keyCodes[KeyEvent.VK_S];
@@ -60,6 +66,7 @@ public class KeyboardInput implements KeyListener {
         keyEnter = keyCodes[KeyEvent.VK_ENTER];
         keyShift = keyCodes[KeyEvent.VK_SHIFT];
         space = keyCodes[KeyEvent.VK_SPACE];
+        esc = keyCodes[KeyEvent.VK_ESCAPE];
     }
 
     @Override
@@ -129,5 +136,11 @@ public class KeyboardInput implements KeyListener {
         return previousKeyE;
     }
 
+    public boolean isEsc() {
+        return esc;
+    }
 
+    public boolean isPreviousEsc() {
+        return previousEsc;
+    }
 }

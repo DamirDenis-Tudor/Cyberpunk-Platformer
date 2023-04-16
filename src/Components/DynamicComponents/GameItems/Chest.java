@@ -1,6 +1,7 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.GameItems;
 
-import Components.StaticComponents.AnimationHandler;
+import Components.BaseComponent.AnimationHandler;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class encapsulate the behavior of a chest.
+ * This class encapsulates the behavior of a chest.
  */
 public class Chest extends DynamicComponent {
     AnimationHandler animationHandler;
@@ -45,7 +46,7 @@ public class Chest extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {}
+    public void interactionWith(Object object) throws Exception {}
 
     @Override
     public void update() throws Exception {
@@ -66,12 +67,12 @@ public class Chest extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return null;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Chest;
     }
 }

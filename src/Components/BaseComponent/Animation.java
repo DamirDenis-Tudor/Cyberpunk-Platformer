@@ -1,5 +1,6 @@
-package Components.StaticComponents;
+package Components.BaseComponent;
 
+import Components.StaticComponent;
 import Enums.AnimationType;
 import Timing.Timer;
 import Timing.TimersHandler;

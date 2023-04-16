@@ -1,7 +1,9 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents;
 
+import Components.Interactive;
+import Components.Notifiable;
+import Components.StaticComponent;
 import Enums.ComponentType;
-import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Rectangle;
 
@@ -11,32 +13,29 @@ import Utils.Rectangle;
  * Additionally, it provides the capability for the object to be recognized by an identifier.
  * As a result, access to the physical object is not necessary as the object can be identified solely by its identifier.
  */
-public abstract class DynamicComponent {
-
-    protected Scene scene = null;
-    protected Rectangle collideBox;
-    protected ComponentType subtype;
+public abstract class DynamicComponent implements StaticComponent, Interactive , Notifiable {
     private static int idCounter = 0;
     private int id=0;
     private boolean active = true;
+
+    protected Scene scene = null;
+
+    protected Rectangle collideBox;
+    protected ComponentType subtype;
     public DynamicComponent(){
         id=idCounter;
         idCounter++;
-    }
-    public int getId(){
-        return id;
-    }
-    public abstract void  notify(Message message) throws Exception;
-    public abstract void handleInteractionWith(DynamicComponent component) throws Exception;
-    public abstract void update() throws Exception;
-    public abstract void draw();
-    public abstract ComponentType getSubType();
-    public abstract ComponentType getBaseType();
-    public Rectangle getCollideBox() {
-        return collideBox;
     }
     public boolean getActiveStatus(){return active;}
     public void setActiveStatus(boolean value){
         active = value;
     }
+    public int getId(){
+        return id;
+    }
+    public Rectangle getCollideBox() {
+        return collideBox;
+    }
+    public abstract ComponentType getCurrentType();
+    public abstract ComponentType getGeneralType();
 }

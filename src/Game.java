@@ -1,3 +1,5 @@
+import Input.MouseInput;
+import Scenes.Scene;
 import Timing.Timer;
 import Window.Camera;
 import Window.GameWindow;
@@ -40,9 +42,10 @@ public class Game implements Runnable {
 
         try {
             GameWindow window = GameWindow.getInstance();
+            MouseInput mouseInput = MouseInput.getInstance();
             KeyboardInput keyboardInput = KeyboardInput.getInstance();
-            SceneHandler sceneHandler = SceneHandler.getInstance();
             Camera camera = Camera.getInstance();
+            SceneHandler sceneHandler = SceneHandler.getInstance();
 
             while (runState) {
                 curentTime = System.nanoTime();
@@ -52,8 +55,15 @@ public class Game implements Runnable {
 
                     keyboardInput.updateInputKey();
 
+                    mouseInput.update();
+
                     sceneHandler.getActiveScene().update();
 
+                    if(sceneHandler.getActiveScene()==null){;
+                        System.exit(-1);
+                    }
+
+                    System.out.println(mouseInput.isLeftMousePressed() + "->" + mouseInput.isLeftMousePreviousPressed());
                     camera.update();
 
                     window.clear();

@@ -1,7 +1,8 @@
 package Scenes;
 
-import Components.DinamicComponents.DynamicComponent;
-import Scenes.Messages.Message;
+import Components.DynamicComponents.DynamicComponent;
+import Components.Notifiable;
+import Components.StaticComponent;
 import Enums.*;
 
 import java.util.ArrayList;
@@ -10,11 +11,13 @@ import java.util.List;
 /**
  * This class contains a several DynamicComponents(specific to a scene).
  * It actualizes them, and it handles different kinds of request.
- * Note : each DynamicComponent has a reference to its scene.(see the Mediator Design Pattern)
+ * Note: each DynamicComponent has a reference to its scene.(see the Mediator Design Pattern)
  */
-public abstract class Scene {
-    protected List<DynamicComponent> components;
-    public Scene() {
+public abstract class Scene implements Notifiable {
+    protected SceneHandler sceneHandler;
+    protected List<StaticComponent> components;
+    public Scene(SceneHandler sceneHandler) {
+        this.sceneHandler = sceneHandler;
         components = new ArrayList<>();
     }
 
@@ -30,25 +33,16 @@ public abstract class Scene {
     }
 
     /**
-     * This method can be called when a component make a request or when a scene decides.
-     * @param newScene scene to be activated
-     * @throws Exception
-     */
-    public void requestSceneChange(SceneType newScene) throws Exception {
-        SceneHandler.getInstance().handleSceneChangeRequest(newScene);
-    }
-
-    /**
      * @param component to be added
      */
-    public void addComponent(DynamicComponent component) {
+    public void addComponent(StaticComponent component) {
         components.add(component);
     }
 
     /**
      * @param component to be removed
      */
-    public void removeComponent(DynamicComponent component){components.remove(component);}
+    public void removeComponent(StaticComponent component){components.remove(component);}
 
     /**
      * @param component to be checked
@@ -61,9 +55,10 @@ public abstract class Scene {
      * @return founded component
      */
     public DynamicComponent findComponent(ComponentType name){
-        for (DynamicComponent dinamicComponent: components){
-            if (name == dinamicComponent.getBaseType()){
-                return dinamicComponent;
+        for (StaticComponent component: components){
+            DynamicComponent dynamicComponent = (DynamicComponent) component;
+            if (name == dynamicComponent.getGeneralType()){
+                return dynamicComponent;
             }
         }
         return null;
@@ -74,9 +69,10 @@ public abstract class Scene {
      * @return null or founded component
      */
     public DynamicComponent findComponentWithId(int id){
-        for (DynamicComponent dinamicComponent: components){
-            if (id == dinamicComponent.getId()){
-                return dinamicComponent;
+        for (StaticComponent component: components){
+            DynamicComponent dynamicComponent = (DynamicComponent) component;
+            if (id == dynamicComponent.getId()){
+                return dynamicComponent;
             }
         }
         return null;
@@ -89,17 +85,12 @@ public abstract class Scene {
      */
     public List<DynamicComponent> getAllComponentsWithName(ComponentType name){
         List<DynamicComponent> searchedComponents= new ArrayList<>();
-        for (DynamicComponent dynamicComponent: components){
-            if (name == dynamicComponent.getBaseType()){
+        for (StaticComponent component: components){
+            DynamicComponent dynamicComponent = (DynamicComponent) component;
+            if (name == dynamicComponent.getGeneralType()){
                 searchedComponents.add(dynamicComponent);
             }
         }
         return searchedComponents;
     }
-    /**
-     * this method should handle all the components scene requests.
-     * @param message to be handled
-     * @throws Exception
-     */
-    public abstract void notify(Message message) throws Exception;
 }

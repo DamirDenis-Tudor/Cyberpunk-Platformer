@@ -1,6 +1,7 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.Map;
 
-import Components.StaticComponents.AnimationHandler;
+import Components.BaseComponent.AnimationHandler;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -48,8 +49,9 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
-        if (component.getBaseType() == ComponentType.Platform) {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent) object;
+        if (component.getGeneralType() == ComponentType.Platform) {
             collideBox.solveCollision(component.getCollideBox());
             if (collideBox.getDx() > 0) {
                 component.notify(new Message(MessageType.RightCollision, ComponentType.Enemy, getId()));
@@ -62,7 +64,7 @@ public class Platform extends DynamicComponent {
                 statuses.put(ComponentStatus.LeftCollision, false);
                 animationHandler.getAnimation().setDirection(false);
             }
-        } else if (component.getBaseType() == ComponentType.Player) {
+        } else if (component.getGeneralType() == ComponentType.Player) {
             if(animationHandler.getAnimation().getDirection()){
                 component.getCollideBox().moveByX(platformVelocity);
             } else  {
@@ -89,12 +91,12 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return null;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Platform;
     }
 }

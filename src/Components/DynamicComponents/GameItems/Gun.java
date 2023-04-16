@@ -1,6 +1,7 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.GameItems;
 
-import Components.StaticComponents.ImageWrapper;
+import Components.BaseComponent.ImageWrapper;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -16,9 +17,7 @@ import java.util.Map;
 
 public class Gun extends DynamicComponent {
     private final ImageWrapper imageWrapper;
-
     private boolean direction = true; // right - true,left - false
-
     private ComponentType subType = null;
     private int xOffset = 10;
     private int yOffset = 0;
@@ -71,7 +70,7 @@ public class Gun extends DynamicComponent {
                         if(direction){
                             scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.Gun, getId()));
                         } else {
-                            scene.notify(new Message(MessageType.BulletLauchLeft, ComponentType.Gun, getId()));
+                            scene.notify(new Message(MessageType.BulletLaunchLeft, ComponentType.Gun, getId()));
                         }
                     }
                 }
@@ -80,8 +79,9 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
-        if (component.getBaseType() == ComponentType.Player) {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent) object;
+        if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.IsPickedUp)) {
                 collideBox.setPosition(component.getCollideBox().getPosition());
                 yOffset = component.getCollideBox().getHeight() / 2 - 2;
@@ -93,19 +93,17 @@ public class Gun extends DynamicComponent {
     public void update() throws Exception {
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Gun, getId()));
     }
-
     @Override
     public void draw() {
         if (!statuses.get(ComponentStatus.Hide)) imageWrapper.draw(collideBox, xOffset, yOffset, direction);
     }
-
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return subType;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Gun;
     }
 }

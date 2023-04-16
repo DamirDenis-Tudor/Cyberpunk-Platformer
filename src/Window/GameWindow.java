@@ -2,9 +2,15 @@ package Window;
 
 import Input.KeyboardInput;
 import Input.MouseInput;
+import Utils.Coordinate;
+import jdk.jshell.execution.Util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+
+import static java.awt.Font.TRUETYPE_FONT;
 
 /**
  * This class describes a basic game window with
@@ -14,6 +20,8 @@ import java.awt.*;
  */
 public class GameWindow {
     static GameWindow instance; // class instance
+    Graphics2D graphics2D;
+    private Font font;
     private JFrame windowFrame;  // game frame
     private final String windowTitle;
     private final int windowWidth;
@@ -21,7 +29,7 @@ public class GameWindow {
     private Canvas canvas; // canvas is over the frame
 
     /**
-     * This constructor initialize the properties.
+     * This constructor initializes the properties.
      *
      * @param title  window title
      * @param width  window width
@@ -34,11 +42,13 @@ public class GameWindow {
         windowFrame = null;
 
         buildGameWindow();
+
+        graphics2D = (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
     }
 
     /**
      * this method builds the components of the window:
-     * frame , canvas with their properties
+     * frame, canvas with their properties
      */
     private void buildGameWindow() {
         windowFrame = new JFrame(windowTitle);
@@ -56,11 +66,21 @@ public class GameWindow {
         canvas.setMinimumSize(new Dimension(windowWidth, windowHeight));
         canvas.addKeyListener(KeyboardInput.getInstance());
         canvas.addMouseListener(MouseInput.getInstance());
+        canvas.addMouseMotionListener(MouseInput.getInstance());
 
         windowFrame.add(canvas);
         windowFrame.pack();
 
         canvas.createBufferStrategy(3);
+
+        try {
+            font = Font.createFont( TRUETYPE_FONT , new File("src/Fonts/FutureMillennium.ttf") );
+        } catch (FontFormatException e){
+            System.out.println(e.getMessage());
+            return;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         Toolkit.getDefaultToolkit().sync();
     }
@@ -71,8 +91,8 @@ public class GameWindow {
      */
     public static GameWindow getInstance() {
         if (instance == null) {
-             instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-            //instance = new GameWindow("CyberPunk" , 800 , 1200);
+           // instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+            instance = new GameWindow("Cyberpunk", 1000, 1080);
         }
         return instance;
     }
@@ -92,11 +112,31 @@ public class GameWindow {
     }
 
     public Graphics2D getGraphics() {
-        return (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
+        return graphics2D;
+    }
+
+    public void drawText(String text, int centerX, int centerY, Color color, float size) {
+        font = font.deriveFont(size);
+        graphics2D.setFont(font);
+        graphics2D.setColor(color);
+
+        FontMetrics fm = graphics2D.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        int textHeight = fm.getHeight();
+
+        int x = centerX - textWidth / 2;
+        int y = centerY - textHeight / 2 + fm.getAscent();
+
+        graphics2D.drawString(text, x, y);
+    }
+
+    public void drawRectangle(Utils.Rectangle rectangle , Color color){
+        graphics2D.setColor(color);
+        graphics2D.fillRect(rectangle.getMinX(),rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
     }
 
     /**
-     * Before drawing anything on window,
+     * Before drawing anything on a window,
      * this method must be called.
      */
     public void clear() {
@@ -105,7 +145,7 @@ public class GameWindow {
     }
 
     /**
-     * after drawing multiple stuffs on window
+     * after drawing multiple stuffs on a window
      * this method must be called
      */
     public void show() {

@@ -10,6 +10,8 @@ public class Camera {
     private final GameWindow gameWindow;
     private Coordinate<Integer> focusComponentPosition; // reference to component position
     private int gameMapPixelDimension = 0; // map width in pixels
+
+    private boolean active = true;
     private int currentOffset = 0; // current frame horizontal offset
     private int pastOffset = 0; // past frame horizontal offset
 
@@ -32,8 +34,20 @@ public class Camera {
         return instance;
     }
 
+
+
     public int getCurrentOffset() {
         return currentOffset;
+    }
+
+    public void disableCameraOffset(){
+        currentOffset = 0;
+        active = false;
+    }
+
+    public void enableCurrentOffset(){
+        currentOffset = pastOffset;
+        active = true;
     }
 
     public int getPastOffset() {
@@ -41,7 +55,7 @@ public class Camera {
     }
 
     /**
-     * @param component reference to focused component
+     * @param component reference to a focused component
      */
     public void setFocusComponentPosition(Coordinate<Integer> component) {
         this.focusComponentPosition = component;
@@ -56,12 +70,14 @@ public class Camera {
      * This method is responsible for detecting the borders of the map and to stop camera movement when is necessary.
      */
     public void update() {
-        if (focusComponentPosition.getPosX() > gameWindow.GetWndWidth() / 2 &&
-                focusComponentPosition.getPosX() < gameMapPixelDimension - gameWindow.GetWndWidth() / 2) {
-            pastOffset = currentOffset;
-            currentOffset = -focusComponentPosition.getPosX() + gameWindow.GetWndWidth()/2 ;
-        }else {
-            currentOffset = pastOffset;
+        if (active) {
+            if (focusComponentPosition.getPosX() > gameWindow.GetWndWidth() / 2 &&
+                    focusComponentPosition.getPosX() < gameMapPixelDimension - gameWindow.GetWndWidth() / 2) {
+                pastOffset = currentOffset;
+                currentOffset = -focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2;
+            } else {
+                currentOffset = pastOffset;
+            }
         }
     }
 }

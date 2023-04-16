@@ -1,7 +1,8 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.Map;
 
-import Components.StaticComponents.MapAsset;
-import Components.StaticComponents.ParallaxWallpaper;
+import Components.BaseComponent.MapAsset;
+import Components.BaseComponent.ParallaxWallpaper;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -218,13 +219,10 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message) {
-    }
+    public void notify(Message message) {}
 
     @Override
-    public void update() throws Exception {
-        background.update();
-    }
+    public void update() throws Exception {background.update();}
 
     @Override
     public void draw() {
@@ -250,7 +248,7 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return null;
     }
 
@@ -271,23 +269,25 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Map;
     }
 
     /**
      * In this context, map handles the interaction with any movable object
      *
-     * @param component interacts with
+     * @param object interacts with
      */
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent) object;
         Rectangle rectangle = component.getCollideBox();
         Rectangle rectangle1 = new Rectangle(rectangle);
         rectangle1.moveByY(1);
+        rectangle1.moveByX(1);
 
         // if the message is from player
-        if (component.getBaseType() == ComponentType.Player) {
+        if (component.getGeneralType() == ComponentType.Player) {
             // => check if is on a ladder
             for (Rectangle ladder : entitiesCoordinates.get("ladders")) {
                 if (rectangle.intersects(ladder)) {
@@ -304,7 +304,7 @@ public class GameMap extends DynamicComponent {
                 if (rectangle1.intersects(platform.getCollideBox())) {
                     if (rectangle1.getDy() < 0) {
                         component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
-                        platform.handleInteractionWith(component);
+                        platform.interactionWith(component);
                     } else if (rectangle.getDy() > 0) {
                         component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map, getId()));
                     }
@@ -315,7 +315,7 @@ public class GameMap extends DynamicComponent {
         }
 
         // if the message is from bullet => check if it has a collision
-        if (component.getBaseType() == ComponentType.Bullet) {
+        if (component.getGeneralType() == ComponentType.Bullet) {
             int x = component.getCollideBox().getMinX() / mapDim;
             int y = component.getCollideBox().getCenterY() / mapDim;
             if (x <= 0 || x > width - 1 || !Objects.equals(tilesIndexes[y][x], "0")) {
@@ -359,14 +359,15 @@ public class GameMap extends DynamicComponent {
                     // determine left_right wall collision
                     if (rectangle.getDx() < 0) {
                         wasRightCollision = true;
-                    } else if (rectangle.getDx() > 0) {
+
+                    }else if (rectangle.getDx() > 0) {
                         wasLeftCollision = true;
                     }
                 }
             }
         }
 
-        if (component.getBaseType() != ComponentType.Platform) {
+        if (component.getGeneralType() != ComponentType.Platform) {
             // notify the component
             if (wasGroundCollision) {
                 component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
@@ -379,9 +380,9 @@ public class GameMap extends DynamicComponent {
         }
 
         // particular behavior for some components
-        if (component.getBaseType() != ComponentType.Player) {
+        if (component.getGeneralType() != ComponentType.Player) {
 
-            if (component.getBaseType() != ComponentType.Platform) {
+            if (component.getGeneralType() != ComponentType.Platform) {
                 // collision verification is necessary to prevent components from falling off the platform
                 if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
                     wasLeftCollision = true;

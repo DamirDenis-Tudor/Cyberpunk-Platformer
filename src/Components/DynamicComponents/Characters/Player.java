@@ -1,9 +1,11 @@
-package Components.DinamicComponents;
+package Components.DynamicComponents.Characters;
 
-import Components.StaticComponents.AnimationHandler;
-import Components.StaticComponents.CharacterisesGenerator;
+import Components.BaseComponent.AnimationHandler;
+import Components.BaseComponent.CharacterisesGenerator;
+import Components.DynamicComponents.DynamicComponent;
 import Enums.*;
 import Input.KeyboardInput;
+import Input.MouseInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
@@ -29,12 +31,13 @@ public class Player extends DynamicComponent {
     private int attackComboIndex = 0;
 
     public Player(Scene scene, Coordinate<Integer> position, ComponentType type) throws Exception {
+        super();
         this.scene = scene;
 
         keyboardInput = KeyboardInput.getInstance();
 
         timersHandler = TimersHandler.getInstance();
-        timersHandler.addTimer(new Timer(0.30f), this.getBaseType().name());
+        timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
 
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.BikerIdle, position);
@@ -84,6 +87,7 @@ public class Player extends DynamicComponent {
                         statuses.put(ComponentStatus.Hurt, true);
                     }
                     health -= 1;
+                    System.out.println(health);
                     if (health <= 0) {
                         statuses.put(ComponentStatus.Death, true);
                         setActiveStatus(false);
@@ -95,8 +99,9 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public void handleInteractionWith(DynamicComponent component) throws Exception {
-        switch (component.getBaseType()) {
+    public void interactionWith(Object object) throws Exception {
+        DynamicComponent component = (DynamicComponent) object;
+        switch (component.getGeneralType()) {
             case Enemy -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.Attack) &&
@@ -118,7 +123,7 @@ public class Player extends DynamicComponent {
                     } else {
                         component.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
                     }
-                    component.handleInteractionWith(this);
+                    component.interactionWith(this);
                     statuses.put(ComponentStatus.GunPicked, true);
                 }
             }
@@ -228,19 +233,19 @@ public class Player extends DynamicComponent {
 
         // max jump will be implemented with a timer
         // this was a method appropriate to my system
-        boolean jumpingTimer = timersHandler.getTimer(this.getBaseType().name()).getTimerState();
+        boolean jumpingTimer = timersHandler.getTimer(this.getGeneralType().name()).getTimerState();
 
         // jumping logic
         if (!statuses.get(ComponentStatus.IsOnLadder) && (((statuses.get(ComponentStatus.BottomCollision) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
                 (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())))) {
-            timersHandler.getTimer(this.getBaseType().name()).resetTimer();
+            timersHandler.getTimer(this.getGeneralType().name()).resetTimer();
             jumpsCounter++;
         }
 
         // jumping to detach logic from helicopter
         if (statuses.get(ComponentStatus.OnHelicopter) && !jumpingTimer && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace()) {
             statuses.put(ComponentStatus.DetachedFromHelicopter, true);
-            timersHandler.getTimer(this.getBaseType().name()).resetTimer();
+            timersHandler.getTimer(this.getGeneralType().name()).resetTimer();
             jumpsCounter++;
         }
         if (statuses.get(ComponentStatus.DetachedFromHelicopter) && jumpsCounter == 2) {
@@ -259,13 +264,13 @@ public class Player extends DynamicComponent {
             collideBox.moveByY(gravitationForce);
         }
 
-        // if the top collision has occurred then stop timer earlier
+        // if the top collision has occurred, then stop timer earlier
         if (statuses.get(ComponentStatus.IsOnLadder) || (statuses.get(ComponentStatus.TopCollision) && jumpsCounter == 2)) {
-            timersHandler.getTimer(this.getBaseType().name()).finishEarlier();
+            timersHandler.getTimer(this.getGeneralType().name()).finishEarlier();
         }
 
         // attack event logic
-        if (!statuses.get(ComponentStatus.IsOnLadder) && keyboardInput.getKeyEnter() && !keyboardInput.isPreviousKeyE()) {
+        if (!statuses.get(ComponentStatus.IsOnLadder) && MouseInput.getInstance().isLeftMousePressed()) {
             if (statuses.get(ComponentStatus.GunPicked)) {
                 scene.notify(new Message(MessageType.Shoot, ComponentType.Player, getId()));
             } else {
@@ -274,7 +279,7 @@ public class Player extends DynamicComponent {
         }
 
         // open chest logic
-        if (keyboardInput.getKeyShift()) {
+        if (MouseInput.getInstance().isRightMousePressed()) {
             statuses.put(ComponentStatus.TryingToOpenOrPickSomething, true);
         } else {
             statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
@@ -328,12 +333,12 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getSubType() {
+    public ComponentType getCurrentType() {
         return null;
     }
 
     @Override
-    public ComponentType getBaseType() {
+    public ComponentType getGeneralType() {
         return ComponentType.Player;
     }
 }

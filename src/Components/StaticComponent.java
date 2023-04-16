@@ -1,10 +1,9 @@
-package Components.StaticComponents;
+package Components;
 
 /**
  * This interface describes the basic functionality of a static object.
- * These components should not make changes to the course of the game.
  */
-interface StaticComponent {
+public interface StaticComponent {
     void update() throws Exception;
     void draw();
 }

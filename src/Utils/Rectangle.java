@@ -115,6 +115,11 @@ public class Rectangle {
         }
     }
 
+    public boolean contains(Coordinate<Integer> point){
+        return point.getPosX() < getMaxX() && point.getPosX() > getMinX() &&
+                point.getPosY() < getMaxY() && point.getPosY() > getMinY();
+    }
+
     public double getDx() {
         return dx;
     }
