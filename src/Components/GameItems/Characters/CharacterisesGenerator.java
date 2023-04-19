@@ -53,6 +53,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.RunGun, AnimationType.BikerRunGun);
                 animationsType.put(GeneralAnimationTypes.IdleGun, AnimationType.BikerIdleGun);
                 animationsType.put(GeneralAnimationTypes.JumpGun, AnimationType.BikerJumpGun);
+                animationsType.put(GeneralAnimationTypes.Falling, AnimationType.BikerFall);
             }
             case Cyborg -> {
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.CyborgIdle);

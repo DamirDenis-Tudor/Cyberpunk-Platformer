@@ -19,7 +19,8 @@ import static Utils.Constants.gravitationForce;
 import static Utils.Constants.playerVelocity;
 
 public class Player extends DynamicComponent {
-    transient private TimersHandler timersHandler = TimersHandler.get();;
+    transient private TimersHandler timersHandler = TimersHandler.get();
+    ;
     transient private AnimationHandler animationHandler = new AnimationHandler();
     transient private KeyboardInput keyboardInput = KeyboardInput.get();
     private final Map<ComponentStatus, Boolean> statuses;
@@ -29,17 +30,18 @@ public class Player extends DynamicComponent {
     private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
 
-    public Player(Scene scene, Coordinate<Integer> position, ComponentType type){
+    public Player(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
 
-        timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
+        timersHandler.addTimer(new Timer(0.30f), getGeneralType().name());
+        timersHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
 
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Player);
         animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
         attackCombo = CharacterisesGenerator.generateAttackComboFor(type);
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), position);
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
 
         Camera.get().setFocusComponentPosition(collideBox.getPosition());
@@ -60,7 +62,7 @@ public class Player extends DynamicComponent {
                     }
                     case DeactivateBottomCollision -> {
                         statuses.put(ComponentStatus.BottomCollision, false);
-                        if (jumpsCounter == 0 && !statuses.get(ComponentStatus.OnHelicopter)) {
+                        if (jumpsCounter == 0 && !statuses.get(ComponentStatus.OnHelicopter) && !statuses.get(ComponentStatus.DetachedFromHelicopter)) {
                             jumpsCounter = 1;
                         }
                     }
@@ -82,7 +84,7 @@ public class Player extends DynamicComponent {
                         statuses.put(ComponentStatus.Hurt, true);
                     }
                     health -= 1;
-                    System.out.println(health);
+                    //System.out.println(health);
                     if (health <= 0) {
                         statuses.put(ComponentStatus.Death, true);
                         setActiveStatus(false);
@@ -90,11 +92,20 @@ public class Player extends DynamicComponent {
                     }
                 }
             }
+            case Scene -> {
+                if (message.type() == MessageType.GunNeedsRecalibration) {
+                    if (animationHandler.getAnimation().getDirection()) {
+                        scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
+                    } else {
+                        scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
+                    }
+                }
+            }
         }
     }
 
     @Override
-    public void interactionWith(Object object){
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         switch (component.getGeneralType()) {
             case Enemy -> {
@@ -135,6 +146,8 @@ public class Player extends DynamicComponent {
                         !statuses.get(ComponentStatus.OnHelicopter) &&
                         !statuses.get(ComponentStatus.DetachedFromHelicopter)) {
                     collideBox.solveCollision(component.getCollideBox());
+                    statuses.put(ComponentStatus.DetachedFromHelicopter, false);
+                    statuses.put(ComponentStatus.TopCollision, false);
                     statuses.put(ComponentStatus.OnHelicopter, true);
                     component.notify(new Message(MessageType.OnHelicopter, ComponentType.Player, getId()));
                     jumpsCounter = 0;
@@ -265,9 +278,13 @@ public class Player extends DynamicComponent {
         }
 
         // attack event logic
+        boolean shootingTimerStatus = timersHandler.getTimer(getGeneralType().name() + getId()).getTimerState();
         if (!statuses.get(ComponentStatus.IsOnLadder) && MouseInput.get().isLeftMousePressed()) {
             if (statuses.get(ComponentStatus.GunPicked)) {
-                scene.notify(new Message(MessageType.Shoot, ComponentType.Player, getId()));
+                if (!shootingTimerStatus) {
+                    timersHandler.getTimer(getGeneralType().name() + getId()).resetTimer();
+                    scene.notify(new Message(MessageType.Shoot, ComponentType.Player, getId()));
+                }
             } else {
                 statuses.put(ComponentStatus.Attack, true);
             }
@@ -316,8 +333,6 @@ public class Player extends DynamicComponent {
         }
 
         handleAnimations();
-
-        //System.out.println("OnH : " + statuses.get(ComponentStatus.OnHelicopter) + "| OUTh : " + statuses.get(ComponentStatus.DetachedFromHelicopter));
         animationHandler.update();
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player, getId()));
     }
@@ -342,6 +357,7 @@ public class Player extends DynamicComponent {
         this.scene = scene;
         timersHandler = TimersHandler.get();
         timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
+        timersHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
         keyboardInput = KeyboardInput.get();
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());

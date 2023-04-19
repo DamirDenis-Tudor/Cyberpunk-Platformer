@@ -13,6 +13,7 @@ import Utils.Rectangle;
 import Window.GameWindow;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Button implements StaticComponent,Serializable {
     private final Scene scene;
@@ -34,18 +35,20 @@ public class Button implements StaticComponent,Serializable {
             text.setTextColor(ColorType.HoverText);
             if (MouseInput.get().isLeftMousePressed()) {
                 if(!previousClicked) {
-                    scene.notify(new Message(MessageType.ButtonClicked, currentType, -1));
-                    previousClicked = true;
-                    if (currentType == ComponentType.SaveInfo){
+                    if(currentType == ComponentType.SaveInfo){
                         Database.get().setSaveToBeLoaded(text.getText().split(" ")[0]);
                     }
+                    scene.notify(new Message(MessageType.ButtonClicked, currentType, -1));
+                    previousClicked = true;
                 }
             }else {
                 previousClicked = false;
             }
         } else {
-            backgroundColor = ColorType.DefaultBackground;
-            text.setTextColor(ColorType.DefaultText);
+            if(!Objects.equals(Database.get().getSaveToBeLoaded(), text.getText().split(" ")[0])) {
+                backgroundColor = ColorType.DefaultBackground;
+                text.setTextColor(ColorType.DefaultText);
+            }
         }
     }
     @Override

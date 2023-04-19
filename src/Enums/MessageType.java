@@ -10,5 +10,5 @@ public enum MessageType {
     // Scenes Messages
     NewGame,SaveGame,LoadGame,
 
-    SaveHasBeenAdded
+    SaveHasBeenAdded , GunNeedsRecalibration
 }

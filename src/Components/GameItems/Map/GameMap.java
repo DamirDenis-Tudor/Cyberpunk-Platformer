@@ -295,7 +295,6 @@ public class GameMap extends DynamicComponent {
         Rectangle rectangle = component.getCollideBox();
         Rectangle rectangle1 = new Rectangle(rectangle);
         rectangle1.moveByY(1);
-        rectangle1.moveByX(1);
 
         // if the message is from player
         if (component.getGeneralType() == ComponentType.Player) {
@@ -336,8 +335,8 @@ public class GameMap extends DynamicComponent {
         }
 
         // the message is from a component that has map collision and needs recalibraion
-        int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 2);
-        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 3);
+        int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 5);
+        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 2);
         int yStart = Math.max(0, rectangle.getPosition().getPosY() / mapDim - 1);
         int yEnd = Math.min(height, (rectangle.getPosition().getPosY() + rectangle.getHeight()) / mapDim + 1);
 
@@ -370,7 +369,6 @@ public class GameMap extends DynamicComponent {
                     // determine left_right wall collision
                     if (rectangle.getDx() < 0) {
                         wasRightCollision = true;
-
                     } else if (rectangle.getDx() > 0) {
                         wasLeftCollision = true;
                     }
@@ -392,7 +390,6 @@ public class GameMap extends DynamicComponent {
 
         // particular behavior for some components
         if (component.getGeneralType() != ComponentType.Player) {
-
             if (component.getGeneralType() != ComponentType.Platform) {
                 // collision verification is necessary to prevent components from falling off the platform
                 if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {

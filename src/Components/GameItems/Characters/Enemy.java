@@ -39,7 +39,7 @@ public class Enemy extends DynamicComponent {
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Enemy);
         animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), position);
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
     }
 
@@ -243,7 +243,6 @@ public class Enemy extends DynamicComponent {
         }
 
         handleAnimations();
-
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Enemy, getId()));
         animationHandler.update();
     }
@@ -269,7 +268,7 @@ public class Enemy extends DynamicComponent {
         timersHandler = TimersHandler.get();
         timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Walk), collideBox.getPosition());
         switch (subtype){
             case GunnerEnemy -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
             case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.2f) , subtype.name()+getId());

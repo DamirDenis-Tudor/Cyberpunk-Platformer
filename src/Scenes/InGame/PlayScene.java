@@ -31,16 +31,15 @@ import static Enums.ComponentType.*;
 
 // TODO : Narrator(DynamicComponent) -> for tutorial
 
-// TODO : Male parallax background predefined.
-
 /**
  * This class encapsulates the relation between in game components like player, enemies, bullets, guns, chests, platforms, etc.
  */
 final public class PlayScene extends Scene {
     Random rand = new Random(17);
 
-    public PlayScene(Scenes.SceneHandler sceneHandler) throws Exception {
+    public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
+        newGame();
     }
 
     private void newGame() {
@@ -112,8 +111,8 @@ final public class PlayScene extends Scene {
                 database.insertDataIntoSave(dynamicComponent.getGeneralType(), bytes.toByteArray());
                 objectOut.close();
                 bytes.close();
-                System.out.println("Object serialized successfully!");
             }
+            System.out.println("Objects serialized successfully!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -305,6 +304,11 @@ final public class PlayScene extends Scene {
                                 component.getCollideBox().getPosition(), Player);
                         bullet.notify(new Message(message.type(), Gun, message.componentId()));
                         addComponent(bullet);
+                    }
+                    case GunNeedsRecalibration -> {
+                        findComponentWithId(message.componentId()).getCollideBox().
+                            setPosition(findComponent(Player).getCollideBox().getPosition());
+                         findComponent(Player).notify(new Message(MessageType.GunNeedsRecalibration , Scene , -1));
                     }
                 }
             }

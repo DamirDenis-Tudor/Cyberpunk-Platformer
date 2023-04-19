@@ -13,6 +13,8 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
 
+import java.util.Objects;
+
 public class LoadScene extends Scene {
     private int savesStartingPosition = 0;
 
@@ -55,8 +57,10 @@ public class LoadScene extends Scene {
             case ButtonClicked -> {
                 switch (message.source()) {
                     case LoadSave -> {
-                        sceneHandler.notify(new Message(MessageType.LoadGame, ComponentType.Scene, -1));
-                        sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
+                        if (!Objects.equals(Database.get().getSaveToBeLoaded(), "")) {
+                            sceneHandler.notify(new Message(MessageType.LoadGame, ComponentType.Scene, -1));
+                            sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
+                        }
                     }
                     case DeleteLatestSave -> {
                         if (components.size() == savesStartingPosition) return;

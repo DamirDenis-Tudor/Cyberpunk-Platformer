@@ -29,7 +29,7 @@ public class Helicopter extends DynamicComponent {
         statuses.put(ComponentStatus.HasPlayer, false);
 
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(AnimationType.Helicopter, position);
+        animationHandler.changeAnimation(AnimationType.Helicopter, new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
         initialPosition = new Coordinate<>(collideBox.getPosition());
     }

@@ -170,4 +170,8 @@ public class Database {
     public void setSaveToBeLoaded(String save) {
         saveToBeLoaded = save;
     }
+
+    public String getSaveToBeLoaded() {
+        return saveToBeLoaded;
+    }
 }

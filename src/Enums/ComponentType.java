@@ -18,4 +18,6 @@ public enum ComponentType implements Serializable {
     NewGameButton, LoadButton , SettingsButton ,ExitButton,Back,BackToMenu, Continue , DeleteSave , DeleteLatestSave, LoadSave,SaveButton,SaveInfo,
 
     SceneHandler,Scene
+
+
 }

@@ -35,11 +35,12 @@ public class Gun extends DynamicComponent {
         this.subType = subType;
         this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
         this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
-        this.collideBox.setPosition(position);
+        this.collideBox.setPosition(new Coordinate<>(position));
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.IsPickedUp, false);
         statuses.put(ComponentStatus.HasLaunchedBullet, false);
         statuses.put(ComponentStatus.Hide, false);
+        statuses.put(ComponentStatus.NeedsRecalibration , false);
     }
 
     @Override
@@ -92,6 +93,10 @@ public class Gun extends DynamicComponent {
 
     @Override
     public void update() {
+        if(statuses.get(ComponentStatus.NeedsRecalibration)){
+            statuses.put(ComponentStatus.NeedsRecalibration , false);
+            scene.notify(new Message(MessageType.GunNeedsRecalibration, getGeneralType() , getId()));
+        }
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Gun, getId()));
     }
     @Override
@@ -112,5 +117,8 @@ public class Gun extends DynamicComponent {
     public void addMissingPartsAfterDeserialization(Scene scene) {
         this.scene = scene;
         this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
+        if(statuses.get(ComponentStatus.IsPickedUp)){
+            statuses.put(ComponentStatus.NeedsRecalibration , true);
+        }
     }
 }

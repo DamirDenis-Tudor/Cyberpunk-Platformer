@@ -24,7 +24,7 @@ public class Platform extends DynamicComponent {
         statuses.put(ComponentStatus.RightCollision, false);
 
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(AnimationType.Platform, position);
+        animationHandler.changeAnimation(AnimationType.Platform, new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
     }
 

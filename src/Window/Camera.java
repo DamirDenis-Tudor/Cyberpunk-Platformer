@@ -75,11 +75,13 @@ public class Camera {
                     focusComponentPosition.getPosX() < gameMapPixelDimension - gameWindow.GetWndWidth() / 2) {
                 pastOffset = currentOffset;
                 currentOffset = -focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2;
-            } else {
+            } else if(focusComponentPosition.getPosX() <= gameWindow.GetWndWidth() / 2){
                 currentOffset = 0;
                 pastOffset = 0;
-
+            } else if (focusComponentPosition.getPosX() >= gameMapPixelDimension - gameWindow.GetWndWidth()/2) {
+                currentOffset = pastOffset;
             }
         }
+        //System.out.println(currentOffset);
     }
 }

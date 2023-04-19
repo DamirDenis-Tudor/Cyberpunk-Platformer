@@ -28,7 +28,7 @@ public class Chest extends DynamicComponent {
 
         // chest animation
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(AnimationType.Chest1, position);
+        animationHandler.changeAnimation(AnimationType.Chest1, new Coordinate<>(position));
         // lock at first frame -> chest in locked
         animationHandler.getAnimation().lockAtFistFrame();
 
