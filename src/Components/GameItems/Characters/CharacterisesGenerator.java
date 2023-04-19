@@ -1,15 +1,17 @@
-package Components.BaseComponent;
+package Components.GameItems.Characters;
 
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.GeneralAnimationTypes;
-
-import java.util.*;
-
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Constants;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CharacterisesGenerator {
     public static List<AnimationType> generateAttackComboFor(ComponentType type) {
@@ -36,7 +38,7 @@ public class CharacterisesGenerator {
         return attackCombo;
     }
 
-    public static Map<GeneralAnimationTypes, AnimationType> generateAnimationTypesFor(ComponentType type ,int id) throws Exception {
+    public static Map<GeneralAnimationTypes, AnimationType> generateAnimationTypesFor(ComponentType type ,int id) {
         Map<GeneralAnimationTypes, AnimationType> animationsType = new HashMap<>();
         switch (type) {
             case Biker -> {
@@ -122,7 +124,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy3Death);
             }
             case GunnerEnemy -> {
-                TimersHandler.getInstance().addTimer(new Timer(0.5f) , type.name()+id);
+                TimersHandler.get().addTimer(new Timer(0.5f) , type.name()+id);
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy2Idle);
                 animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy2Walk);
                 animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy2Attack);
@@ -130,7 +132,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy2Death);
             }
             case MachineGunEnemy -> {
-                TimersHandler.getInstance().addTimer(new Timer(0.2f) , type.name()+id);
+                TimersHandler.get().addTimer(new Timer(0.2f) , type.name()+id);
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy6Idle);
                 animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy6Walk);
                 animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy6Attack);

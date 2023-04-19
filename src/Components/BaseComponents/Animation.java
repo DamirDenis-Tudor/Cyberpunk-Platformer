@@ -1,4 +1,4 @@
-package Components.BaseComponent;
+package Components.BaseComponents;
 
 import Components.StaticComponent;
 import Enums.AnimationType;
@@ -23,8 +23,8 @@ import static Utils.Constants.mapScale;
 public class Animation implements StaticComponent {
     private static int idCounter = 1000; // at each frame this counter increments
     private String timerId; // changing image timer
-    private final TimersHandler timersHandler = TimersHandler.getInstance();
-    private GameWindow gameWindow = GameWindow.getInstance();
+    private final TimersHandler timersHandler = TimersHandler.get();
+    private GameWindow gameWindow = GameWindow.get();
     private List<BufferedImage> images;
     private int width;
     private int height;
@@ -68,9 +68,8 @@ public class Animation implements StaticComponent {
     /**
      *
      * @param animation to be copied
-     * @throws Exception timer exception
      */
-    public Animation(Animation animation) throws Exception {
+    public Animation(Animation animation) {
         idCounter++;
 
         timerId = "animation" + idCounter;
@@ -93,7 +92,7 @@ public class Animation implements StaticComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update(){
         if (!timersHandler.getTimer(timerId).getTimerState() && (!lock || currentCount != repeats)) {
             timersHandler.getTimer(timerId).resetTimer();
             if (activeImageIndex < images.size() - 1) {
@@ -110,12 +109,12 @@ public class Animation implements StaticComponent {
     @Override
     public void draw() {
         if (!direction) {
-            int posX = rectangle.getPosition().getPosX() + (rectangle.getWidth() ) + Camera.getInstance().getCurrentOffset();
+            int posX = rectangle.getPosition().getPosX() + (rectangle.getWidth() ) + Camera.get().getCurrentOffset();
             int posY = rectangle.getPosition().getPosY();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX , posY, -width, height, null);
             //gameWindow.getGraphics().drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
-            int posX = rectangle.getPosition().getPosX() + Camera.getInstance().getCurrentOffset();
+            int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentOffset();
             int posY =  rectangle.getPosition().getPosY();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX, posY, width, height, null);
             //gameWindow.getGraphics().drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());

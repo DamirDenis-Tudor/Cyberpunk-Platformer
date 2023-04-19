@@ -1,5 +1,4 @@
 import Input.MouseInput;
-import Scenes.Scene;
 import Timing.Timer;
 import Window.Camera;
 import Window.GameWindow;
@@ -41,10 +40,10 @@ public class Game implements Runnable {
         final double timeFrame = 1000000000.f / framesPerSecond;
 
         try {
-            GameWindow window = GameWindow.getInstance();
-            MouseInput mouseInput = MouseInput.getInstance();
-            KeyboardInput keyboardInput = KeyboardInput.getInstance();
-            Camera camera = Camera.getInstance();
+            GameWindow window = GameWindow.get();
+            MouseInput mouseInput = MouseInput.get();
+            KeyboardInput keyboardInput = KeyboardInput.get();
+            Camera camera = Camera.get();
             SceneHandler sceneHandler = SceneHandler.getInstance();
 
             while (runState) {
@@ -55,15 +54,12 @@ public class Game implements Runnable {
 
                     keyboardInput.updateInputKey();
 
-                    mouseInput.update();
-
-                    sceneHandler.getActiveScene().update();
+                        sceneHandler.getActiveScene().update();
 
                     if(sceneHandler.getActiveScene()==null){;
                         System.exit(-1);
                     }
 
-                    System.out.println(mouseInput.isLeftMousePressed() + "->" + mouseInput.isLeftMousePreviousPressed());
                     camera.update();
 
                     window.clear();

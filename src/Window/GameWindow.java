@@ -2,8 +2,6 @@ package Window;
 
 import Input.KeyboardInput;
 import Input.MouseInput;
-import Utils.Coordinate;
-import jdk.jshell.execution.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,9 +62,9 @@ public class GameWindow {
         canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
         canvas.setMaximumSize(new Dimension(windowWidth, windowHeight));
         canvas.setMinimumSize(new Dimension(windowWidth, windowHeight));
-        canvas.addKeyListener(KeyboardInput.getInstance());
-        canvas.addMouseListener(MouseInput.getInstance());
-        canvas.addMouseMotionListener(MouseInput.getInstance());
+        canvas.addKeyListener(KeyboardInput.get());
+        canvas.addMouseListener(MouseInput.get());
+        canvas.addMouseMotionListener(MouseInput.get());
 
         windowFrame.add(canvas);
         windowFrame.pack();
@@ -89,10 +87,10 @@ public class GameWindow {
     /**
      * @return class instance
      */
-    public static GameWindow getInstance() {
+    public static GameWindow get() {
         if (instance == null) {
-           // instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-            instance = new GameWindow("Cyberpunk", 1000, 1080);
+            instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+            //instance = new GameWindow("Cyberpunk", 1000, 1080);
         }
         return instance;
     }

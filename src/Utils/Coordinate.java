@@ -1,6 +1,8 @@
 package Utils;
 
-public class Coordinate <T extends Number>{
+import java.io.Serializable;
+
+public class Coordinate <T extends Number> implements Serializable {
     private T posX ;
     private T posY ;
 

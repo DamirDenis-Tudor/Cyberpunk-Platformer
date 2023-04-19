@@ -27,7 +27,7 @@ public class MouseInput implements MouseListener, MouseMotionListener {
         isLeftMousePressed = false;
     }
 
-    public static MouseInput getInstance(){
+    public static MouseInput get(){
         if (instance == null) {
             instance = new MouseInput();
         }
@@ -73,10 +73,6 @@ public class MouseInput implements MouseListener, MouseMotionListener {
     public void mouseMoved(MouseEvent e) {
         position.setX(e.getX());
         position.setY(e.getY());
-    }
-
-    public void update(){
-
     }
 
     public boolean isLeftMousePressed() {

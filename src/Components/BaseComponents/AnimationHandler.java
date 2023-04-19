@@ -1,4 +1,4 @@
-package Components.BaseComponent;
+package Components.BaseComponents;
 
 import Components.StaticComponent;
 import Enums.AnimationType;
@@ -21,11 +21,11 @@ public class AnimationHandler implements StaticComponent {
         animation.setPosition(position);
     }
 
-    public void changeAnimation(AnimationType name , Coordinate<Integer> position) throws Exception {
+    public void changeAnimation(AnimationType name , Coordinate<Integer> position) {
         // the animation will be change only is not equal with the current one
         if(animation.getType() != name) {
             boolean direction = animation.getDirection();
-            animation = new Animation(AssetsDeposit.getInstance().getAnimation(name));
+            animation = new Animation(AssetsDeposit.get().getAnimation(name));
             animation.setPosition(position);
             animation.setDirection(direction);
         }
@@ -35,7 +35,7 @@ public class AnimationHandler implements StaticComponent {
         animation.draw();
     }
 
-    public void update() throws Exception {
+    public void update(){
         animation.update();
     }
 }

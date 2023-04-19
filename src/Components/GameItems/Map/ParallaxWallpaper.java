@@ -1,4 +1,4 @@
-package Components.BaseComponent;
+package Components.GameItems.Map;
 
 import Components.StaticComponent;
 import Window.GameWindow;
@@ -6,28 +6,22 @@ import Window.Camera;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class handles the behavior of a parallax background.
- * For additional info see how Parallax effect works.
+ * For additional info, see how the Parallax effect works.
  */
-public class ParallaxWallpaper implements StaticComponent {
-
-    private final GameWindow gameWindow;
-    private final Camera camera;
+public class ParallaxWallpaper implements StaticComponent{
     private final List<BufferedImage> images;
     private final List<Integer> velocities;
     private final List<Integer> background1Position;
 
     private final List<Integer> background2Position;
 
-    private long lastUpdateTime;
-
     public ParallaxWallpaper() {
-        gameWindow = GameWindow.getInstance();
-        camera = Camera.getInstance();
         images = new ArrayList<>();
 
         background1Position = new ArrayList<>();
@@ -44,20 +38,20 @@ public class ParallaxWallpaper implements StaticComponent {
     public void addImage(BufferedImage image) {
         images.add(image);
         background1Position.add(0);
-        background2Position.add(gameWindow.GetWndWidth());
+        background2Position.add(GameWindow.get().GetWndWidth());
     }
 
     private int scrollingDirection() {
-        if (camera.getCurrentOffset() - camera.getPastOffset() > 0) {
+        if (Camera.get().getCurrentOffset() - Camera.get().getPastOffset() > 0) {
             return 1;
-        } else if (camera.getCurrentOffset() - camera.getPastOffset() < 0) {
+        } else if (Camera.get().getCurrentOffset() - Camera.get().getPastOffset() < 0) {
             return -1;
         }
         return 0;
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         for (int index = 0; index < images.size(); index++) {
             int velocity = velocities.get(index);
             int direction = scrollingDirection();
@@ -65,15 +59,15 @@ public class ParallaxWallpaper implements StaticComponent {
             background1Position.set(index, background1Position.get(index) + distance);
             background2Position.set(index, background2Position.get(index) + distance);
 
-            if (background1Position.get(index) <= -gameWindow.GetWndWidth() + 10) {
-                background1Position.set(index, gameWindow.GetWndWidth() - 10);
-            } else if (background1Position.get(index) >= gameWindow.GetWndWidth() - 10) {
-                background1Position.set(index, -gameWindow.GetWndWidth() + 10);
+            if (background1Position.get(index) <= -GameWindow.get().GetWndWidth() + 10) {
+                background1Position.set(index, GameWindow.get().GetWndWidth() - 10);
+            } else if (background1Position.get(index) >= GameWindow.get().GetWndWidth() - 10) {
+                background1Position.set(index, -GameWindow.get().GetWndWidth() + 10);
             }
-            if (background2Position.get(index) <= -gameWindow.GetWndWidth() + 10) {
-                background2Position.set(index, gameWindow.GetWndWidth() - 10);
-            } else if (background2Position.get(index) >= gameWindow.GetWndWidth() - 10) {
-                background2Position.set(index, -gameWindow.GetWndWidth() + 10);
+            if (background2Position.get(index) <= -GameWindow.get().GetWndWidth() + 10) {
+                background2Position.set(index, GameWindow.get().GetWndWidth() - 10);
+            } else if (background2Position.get(index) >= GameWindow.get().GetWndWidth() - 10) {
+                background2Position.set(index, -GameWindow.get().GetWndWidth() + 10);
             }
         }
     }
@@ -85,13 +79,13 @@ public class ParallaxWallpaper implements StaticComponent {
             for performance, all the gathered into a single
             linage and then in drawn on screen.
          */
-        BufferedImage bf = new BufferedImage(gameWindow.GetWndWidth(), gameWindow.GetWndHeight() , 1);
+        BufferedImage bf = new BufferedImage(GameWindow.get().GetWndWidth(), GameWindow.get().GetWndHeight() , 1);
         Graphics g = bf.createGraphics();
         for (int index = 0; index < images.size(); index++) {
-            g.drawImage(images.get(index), background1Position.get(index), 0, gameWindow.GetWndWidth(), gameWindow.GetWndHeight(), null);
-            g.drawImage(images.get(index), background2Position.get(index), 0, gameWindow.GetWndWidth(), gameWindow.GetWndHeight(), null);
+            g.drawImage(images.get(index), background1Position.get(index), 0, GameWindow.get().GetWndWidth(), GameWindow.get().GetWndHeight(), null);
+            g.drawImage(images.get(index), background2Position.get(index), 0, GameWindow.get().GetWndWidth(), GameWindow.get().GetWndHeight(), null);
         }
 
-        gameWindow.getGraphics().drawImage(bf,0,0,null);
+        GameWindow.get().getGraphics().drawImage(bf,0,0,null);
     }
 }

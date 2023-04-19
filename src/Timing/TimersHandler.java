@@ -8,20 +8,20 @@ import java.util.Map;
  * handles all the timers in the game by saving them into a HashMap.
  */
 public class TimersHandler {
-    private final Map<String, Timer> timers ; // timers HashMap
+    private final Map<String, Timer> timers; // timers HashMap
     private static TimersHandler instance = null; // first and last instance
 
     /**
-        This constructor initialize the HashMap.
+     * This constructor initialize the HashMap.
      */
     private TimersHandler() {
         timers = new HashMap<>();
     }
 
     /**
-        @return : shared instance of class
+     * @return : shared instance of class
      */
-    public static TimersHandler getInstance() {
+    public static TimersHandler get() {
         if (instance == null) {
             instance = new TimersHandler();
         }
@@ -29,30 +29,36 @@ public class TimersHandler {
     }
 
     /**
-     * @param timer   timer to be added
-     * @param ID      identifier of the timer
-     * @throws        Exception message
+     * @param timer timer to be added
+     * @param ID    identifier of the timer
      */
-    public void addTimer(Timer timer, String ID) throws Exception {
-        if (timer == null) {
-            throw new NullPointerException();
-        } else if (this.timers.containsKey(ID)) {
-            throw new Exception("Error : trying to add an element that have same ID with an existing one!");
-        } else {
-            this.timers.put(ID, timer);
+    public void addTimer(Timer timer, String ID) {
+        try {
+            if (timer == null) {
+                throw new NullPointerException();
+            } else if (!this.timers.containsKey(ID)) {
+                this.timers.put(ID, timer);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "->" + e.getLocalizedMessage());
         }
+
     }
 
     /**
      * @param ID timer identifier
      * @return timer
-     * @throws Exception message
      */
-    public Timer getTimer(String ID) throws Exception {
-        if (this.timers.containsKey(ID)) {
-            return this.timers.get(ID);
-        } else {
-            throw new Exception("Invalid member ID: " + ID + " in TimeHandler!");
+    public Timer getTimer(String ID) {
+        try {
+            if (this.timers.containsKey(ID)) {
+                return this.timers.get(ID);
+            } else {
+                throw new Exception("Invalid member ID: " + ID + " in TimeHandler!");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "->" + e.getLocalizedMessage());
         }
+        return null;
     }
 }

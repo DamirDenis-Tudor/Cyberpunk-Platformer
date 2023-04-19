@@ -1,8 +1,7 @@
-package Components.DynamicComponents.Characters;
+package Components.GameItems.Characters;
 
-import Components.BaseComponent.AnimationHandler;
-import Components.BaseComponent.CharacterisesGenerator;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AnimationHandler;
+import Components.GameItems.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -12,26 +11,27 @@ import Utils.Coordinate;
 
 import java.util.Map;
 
-import static Utils.Constants.*;
+import static Utils.Constants.enemyRange;
+import static Utils.Constants.gravitationForce;
 
 /**
  * This class describes a basic enemy behavior.
  * Read the code it describes itself.
  */
 public class Enemy extends DynamicComponent {
-    protected final AnimationHandler animationHandler;
-    protected final TimersHandler timersHandler;
-    protected final Map<ComponentStatus, Boolean> statuses;
+    transient protected AnimationHandler animationHandler;
+    transient protected TimersHandler timersHandler;
+    protected Map<ComponentStatus, Boolean> statuses;
     protected final Map<GeneralAnimationTypes, AnimationType> animationsType;
     protected int health = 100;
     protected int velocity = 0;
 
-    public Enemy(Scene scene, Coordinate<Integer> position, ComponentType type) throws Exception {
+    public Enemy(Scene scene, Coordinate<Integer> position, ComponentType type){
         super();
         this.scene = scene;
         animationHandler = new AnimationHandler();
 
-        timersHandler = TimersHandler.getInstance();
+        timersHandler = TimersHandler.get();
         timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
 
         subtype = type;
@@ -44,7 +44,7 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message) {
         switch (message.source()) {
             case Map -> {
                 switch (message.type()) {
@@ -83,6 +83,8 @@ public class Enemy extends DynamicComponent {
                         health -= 25;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.Death, true);
+                            collideBox.getPosition().setX(-1);
+                            collideBox.getPosition().setY(-1);
                             setActiveStatus(false);
                             scene.notify(new Message(MessageType.Destroy, ComponentType.Enemy, getId()));
                         }
@@ -97,7 +99,7 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent)object;
         switch (component.getGeneralType()) {
             case Player -> {
@@ -173,7 +175,7 @@ public class Enemy extends DynamicComponent {
         }
     }
 
-    protected void handleAnimations() throws Exception {
+    protected void handleAnimations(){
         if (statuses.get(ComponentStatus.Death)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
@@ -208,7 +210,7 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update(){
         if (!statuses.get(ComponentStatus.BottomCollision)) {
             collideBox.moveByY(gravitationForce);
         }
@@ -259,5 +261,18 @@ public class Enemy extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.Enemy;
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene = scene;
+        timersHandler = TimersHandler.get();
+        timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
+        animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+        switch (subtype){
+            case GunnerEnemy -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
+            case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.2f) , subtype.name()+getId());
+        }
     }
 }

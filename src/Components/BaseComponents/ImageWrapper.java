@@ -1,5 +1,7 @@
-package Components.BaseComponent;
+package Components.BaseComponents;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
+
 import Utils.Rectangle;
 import Window.GameWindow;
 import Window.Camera;
@@ -13,8 +15,8 @@ public class ImageWrapper {
     private final BufferedImage image;
 
     public ImageWrapper(BufferedImage image){
-        gameWindow = GameWindow.getInstance();
-        camera = Camera.getInstance();
+        gameWindow = GameWindow.get();
+        camera = Camera.get();
         this.image = image;
     }
 

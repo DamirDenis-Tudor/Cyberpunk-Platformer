@@ -1,7 +1,8 @@
-package Components.DynamicComponents.GameItems;
+package Components.GameItems.GameItems;
 
-import Components.BaseComponent.ImageWrapper;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.ImageWrapper;
+import Components.GameItems.DynamicComponent;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Gun extends DynamicComponent {
-    private final ImageWrapper imageWrapper;
+    transient private ImageWrapper imageWrapper;
     private boolean direction = true; // right - true,left - false
     private ComponentType subType = null;
     private int xOffset = 10;
@@ -29,11 +30,11 @@ public class Gun extends DynamicComponent {
         statuses = new HashMap<>();
     }
 
-    public Gun(Scene scene, Gun gun, Coordinate<Integer> position,ComponentType subType) {
+    public Gun(Scene scene, Coordinate<Integer> position,ComponentType subType) {
         this.scene = scene;
         this.subType = subType;
-        this.imageWrapper = gun.imageWrapper;
-        this.collideBox = new Rectangle(gun.collideBox);
+        this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
+        this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
         this.collideBox.setPosition(position);
         statuses = new HashMap<>();
         statuses.put(ComponentStatus.IsPickedUp, false);
@@ -42,7 +43,7 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message) {
         if (message.source() == ComponentType.Player) {
             switch (message.type()) {
                 case IsPickedUp -> statuses.put(ComponentStatus.IsPickedUp, true);
@@ -79,7 +80,7 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.IsPickedUp)) {
@@ -90,7 +91,7 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Gun, getId()));
     }
     @Override
@@ -105,5 +106,11 @@ public class Gun extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.Gun;
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene = scene;
+        this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
     }
 }

@@ -44,7 +44,7 @@ public class KeyboardInput implements KeyListener {
     /**
      * @return shared instance
      */
-    public static KeyboardInput getInstance() {
+    public static KeyboardInput get() {
         if (instance == null) {
             instance = new KeyboardInput();
         }

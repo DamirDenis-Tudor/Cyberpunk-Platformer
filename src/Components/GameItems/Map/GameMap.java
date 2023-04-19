@@ -1,8 +1,7 @@
-package Components.DynamicComponents.Map;
+package Components.GameItems.Map;
 
-import Components.BaseComponent.MapAsset;
-import Components.BaseComponent.ParallaxWallpaper;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AssetsDeposit;
+import Components.GameItems.DynamicComponent;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -29,25 +28,25 @@ import static Utils.Constants.*;
  * matrix of objects|tiles, dimensions, predefined object positions.
  */
 public class GameMap extends DynamicComponent {
-    private final GameWindow gameWindow = GameWindow.getInstance();
     private int width; // lines
     private int height; // columns
-    private Map<String, MapAsset> tiles; // String - id , Tile
-    private Map<String, MapAsset> objects; // String - id , Object
+    transient private Map<String, MapAsset> tiles; // String - id , Tile
+    transient private Map<String, MapAsset> objects; // String - id , Object
     private String[][] tilesIndexes; // indexes for tiles
     private String[][] objectsIndexes; // indexes for objects
     private String[][] decorsIndexes; // indexes for objects
-    private ParallaxWallpaper background; // parallax background
+    transient private ParallaxWallpaper background; // parallax ba    private String[][] tilesIndexes; // indexes for tilesckground
     private Map<String, List<Rectangle>> entitiesCoordinates; // map of the preloaded entities
+    ComponentType mapType;
 
-    static boolean pastGroundCollision = false; // this variable is used to solve a nasty bug
-    boolean wasGroundCollision = false;
-    boolean wasTopCollision = false;
-    boolean wasLeftCollision = false;
-    boolean wasRightCollision = false;
-
-    public GameMap(Scene scene, String path) {
+    public GameMap(Scene scene, ComponentType mapType) {
         this.scene = scene;
+        this.mapType = mapType;
+        String path = "";
+        switch (mapType) {
+            case GreenCity -> path = "src/Resources/maps/green_map.tmx";
+            case IndustrialCity -> path = "";
+        }
         try {
             //   first initialize the document element
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -153,7 +152,7 @@ public class GameMap extends DynamicComponent {
 
             // -------------------------------------
             // it's the time to load the
-            // second layer(objects layer) matrix of indexes
+            // second layer(object layer) matrix of indexes
             String objectsBuffer = root.getElementsByTagName("data").item(1).
                     getFirstChild().getTextContent();
 
@@ -168,7 +167,7 @@ public class GameMap extends DynamicComponent {
 
             // -------------------------------------
             // it's the time to load the
-            // third layer(objects layer) matrix of indexes
+            // third layer(object layer) matrix of indexes
             // ->>>>hereeeee
             String decorBuffer = root.getElementsByTagName("data").item(2).
                     getFirstChild().getTextContent();
@@ -215,14 +214,17 @@ public class GameMap extends DynamicComponent {
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
-        Camera.getInstance().setGameMapPixelDimension(width * mapDim);
+        Camera.get().setGameMapPixelDimension(width * mapDim);
     }
 
     @Override
-    public void notify(Message message) {}
+    public void notify(Message message) {
+    }
 
     @Override
-    public void update() throws Exception {background.update();}
+    public void update() {
+        background.update();
+    }
 
     @Override
     public void draw() {
@@ -245,11 +247,12 @@ public class GameMap extends DynamicComponent {
          * drawing decorations
          */
         drawLayer(decorsIndexes, objects);
+
     }
 
     @Override
     public ComponentType getCurrentType() {
-        return null;
+        return mapType;
     }
 
     private void drawLayer(String[][] decorsIndexes, Map<String, MapAsset> types) {
@@ -259,10 +262,10 @@ public class GameMap extends DynamicComponent {
                     MapAsset asset = types.get(decorsIndexes[i][j]);
                     int dimW = asset.getWidth();
                     int dimH = asset.getHeight();
-                    int xPos = j * mapDim + Camera.getInstance().getCurrentOffset();
+                    int xPos = j * mapDim + Camera.get().getCurrentOffset();
                     int yPos = i * mapDim - dimH + mapDim;
 
-                    gameWindow.getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
+                    GameWindow.get().getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
                 }
             }
         }
@@ -273,13 +276,21 @@ public class GameMap extends DynamicComponent {
         return ComponentType.Map;
     }
 
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene = scene;
+        this.background = AssetsDeposit.get().getGameMap(mapType).background;
+        this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
+        this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
+    }
+
     /**
-     * In this context, map handles the interaction with any movable object
+     * In this context, a map handles the interaction with any movable object
      *
      * @param object interacts with
      */
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         Rectangle rectangle = component.getCollideBox();
         Rectangle rectangle1 = new Rectangle(rectangle);
@@ -325,16 +336,16 @@ public class GameMap extends DynamicComponent {
         }
 
         // the message is from a component that has map collision and needs recalibraion
-        int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 5);
-        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 2);
+        int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 2);
+        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 3);
         int yStart = Math.max(0, rectangle.getPosition().getPosY() / mapDim - 1);
         int yEnd = Math.min(height, (rectangle.getPosition().getPosY() + rectangle.getHeight()) / mapDim + 1);
 
         // variables for special cases collision detection
-        wasGroundCollision = false;
-        wasTopCollision = false;
-        wasLeftCollision = false;
-        wasRightCollision = false;
+        boolean wasGroundCollision = false;
+        boolean wasTopCollision = false;
+        boolean wasLeftCollision = false;
+        boolean wasRightCollision = false;
 
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
@@ -360,7 +371,7 @@ public class GameMap extends DynamicComponent {
                     if (rectangle.getDx() < 0) {
                         wasRightCollision = true;
 
-                    }else if (rectangle.getDx() > 0) {
+                    } else if (rectangle.getDx() > 0) {
                         wasLeftCollision = true;
                     }
                 }

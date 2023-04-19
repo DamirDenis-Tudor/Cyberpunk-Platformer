@@ -1,18 +1,21 @@
 package Scenes.InGame;
 
-import Components.DynamicComponents.*;
-import Components.BaseComponent.AssetsDeposit;
-import Components.BaseComponent.CharacterisesGenerator;
-import Components.DynamicComponents.Characters.Enemy;
-import Components.DynamicComponents.Characters.Player;
-import Components.DynamicComponents.GameItems.Bullet;
-import Components.DynamicComponents.GameItems.Chest;
-import Components.DynamicComponents.GameItems.Gun;
-import Components.DynamicComponents.Map.GameMap;
-import Components.DynamicComponents.Map.Helicopter;
-import Components.DynamicComponents.Map.Platform;
-import Enums.MessageType;
+import Components.BaseComponents.AssetsDeposit;
+import Components.GameItems.Characters.CharacterisesGenerator;
+import Components.GameItems.Characters.Enemy;
+import Components.GameItems.Characters.Player;
+import Components.GameItems.DynamicComponent;
+import Components.GameItems.GameItems.Bullet;
+import Components.GameItems.GameItems.Chest;
+import Components.GameItems.GameItems.Gun;
+import Components.GameItems.Map.GameMap;
+import Components.GameItems.Map.Helicopter;
+import Components.GameItems.Map.Platform;
+import Components.StaticComponent;
+import Database.Database;
+import Database.SerializedObject;
 import Enums.ComponentType;
+import Enums.MessageType;
 import Enums.SceneType;
 import Input.KeyboardInput;
 import Input.MouseInput;
@@ -21,11 +24,14 @@ import Scenes.Scene;
 import Utils.Coordinate;
 import Window.Camera;
 
+import java.io.*;
 import java.util.Random;
 
 import static Enums.ComponentType.*;
 
 // TODO : Narrator(DynamicComponent) -> for tutorial
+
+// TODO : Male parallax background predefined.
 
 /**
  * This class encapsulates the relation between in game components like player, enemies, bullets, guns, chests, platforms, etc.
@@ -35,10 +41,15 @@ final public class PlayScene extends Scene {
 
     public PlayScene(Scenes.SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
+    }
 
+    private void newGame() {
+        if (!components.isEmpty()) {
+            components.clear();
+        }
         // add the components specific to the scene
-        GameMap map = new GameMap(this, "src/Resources/maps/green_map.tmx");
-
+        GameMap map = AssetsDeposit.get().getGameMap(GreenCity);
+        map.setScene(this);
         addComponent(map);
 
         //add basic enemies
@@ -53,6 +64,7 @@ final public class PlayScene extends Scene {
             DynamicComponent comp = new Enemy(this, position, type);
             addComponent(comp);
         }
+
 
         //   add animals
         for (Coordinate<Integer> position : map.getAnimalsPositions()) {
@@ -76,30 +88,111 @@ final public class PlayScene extends Scene {
             addComponent(new Helicopter(this, position));
         }
 
-        // add player
-        addComponent(new Player(this, map.getPlayerPosition(), Biker));
-
         //  add chests
         for (Coordinate<Integer> position : map.getChestsPositions()) {
             addComponent(new Chest(this, position));
         }
+
+        // add player
+        addComponent(new Player(this, map.getPlayerPosition(), Biker));
+    }
+
+    private void saveGame() {
+        try {
+            // create a SAVE table and dynamically bind to SAVES table
+            Database database = Database.get();
+            database.createSavesTable();
+            database.createSaveTable();
+
+            for (StaticComponent component : components) {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                ObjectOutputStream objectOut = new ObjectOutputStream(bytes);
+                DynamicComponent dynamicComponent = (DynamicComponent) component;
+                objectOut.writeObject(dynamicComponent);
+                database.insertDataIntoSave(dynamicComponent.getGeneralType(), bytes.toByteArray());
+                objectOut.close();
+                bytes.close();
+                System.out.println("Object serialized successfully!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadGame() {
+        if (!components.isEmpty()) {
+            components.clear();
+        }
+        for (SerializedObject serializedObject : Database.get().getSerializedObjects()) {
+            try {
+                // deserialization
+                ByteArrayInputStream byteStream = new ByteArrayInputStream(serializedObject.getData());
+                ObjectInputStream objectStream = new ObjectInputStream(byteStream);
+                switch (serializedObject.getType()) {
+                    case Map -> {
+                        DynamicComponent component = (GameMap) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Player -> {
+                        DynamicComponent component = (Player) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Enemy -> {
+                        DynamicComponent component = (Enemy) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Bullet -> {
+                        DynamicComponent component = (Bullet) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Gun -> {
+                        DynamicComponent component = (Gun) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Chest -> {
+                        DynamicComponent component = (Chest) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Helicopter -> {
+                        DynamicComponent component = (Helicopter) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                    case Platform -> {
+                        DynamicComponent component = (Platform) objectStream.readObject();
+                        component.addMissingPartsAfterDeserialization(this);
+                        components.add(component);
+                    }
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
+            }
+        }
+        System.out.println();
+        /*
+        TODO :
+         - SOLVE THE BUG WITH THE GHOST GUN
+         - SOLVE THE BUG WITH WHEN TRYING TO LOAD SOMETHING WITHOUT CREATING NEW GAME
+         */
     }
 
     @Override
     public void update() throws Exception {
         super.update();
-        if (KeyboardInput.getInstance().isEsc()) {
+        if (KeyboardInput.get().isEsc()) {
             sceneHandler.handleSceneChangeRequest(SceneType.LevelPausedScene);
         }
     }
 
     @Override
-    public void notify(Message message) throws Exception {
-        if (message.type() == MessageType.SceneHasBeenActivated) {
-            Camera.getInstance().disableCameraOffset();
-            MouseInput.getInstance().reset();
-        }
-
+    public void notify(Message message) {
         // no matter who is sending the 'Destroy' message, it must be handled first.
         if (message.type() == MessageType.Destroy) {
             removeComponent(findComponentWithId(message.componentId()));
@@ -108,6 +201,19 @@ final public class PlayScene extends Scene {
 
         // handle the normal requests
         switch (message.source()) {
+            case SceneHandler -> {
+                if (message.type() == MessageType.SceneHasBeenActivated) {
+                    Camera.get().enableCurrentOffset();
+                    MouseInput.get().reset();
+                }
+            }
+            case Scene -> {
+                switch (message.type()) {
+                    case NewGame -> newGame();
+                    case LoadGame -> loadGame();
+                    case SaveGame -> saveGame();
+                }
+            }
             case Player -> {
                 switch (message.type()) {
                     case HandleCollision -> {
@@ -160,8 +266,7 @@ final public class PlayScene extends Scene {
                     case BulletLaunchLeft, BulletLaunchRight -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
 
-                        DynamicComponent bullet = new Bullet(this, AssetsDeposit.getInstance().getBulletByGunName(CharacterisesGenerator.getGunTypeForEnemy(component.getCurrentType())),
-                                component.getCollideBox().getPosition(), Enemy);
+                        DynamicComponent bullet = new Bullet(this, CharacterisesGenerator.getGunTypeForEnemy(component.getCurrentType()), component.getCollideBox().getPosition(), Enemy);
 
                         bullet.notify(new Message(message.type(), Gun, message.componentId()));
                         addComponent(bullet);
@@ -186,8 +291,7 @@ final public class PlayScene extends Scene {
                             case 8 -> type = ComponentType.Gun9;
                             case 9 -> type = ComponentType.Gun10;
                         }
-                        addComponent(new Gun(this, AssetsDeposit.getInstance().getGun(type),
-                                findComponentWithId(message.componentId()).getCollideBox().getPosition(), type));
+                        addComponent(new Gun(this, findComponentWithId(message.componentId()).getCollideBox().getPosition(), type));
                     }
                 }
             }
@@ -197,7 +301,7 @@ final public class PlayScene extends Scene {
                             findComponent(Player).interactionWith(findComponentWithId(message.componentId()));
                     case BulletLaunchRight, BulletLaunchLeft -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
-                        DynamicComponent bullet = new Bullet(this, AssetsDeposit.getInstance().getBulletByGunName(component.getCurrentType()),
+                        DynamicComponent bullet = new Bullet(this, component.getCurrentType(),
                                 component.getCollideBox().getPosition(), Player);
                         bullet.notify(new Message(message.type(), Gun, message.componentId()));
                         addComponent(bullet);

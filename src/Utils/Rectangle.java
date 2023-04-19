@@ -1,6 +1,8 @@
 package Utils;
 
-public class Rectangle {
+import java.io.Serializable;
+
+public class Rectangle implements Serializable {
     private final int width;
     private final int height;
     private Coordinate<Integer> position;

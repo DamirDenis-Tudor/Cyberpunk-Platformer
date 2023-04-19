@@ -1,8 +1,7 @@
-package Components.DynamicComponents.Characters;
+package Components.GameItems.Characters;
 
-import Components.BaseComponent.AnimationHandler;
-import Components.BaseComponent.CharacterisesGenerator;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AnimationHandler;
+import Components.GameItems.DynamicComponent;
 import Enums.*;
 import Input.KeyboardInput;
 import Input.MouseInput;
@@ -20,9 +19,9 @@ import static Utils.Constants.gravitationForce;
 import static Utils.Constants.playerVelocity;
 
 public class Player extends DynamicComponent {
-    private final TimersHandler timersHandler;
-    private final AnimationHandler animationHandler;
-    private final KeyboardInput keyboardInput;
+    transient private TimersHandler timersHandler = TimersHandler.get();;
+    transient private AnimationHandler animationHandler = new AnimationHandler();
+    transient private KeyboardInput keyboardInput = KeyboardInput.get();
     private final Map<ComponentStatus, Boolean> statuses;
     private final Map<GeneralAnimationTypes, AnimationType> animationsType;
     private int health = 100;
@@ -30,28 +29,24 @@ public class Player extends DynamicComponent {
     private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
 
-    public Player(Scene scene, Coordinate<Integer> position, ComponentType type) throws Exception {
+    public Player(Scene scene, Coordinate<Integer> position, ComponentType type){
         super();
         this.scene = scene;
 
-        keyboardInput = KeyboardInput.getInstance();
-
-        timersHandler = TimersHandler.getInstance();
         timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
-
-        animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(AnimationType.BikerIdle, position);
-        collideBox = animationHandler.getAnimation().getRectangle();
 
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Player);
         animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
         attackCombo = CharacterisesGenerator.generateAttackComboFor(type);
 
-        Camera.getInstance().setFocusComponentPosition(collideBox.getPosition());
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), position);
+        collideBox = animationHandler.getAnimation().getRectangle();
+
+        Camera.get().setFocusComponentPosition(collideBox.getPosition());
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message) {
         switch (message.source()) {
             case Map -> {
                 switch (message.type()) {
@@ -99,7 +94,7 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object){
         DynamicComponent component = (DynamicComponent) object;
         switch (component.getGeneralType()) {
             case Enemy -> {
@@ -151,7 +146,7 @@ public class Player extends DynamicComponent {
         }
     }
 
-    protected void handleAnimations() throws Exception {
+    protected void handleAnimations() {
         if (statuses.get(ComponentStatus.Death)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
@@ -200,7 +195,7 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         // horizontal movement
         statuses.put(ComponentStatus.HorizontalMove, false);
         if (!statuses.get(ComponentStatus.Attack) || jumpsCounter != 0) {
@@ -270,7 +265,7 @@ public class Player extends DynamicComponent {
         }
 
         // attack event logic
-        if (!statuses.get(ComponentStatus.IsOnLadder) && MouseInput.getInstance().isLeftMousePressed()) {
+        if (!statuses.get(ComponentStatus.IsOnLadder) && MouseInput.get().isLeftMousePressed()) {
             if (statuses.get(ComponentStatus.GunPicked)) {
                 scene.notify(new Message(MessageType.Shoot, ComponentType.Player, getId()));
             } else {
@@ -279,7 +274,7 @@ public class Player extends DynamicComponent {
         }
 
         // open chest logic
-        if (MouseInput.getInstance().isRightMousePressed()) {
+        if (MouseInput.get().isRightMousePressed()) {
             statuses.put(ComponentStatus.TryingToOpenOrPickSomething, true);
         } else {
             statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
@@ -340,5 +335,16 @@ public class Player extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.Player;
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene = scene;
+        timersHandler = TimersHandler.get();
+        timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
+        keyboardInput = KeyboardInput.get();
+        animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+        Camera.get().setFocusComponentPosition(collideBox.getPosition());
     }
 }

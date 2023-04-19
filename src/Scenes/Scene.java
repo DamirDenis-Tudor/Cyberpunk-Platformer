@@ -1,9 +1,9 @@
 package Scenes;
 
-import Components.DynamicComponents.DynamicComponent;
+import Components.GameItems.DynamicComponent;
 import Components.Notifiable;
 import Components.StaticComponent;
-import Enums.*;
+import Enums.ComponentType;
 
 import java.util.ArrayList;
 import java.util.List;

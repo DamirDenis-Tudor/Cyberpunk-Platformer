@@ -1,4 +1,4 @@
-package Components.BaseComponent;
+package Components.GameItems.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

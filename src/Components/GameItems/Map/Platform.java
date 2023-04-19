@@ -1,7 +1,7 @@
-package Components.DynamicComponents.Map;
+package Components.GameItems.Map;
 
-import Components.BaseComponent.AnimationHandler;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AnimationHandler;
+import Components.GameItems.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -12,10 +12,10 @@ import java.util.Map;
 import static Utils.Constants.platformVelocity;
 
 public class Platform extends DynamicComponent {
-    protected final AnimationHandler animationHandler;
+    transient protected AnimationHandler animationHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
 
-    public Platform(Scene scene, Coordinate<Integer> position) throws Exception {
+    public Platform(Scene scene, Coordinate<Integer> position) {
         super();
         this.scene = scene;
 
@@ -29,7 +29,7 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message) {
         switch (message.source()) {
             case Map, Platform -> {
                 switch (message.type()) {
@@ -49,7 +49,7 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         if (component.getGeneralType() == ComponentType.Platform) {
             collideBox.solveCollision(component.getCollideBox());
@@ -75,7 +75,7 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         if (!statuses.get(ComponentStatus.LeftCollision)) {
             collideBox.moveByX(-platformVelocity);
         } else if (!statuses.get(ComponentStatus.RightCollision)) {
@@ -98,5 +98,12 @@ public class Platform extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.Platform;
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene=scene;
+        animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(AnimationType.Platform, collideBox.getPosition());
     }
 }

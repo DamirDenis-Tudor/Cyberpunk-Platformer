@@ -1,6 +1,6 @@
 package Scenes.InMenu;
 
-import Components.DynamicComponents.MenuItems.Button;
+import Components.MenuItems.Button;
 import Enums.ComponentType;
 import Enums.SceneType;
 import Input.MouseInput;
@@ -14,16 +14,16 @@ import Window.Camera;
 final public class SettingsScene extends Scene {
     public SettingsScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        components.add(new Button(this, ComponentType.Back,
-                new Rectangle(new Coordinate<>(200, 800), 400, 100)));
+        components.add(new Button(this, ComponentType.Back,"BACK",
+                new Rectangle(new Coordinate<>(200, 800), 400, 100),56));
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message) {
         switch (message.type()) {
             case SceneHasBeenActivated -> {
-                Camera.getInstance().disableCameraOffset();
-                MouseInput.getInstance().reset();
+                Camera.get().disableCameraOffset();
+                MouseInput.get().reset();
             }
             case ButtonClicked -> {
                 switch (message.source()) {

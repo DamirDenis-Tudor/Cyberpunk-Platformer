@@ -1,7 +1,7 @@
-package Components.DynamicComponents.Map;
+package Components.GameItems.Map;
 
-import Components.BaseComponent.AnimationHandler;
-import Components.DynamicComponents.DynamicComponent;
+import Components.BaseComponents.AnimationHandler;
+import Components.GameItems.DynamicComponent;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -16,12 +16,11 @@ import java.util.Map;
 import static Utils.Constants.helicopterVelocity;
 
 public class Helicopter extends DynamicComponent {
-    protected final AnimationHandler animationHandler;
-
+    transient protected AnimationHandler animationHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
     private final Coordinate<Integer> initialPosition;
 
-    public Helicopter(Scene scene, Coordinate<Integer> position) throws Exception {
+    public Helicopter(Scene scene, Coordinate<Integer> position) {
         super();
         this.scene = scene;
         statuses = new HashMap<>();
@@ -36,7 +35,7 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message) throws Exception {
+    public void notify(Message message)  {
         switch (message.source()) {
             case Map -> {
                 switch (message.type()) {
@@ -59,7 +58,7 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void interactionWith(Object object) throws Exception {
+    public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.HasPlayer)) {
@@ -70,7 +69,7 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         if (!statuses.get(ComponentStatus.TopCollision)) {
             collideBox.moveByY(-helicopterVelocity);
         } else if (!statuses.get(ComponentStatus.BottomCollision)) {
@@ -98,6 +97,13 @@ public class Helicopter extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.Helicopter;
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Scene scene) {
+        this.scene = scene;
+        animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(AnimationType.Helicopter, collideBox.getPosition());
     }
 }
 

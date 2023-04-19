@@ -37,7 +37,7 @@ public class Timer {
     }
 
     /**
-     *  this method allow to finish a timer earlier
+     *  this method allows finishing a timer earlier
      */
     public void finishEarlier(){
         this.startTime = 0f;
@@ -46,7 +46,7 @@ public class Timer {
 
     /**
      * reset the startTime and endTime
-     * @note : if this method isn't called, the timer functionality will stop.
+     * @note if this method isn't called, the timer functionality will stop.
      */
     public void resetTimer() {
         this.startTime = 0.0F;

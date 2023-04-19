@@ -19,7 +19,7 @@ public class Camera {
      * This constructor is called once at the installation of static instance.
      */
     private Camera() {
-        gameWindow = GameWindow.getInstance();
+        gameWindow = GameWindow.get();
         focusComponentPosition = new Coordinate<>(0, 0);
     }
 
@@ -27,7 +27,7 @@ public class Camera {
      *
      * @return shared instance of class
      */
-    public static Camera getInstance() {
+    public static Camera get() {
         if (instance == null) {
             instance = new Camera();
         }
@@ -76,7 +76,9 @@ public class Camera {
                 pastOffset = currentOffset;
                 currentOffset = -focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2;
             } else {
-                currentOffset = pastOffset;
+                currentOffset = 0;
+                pastOffset = 0;
+
             }
         }
     }
