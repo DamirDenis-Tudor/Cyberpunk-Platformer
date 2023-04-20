@@ -1,6 +1,7 @@
 package Scenes.InMenu;
 
-import Components.MenuItems.Button;
+import Components.BaseComponents.AssetsDeposit;
+import Components.MenuComponents.Button;
 import Enums.ComponentType;
 import Enums.SceneType;
 import Input.MouseInput;
@@ -14,8 +15,9 @@ import Window.Camera;
 final public class SettingsScene extends Scene {
     public SettingsScene(SceneHandler sceneHandler) {
         super(sceneHandler);
+        components.add(AssetsDeposit.get().getMenuWallpaper());
         components.add(new Button(this, ComponentType.Back,"BACK",
-                new Rectangle(new Coordinate<>(200, 800), 400, 100),56));
+                new Rectangle(new Coordinate<>(200, 800), 400, 150),56));
     }
 
     @Override

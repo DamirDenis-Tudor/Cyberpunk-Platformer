@@ -1,6 +1,7 @@
 package Scenes.InGame;
 
-import Components.MenuItems.Button;
+import Components.BaseComponents.AssetsDeposit;
+import Components.MenuComponents.Button;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Enums.SceneType;
@@ -15,12 +16,13 @@ import Window.Camera;
 final public class LevelPauseScene extends Scene {
     public LevelPauseScene(SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
+        components.add(AssetsDeposit.get().getMenuWallpaper());
         components.add(new Button(this, ComponentType.Continue, "CONTINUE",
-                new Rectangle(new Coordinate<>(200, 400), 400, 100),56));
+                new Rectangle(new Coordinate<>(350, 300), 400, 150),56));
         components.add(new Button(this, ComponentType.SaveButton, "SAVE",
-                new Rectangle(new Coordinate<>(200, 600), 400, 100),56));
+                new Rectangle(new Coordinate<>(350, 500), 400, 150),56));
         components.add(new Button(this, ComponentType.BackToMenu, "BACK TO MENU",
-                new Rectangle(new Coordinate<>(200, 800), 400, 100),56));
+                new Rectangle(new Coordinate<>(350, 700), 400, 150),56));
     }
 
     @Override

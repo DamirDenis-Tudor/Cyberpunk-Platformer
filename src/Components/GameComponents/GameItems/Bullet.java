@@ -1,8 +1,8 @@
-package Components.GameItems.GameItems;
+package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -14,6 +14,9 @@ import Utils.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+/**
+ * This class describes the bullet behaviors.
+ */
 public class Bullet extends DynamicComponent {
     transient private ImageWrapper imageWrapper;
     private ComponentType subType;
@@ -58,15 +61,20 @@ public class Bullet extends DynamicComponent {
     @Override
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
+        // a bullet can interact with player or enemy
         if(component.getGeneralType() == ComponentType.Enemy || component.getGeneralType() == ComponentType.Player){
             if(collideBox.intersects(component.getCollideBox())){
+                // the component is notified that is attacked.
                 component.notify(new Message(MessageType.Attack , ComponentType.Bullet , getId()));
+
+                // the bullet request to be destroyed.
                 scene.notify(new Message(MessageType.Destroy , ComponentType.Bullet , getId()));
             }
         }
     }
     @Override
     public void update() {
+        // bullet movement
         if (direction) {
             xOffset = -5;
             collideBox.moveByX(10);
@@ -101,7 +109,9 @@ public class Bullet extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
+        // restore the image
         imageWrapper = AssetsDeposit.get().getBulletByGunName(bulletType).imageWrapper;
     }
 }

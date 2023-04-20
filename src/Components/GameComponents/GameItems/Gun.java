@@ -1,8 +1,8 @@
-package Components.GameItems.GameItems;
+package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -52,13 +52,13 @@ public class Gun extends DynamicComponent {
                 case PlayerDirectionLeft -> {
                     if (statuses.get(ComponentStatus.IsPickedUp)) {
                         direction = false;
-                        xOffset = 25;
+                        xOffset = 23;
                     }
                 }
                 case PLayerDirectionRight -> {
                     if (statuses.get(ComponentStatus.IsPickedUp)) {
                         direction = true;
-                        xOffset = 22;
+                        xOffset = 27;
                     }
                 }
                 case HideGun -> {
@@ -86,7 +86,7 @@ public class Gun extends DynamicComponent {
         if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.IsPickedUp)) {
                 collideBox.setPosition(component.getCollideBox().getPosition());
-                yOffset = component.getCollideBox().getHeight() / 2 - 2;
+                yOffset = component.getCollideBox().getHeight() / 2 - 5;
             }
         }
     }
@@ -115,8 +115,13 @@ public class Gun extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
+        // restore the image
         this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
+
+        // if in the previous save was in the hands of player,
+        // the gun needs recalibration -> his position will be a reference of the player
         if(statuses.get(ComponentStatus.IsPickedUp)){
             statuses.put(ComponentStatus.NeedsRecalibration , true);
         }

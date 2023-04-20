@@ -1,4 +1,4 @@
-package Components.GameItems.Map;
+package Components.GameComponents.Map;
 
 import Components.StaticComponent;
 import Window.GameWindow;
@@ -6,7 +6,6 @@ import Window.Camera;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

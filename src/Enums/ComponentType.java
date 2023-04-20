@@ -17,7 +17,7 @@ public enum ComponentType implements Serializable {
     Bullet1, Bullet2, Bullet3, Bullet4, Bullet5, Bullet6, Bullet7, Bullet8, Bullet9, Bullet10,
     NewGameButton, LoadButton , SettingsButton ,ExitButton,Back,BackToMenu, Continue , DeleteSave , DeleteLatestSave, LoadSave,SaveButton,SaveInfo,
 
-    SceneHandler,Scene
+    SceneHandler,Scene , Wallpaper
 
 
 }

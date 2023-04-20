@@ -13,7 +13,7 @@ import static java.awt.Font.TRUETYPE_FONT;
 /**
  * This class describes a basic game window with
  * specific characteristics like dimensions, title
- * and usefully tools like on-screen drawing.
+ * and useful tools like on-screen drawing.
  * It implements Singleton Design Pattern.
  */
 public class GameWindow {
@@ -89,8 +89,8 @@ public class GameWindow {
      */
     public static GameWindow get() {
         if (instance == null) {
-            //instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-            instance = new GameWindow("Cyberpunk", 1500, 1080);
+            instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+            //instance = new GameWindow("Cyberpunk", 1200, 1080);
         }
         return instance;
     }

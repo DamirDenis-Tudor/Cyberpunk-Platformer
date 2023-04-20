@@ -1,7 +1,7 @@
-package Components.GameItems.Map;
+package Components.GameComponents.Map;
 
 import Components.BaseComponents.AssetsDeposit;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -26,6 +26,7 @@ import static Utils.Constants.*;
 /**
  * This class contains all the information about the game map:
  * matrix of objects|tiles, dimensions, predefined object positions.
+ *
  */
 public class GameMap extends DynamicComponent {
     private int width; // lines
@@ -45,7 +46,7 @@ public class GameMap extends DynamicComponent {
         String path = "";
         switch (mapType) {
             case GreenCity -> path = "src/Resources/maps/green_map.tmx";
-            case IndustrialCity -> path = "";
+            case IndustrialCity -> path = "src/Resources/maps/industrial_map.tmx";
         }
         try {
             //   first initialize the document element
@@ -278,7 +279,7 @@ public class GameMap extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
         this.background = AssetsDeposit.get().getGameMap(mapType).background;
         this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
         this.objects = AssetsDeposit.get().getGameMap(mapType).objects;

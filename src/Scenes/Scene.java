@@ -1,6 +1,6 @@
 package Scenes;
 
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Components.Notifiable;
 import Components.StaticComponent;
 import Enums.ComponentType;

@@ -1,4 +1,4 @@
-package Components.GameItems.Characters;
+package Components.GameComponents.Characters;
 
 import Enums.AnimationType;
 import Enums.ComponentStatus;
@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class loads predefined characteristics of a component.
+ */
 public class CharacterisesGenerator {
     public static List<AnimationType> generateAttackComboFor(ComponentType type) {
         List<AnimationType> attackCombo = new ArrayList<>();

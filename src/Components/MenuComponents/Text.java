@@ -1,4 +1,4 @@
-package Components.MenuItems;
+package Components.MenuComponents;
 
 import Components.StaticComponent;
 import Enums.ColorType;
@@ -7,6 +7,9 @@ import Window.GameWindow;
 
 import java.io.Serializable;
 
+/**
+ * This class encapsulates the text drawing behavior.
+ */
 public class Text implements StaticComponent, Serializable {
     private final Coordinate<Integer> position;
     private ColorType textColor = ColorType.DefaultText;
@@ -36,5 +39,9 @@ public class Text implements StaticComponent, Serializable {
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

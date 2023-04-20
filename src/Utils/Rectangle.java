@@ -2,6 +2,12 @@ package Utils;
 
 import java.io.Serializable;
 
+/**
+ * This class is important for each object of the game,
+ * because it can be attributed to any component in the game.
+ * The most important aspect is that it has a built-in mechanism
+ * for collision detection and solving.
+ */
 public class Rectangle implements Serializable {
     private final int width;
     private final int height;

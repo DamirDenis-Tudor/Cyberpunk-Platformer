@@ -1,7 +1,7 @@
-package Components.GameItems.GameItems;
+package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -78,11 +78,13 @@ public class Chest extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
         // chest animation
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Chest1, collideBox.getPosition());
-        // lock at first frame -> chest in locked
+
+        // restore the animation status
         if(statuses.get(ComponentStatus.IsOpened)){
             animationHandler.getAnimation().lockAtLastFrame();
         }else {

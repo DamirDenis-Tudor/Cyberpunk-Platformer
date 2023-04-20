@@ -1,4 +1,4 @@
-package Components.GameItems;
+package Components.GameComponents;
 
 import Components.Interactive;
 import Components.Notifiable;
@@ -40,10 +40,26 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
     public int getId(){
         return id;
     }
+
+    public void incrementIdCounter(){
+        idCounter++;
+    }
+
+    public static void setIdCounter(int idCounter) {
+        DynamicComponent.idCounter = idCounter;
+    }
+
     public Rectangle getCollideBox() {
         return collideBox;
     }
     public abstract ComponentType getCurrentType();
     public abstract ComponentType getGeneralType();
-    public abstract void addMissingPartsAfterDeserialization(Scene scene);
+    public void addMissingPartsAfterDeserialization(Scene scene){
+        this.scene = scene;
+
+        // restore the exact counter id as that from the saved state
+        // this is accomplished when the last component from the save is deserialized.
+        setIdCounter(getId());
+        incrementIdCounter();
+    };
 }

@@ -1,6 +1,7 @@
 package Scenes.InMenu;
 
-import Components.MenuItems.Button;
+import Components.BaseComponents.AssetsDeposit;
+import Components.MenuComponents.Button;
 import Database.Database;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -20,12 +21,13 @@ public class LoadScene extends Scene {
 
     public LoadScene(SceneHandler sceneHandler) {
         super(sceneHandler);
+        components.add(AssetsDeposit.get().getMenuWallpaper());
         components.add(new Button(this, ComponentType.LoadSave, "LOAD",
-                new Rectangle(new Coordinate<>(200, 300), 400, 150), 56));
+                new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
         components.add(new Button(this, ComponentType.DeleteLatestSave, "DELETE LAST",
-                new Rectangle(new Coordinate<>(200, 500), 400, 150), 50));
+                new Rectangle(new Coordinate<>(350, 500), 400, 150), 50));
         components.add(new Button(this, ComponentType.Back, "BACK",
-                new Rectangle(new Coordinate<>(200, 700), 400, 150), 56));
+                new Rectangle(new Coordinate<>(350, 700), 400, 150), 56));
 
         savesStartingPosition = components.size();
 
@@ -42,7 +44,7 @@ public class LoadScene extends Scene {
         Database database = Database.get();
         for (String save : database.getAllSavesInfo()) {
             components.add(new Button(this, ComponentType.SaveInfo, save,
-                    new Rectangle(new Coordinate<>(900, 300 + 80 * counter++), 800, 75), 32));
+                    new Rectangle(new Coordinate<>(800, 300 + 80 * counter++), 900, 75), 40));
         }
     }
 

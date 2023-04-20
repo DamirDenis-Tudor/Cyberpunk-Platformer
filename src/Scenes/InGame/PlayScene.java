@@ -1,16 +1,16 @@
 package Scenes.InGame;
 
 import Components.BaseComponents.AssetsDeposit;
-import Components.GameItems.Characters.CharacterisesGenerator;
-import Components.GameItems.Characters.Enemy;
-import Components.GameItems.Characters.Player;
-import Components.GameItems.DynamicComponent;
-import Components.GameItems.GameItems.Bullet;
-import Components.GameItems.GameItems.Chest;
-import Components.GameItems.GameItems.Gun;
-import Components.GameItems.Map.GameMap;
-import Components.GameItems.Map.Helicopter;
-import Components.GameItems.Map.Platform;
+import Components.GameComponents.Characters.CharacterisesGenerator;
+import Components.GameComponents.Characters.Enemy;
+import Components.GameComponents.Characters.Player;
+import Components.GameComponents.DynamicComponent;
+import Components.GameComponents.GameItems.Bullet;
+import Components.GameComponents.GameItems.Chest;
+import Components.GameComponents.GameItems.Gun;
+import Components.GameComponents.Map.GameMap;
+import Components.GameComponents.Map.Helicopter;
+import Components.GameComponents.Map.Platform;
 import Components.StaticComponent;
 import Database.Database;
 import Database.SerializedObject;
@@ -25,6 +25,7 @@ import Utils.Coordinate;
 import Window.Camera;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.Random;
 
 import static Enums.ComponentType.*;
@@ -32,22 +33,26 @@ import static Enums.ComponentType.*;
 // TODO : Narrator(DynamicComponent) -> for tutorial
 
 /**
- * This class encapsulates the relation between in game components like player, enemies, bullets, guns, chests, platforms, etc.
+ * This class encapsulates the relation between in game components like player, enemies,
+ * bullets, guns, chests, platforms, etc. It can also be notified about changes in other scenes.
  */
 final public class PlayScene extends Scene {
     Random rand = new Random(17);
 
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
-        newGame();
     }
 
+    /**
+     * This method deletes all the previous components if exists
+     * and then loads a new instance of the game.
+     */
     private void newGame() {
         if (!components.isEmpty()) {
             components.clear();
         }
         // add the components specific to the scene
-        GameMap map = AssetsDeposit.get().getGameMap(GreenCity);
+        GameMap map = AssetsDeposit.get().getGameMap(IndustrialCity);
         map.setScene(this);
         addComponent(map);
 
@@ -63,7 +68,6 @@ final public class PlayScene extends Scene {
             DynamicComponent comp = new Enemy(this, position, type);
             addComponent(comp);
         }
-
 
         //   add animals
         for (Coordinate<Integer> position : map.getAnimalsPositions()) {
@@ -93,9 +97,13 @@ final public class PlayScene extends Scene {
         }
 
         // add player
-        addComponent(new Player(this, map.getPlayerPosition(), Biker));
+        addComponent(new Player(this, map.getPlayerPosition(), Cyborg));
     }
 
+    /**
+     *  This method creates a snapshot of important aspects that each component has.
+     *  Please have a look in game component classes to see the fields that are saved in a database.
+     */
     private void saveGame() {
         try {
             // create a SAVE table and dynamically bind to SAVES table
@@ -118,6 +126,12 @@ final public class PlayScene extends Scene {
         }
     }
 
+    /**
+     * This method deletes all previous components if they exist,and then restores
+     * the selected components from a database.Moreover, each component may have some
+     * "missing parts," such as characteristics that can be easily found
+     * in the AssetsStorage class via a ComponentType identifier or something else.
+     */
     private void loadGame() {
         if (!components.isEmpty()) {
             components.clear();
@@ -125,9 +139,9 @@ final public class PlayScene extends Scene {
         for (SerializedObject serializedObject : Database.get().getSerializedObjects()) {
             try {
                 // deserialization
-                ByteArrayInputStream byteStream = new ByteArrayInputStream(serializedObject.getData());
+                ByteArrayInputStream byteStream = new ByteArrayInputStream(serializedObject.data());
                 ObjectInputStream objectStream = new ObjectInputStream(byteStream);
-                switch (serializedObject.getType()) {
+                switch (serializedObject.type()) {
                     case Map -> {
                         DynamicComponent component = (GameMap) objectStream.readObject();
                         component.addMissingPartsAfterDeserialization(this);
@@ -174,12 +188,6 @@ final public class PlayScene extends Scene {
                 System.exit(0);
             }
         }
-        System.out.println();
-        /*
-        TODO :
-         - SOLVE THE BUG WITH THE GHOST GUN
-         - SOLVE THE BUG WITH WHEN TRYING TO LOAD SOMETHING WITHOUT CREATING NEW GAME
-         */
     }
 
     @Override
@@ -188,6 +196,12 @@ final public class PlayScene extends Scene {
         if (KeyboardInput.get().isEsc()) {
             sceneHandler.handleSceneChangeRequest(SceneType.LevelPausedScene);
         }
+    }
+
+    @Override
+    public void draw(){
+        super.draw();
+        AssetsDeposit.get().getGameOverlay().draw();
     }
 
     @Override
@@ -236,6 +250,9 @@ final public class PlayScene extends Scene {
                     case PlayerDirectionLeft, PLayerDirectionRight, HideGun, ShowGun, Shoot -> {
                         for (DynamicComponent component : getAllComponentsWithName(Gun)) {
                             if (component.getActiveStatus()) {
+                                if (message.type() == MessageType.Shoot){
+                                    System.out.println();
+                                }
                                 component.notify(new Message(message.type(), Player, message.componentId()));
                             }
                         }
@@ -308,24 +325,23 @@ final public class PlayScene extends Scene {
                     case GunNeedsRecalibration -> {
                         findComponentWithId(message.componentId()).getCollideBox().
                             setPosition(findComponent(Player).getCollideBox().getPosition());
+
                          findComponent(Player).notify(new Message(MessageType.GunNeedsRecalibration , Scene , -1));
                     }
                 }
             }
             case Bullet -> {
-                switch (message.type()) {
-                    case HandleCollision -> {
-                        DynamicComponent bullet = findComponentWithId(message.componentId());
-                        findComponent(Map).interactionWith(bullet);
-                        if (stillExists(bullet) && bullet.getCurrentType() != findComponent(Player).getGeneralType()) {
-                            bullet.interactionWith(findComponent(Player));
-                        }
-                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
-                            if (component.getActiveStatus()) {
-                                if (!stillExists(bullet) || bullet.getCurrentType() == component.getGeneralType())
-                                    return;
-                                bullet.interactionWith(component);
-                            }
+                if (Objects.requireNonNull(message.type()) == MessageType.HandleCollision) {
+                    DynamicComponent bullet = findComponentWithId(message.componentId());
+                    findComponent(Map).interactionWith(bullet);
+                    if (stillExists(bullet) && bullet.getCurrentType() != findComponent(Player).getGeneralType()) {
+                        bullet.interactionWith(findComponent(Player));
+                    }
+                    for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
+                        if (component.getActiveStatus()) {
+                            if (!stillExists(bullet) || bullet.getCurrentType() == component.getGeneralType())
+                                return;
+                            bullet.interactionWith(component);
                         }
                     }
                 }

@@ -1,8 +1,8 @@
 package Components.BaseComponents;
 
-import Components.GameItems.GameItems.Bullet;
-import Components.GameItems.GameItems.Gun;
-import Components.GameItems.Map.GameMap;
+import Components.GameComponents.GameItems.Bullet;
+import Components.GameComponents.GameItems.Gun;
+import Components.GameComponents.Map.GameMap;
 import Enums.AnimationType;
 import Enums.ComponentType;
 import Utils.Coordinate;
@@ -14,8 +14,11 @@ import org.w3c.dom.NodeList;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static Utils.Constants.mapScale;
@@ -30,7 +33,10 @@ public class AssetsDeposit {
     private final Map<ComponentType , Gun> guns;
     private final Map<ComponentType , Bullet> bullets;
     private final Map<ComponentType , ComponentType> gunsBulletsRelation;
+    private ImageWrapper menuWallpaper = null;
+    private ImageWrapper gameOverlay = null;
 
+    private List<ImageWrapper> overlayEffects;
     /**
      * this constructor loads all the assets.
      */
@@ -41,8 +47,23 @@ public class AssetsDeposit {
         guns = new HashMap<>();
         bullets = new HashMap<>();
         try {
+            // -------------------------load menu wallpaper
+            menuWallpaper = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/menu_wallpaper1.png")));
+
+            // -------------------------load the overlay effects and set the transparency
+            //TODO
+            BufferedImage image = ImageIO.read(new File("src/Resources/resources/cyber-effects/Overlay/2.png"));
+            BufferedImage transparentImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = transparentImage.createGraphics();
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f)); // 20% transparency
+            g2d.drawImage(image, 0, 0, null);
+            g2d.dispose();
+            gameOverlay = new ImageWrapper(transparentImage);
+
+
             // -----------------------load game maps
             gameMaps.put(ComponentType.GreenCity , new GameMap(null,ComponentType.GreenCity));
+            gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -150,4 +171,7 @@ public class AssetsDeposit {
      */
     public Bullet getBulletByGunName(ComponentType name){return bullets.get(gunsBulletsRelation.get(name));}
 
+    public ImageWrapper getMenuWallpaper() {return menuWallpaper;}
+
+    public ImageWrapper getGameOverlay() {return gameOverlay;}
 }

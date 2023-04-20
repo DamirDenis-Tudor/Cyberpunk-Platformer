@@ -1,7 +1,8 @@
-package Components.GameItems.Characters;
+package Components.GameComponents.Characters;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
+import Components.MenuComponents.Text;
 import Enums.*;
 import Input.KeyboardInput;
 import Input.MouseInput;
@@ -13,27 +14,36 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import static Utils.Constants.gravitationForce;
 import static Utils.Constants.playerVelocity;
 
+/**
+ * This class implements the player behaviour.The code might be complicated, but it is not.
+ * It is nothing more than a state machine that describes the interactions with other components.
+ */
 public class Player extends DynamicComponent {
     transient private TimersHandler timersHandler = TimersHandler.get();
-    ;
     transient private AnimationHandler animationHandler = new AnimationHandler();
     transient private KeyboardInput keyboardInput = KeyboardInput.get();
     private final Map<ComponentStatus, Boolean> statuses;
     private final Map<GeneralAnimationTypes, AnimationType> animationsType;
     private int health = 100;
-    private Integer jumpsCounter = 0;
+    private final Text healthText;
+    private int jumpsCounter = 0;
     private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
+
+    private boolean direction = false;
 
     public Player(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
 
+        healthText = new Text("HEALTH : " + health, new Coordinate<>(200, 50), 60);
+        healthText.setTextColor(ColorType.RedColor);
         timersHandler.addTimer(new Timer(0.30f), getGeneralType().name());
         timersHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
 
@@ -84,12 +94,13 @@ public class Player extends DynamicComponent {
                         statuses.put(ComponentStatus.Hurt, true);
                     }
                     health -= 1;
-                    //System.out.println(health);
                     if (health <= 0) {
+                        health = 0;
                         statuses.put(ComponentStatus.Death, true);
                         setActiveStatus(false);
                         scene.notify(new Message(MessageType.PlayerDeath, ComponentType.Player, getId()));
                     }
+                    healthText.setText("HEALTH : " + health);
                 }
             }
             case Scene -> {
@@ -211,25 +222,24 @@ public class Player extends DynamicComponent {
     public void update() {
         // horizontal movement
         statuses.put(ComponentStatus.HorizontalMove, false);
-        if (!statuses.get(ComponentStatus.Attack) || jumpsCounter != 0) {
-            if (keyboardInput.getKeyD()) {
-                if (!animationHandler.getAnimation().getDirection()) {
-                    scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
-                }
-                animationHandler.getAnimation().setDirection(true);
-                statuses.put(ComponentStatus.HorizontalMove, true);
-            } else if (keyboardInput.getKeyA()) {
-                if (animationHandler.getAnimation().getDirection()) {
-                    scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
-                }
-                animationHandler.getAnimation().setDirection(false);
-                statuses.put(ComponentStatus.HorizontalMove, true);
+        if (keyboardInput.getKeyD()) {
+            if (!animationHandler.getAnimation().getDirection()) {
+                scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
             }
+            direction = true;
+            statuses.put(ComponentStatus.HorizontalMove, true);
+        } else if (keyboardInput.getKeyA()) {
+            if (animationHandler.getAnimation().getDirection()) {
+                scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
+            }
+            direction = false;
+            statuses.put(ComponentStatus.HorizontalMove, true);
         }
-
+        animationHandler.getAnimation().setDirection(direction);
+        
         if (!statuses.get(ComponentStatus.OnHelicopter)) {
             if (statuses.get(ComponentStatus.HorizontalMove)) {
-                if (animationHandler.getAnimation().getDirection()) {
+                if (direction) {
                     collideBox.moveByX(playerVelocity);
                 } else {
                     collideBox.moveByX(-playerVelocity);
@@ -335,11 +345,13 @@ public class Player extends DynamicComponent {
         handleAnimations();
         animationHandler.update();
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player, getId()));
+        healthText.update();
     }
 
     @Override
     public void draw() {
         animationHandler.draw();
+        healthText.draw();
     }
 
     @Override
@@ -354,13 +366,23 @@ public class Player extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
         timersHandler = TimersHandler.get();
+        keyboardInput = KeyboardInput.get();
+
+        // restore the timers they might be corrupted
         timersHandler.addTimer(new Timer(0.30f), this.getGeneralType().name());
         timersHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
-        keyboardInput = KeyboardInput.get();
+
+        // restoring the animation handler
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+        animationHandler.getAnimation().setDirection(direction);
+        collideBox = animationHandler.getAnimation().getRectangle();
+
+
+        // refocus camera on player position
         Camera.get().setFocusComponentPosition(collideBox.getPosition());
     }
 }

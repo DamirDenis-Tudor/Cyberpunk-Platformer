@@ -1,7 +1,7 @@
-package Components.GameItems.Characters;
+package Components.GameComponents.Characters;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -15,8 +15,8 @@ import static Utils.Constants.enemyRange;
 import static Utils.Constants.gravitationForce;
 
 /**
- * This class describes a basic enemy behavior.
- * Read the code it describes itself.
+ * This class describes a basic enemy behavior.The code might be complicated, but it is not.
+ * It is nothing more than a state machine that describes the interactions with other components.
  */
 public class Enemy extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
@@ -264,11 +264,21 @@ public class Enemy extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
         timersHandler = TimersHandler.get();
         timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
+
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Walk), collideBox.getPosition());
+
+        collideBox = animationHandler.getAnimation().getRectangle();
+        if (statuses.get(ComponentStatus.LeftCollision)){
+            animationHandler.getAnimation().setDirection(true);
+        }else if (statuses.get(ComponentStatus.RightCollision)){
+            animationHandler.getAnimation().setDirection(false);
+        }
+
         switch (subtype){
             case GunnerEnemy -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
             case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.2f) , subtype.name()+getId());

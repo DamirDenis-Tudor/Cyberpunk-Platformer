@@ -10,14 +10,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a rigid database implementation and is focused on the needs for this project.
+ * Normally, this class should implement an interface of CRUD instructions.
+ */
 public class Database {
     private static Database instance = null;
     private Connection connection = null;
     private String oldestSave = "";
     private int currentNumberOfDisplayedSaves = 0;
-
     private String saveToBeLoaded = "";
-
 
     private Database() {
         try {
@@ -106,7 +108,7 @@ public class Database {
             currentNumberOfDisplayedSaves = 0;
             while (resultSet.next()) {
                 currentNumberOfDisplayedSaves++;
-                saves.add(resultSet.getString("SAVE_TABLE_NAME") + " " + resultSet.getString("TIME"));
+                saves.add(resultSet.getString("SAVE_TABLE_NAME") + " - > " + resultSet.getString("TIME"));
             }
             statement.close();
             resultSet.close();

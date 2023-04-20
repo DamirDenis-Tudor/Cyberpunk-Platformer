@@ -82,6 +82,5 @@ public class Camera {
                 currentOffset = pastOffset;
             }
         }
-        //System.out.println(currentOffset);
     }
 }

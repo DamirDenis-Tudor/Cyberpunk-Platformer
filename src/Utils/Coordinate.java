@@ -2,6 +2,11 @@ package Utils;
 
 import java.io.Serializable;
 
+/**
+ * This class is helpful in the position referencing.
+ * Example: camera takes a reference to the player position and so on.
+ * @param <T> must extend Number
+ */
 public class Coordinate <T extends Number> implements Serializable {
     private T posX ;
     private T posY ;

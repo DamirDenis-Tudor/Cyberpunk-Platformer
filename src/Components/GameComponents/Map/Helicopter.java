@@ -1,7 +1,7 @@
-package Components.GameItems.Map;
+package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -15,6 +15,11 @@ import java.util.Map;
 
 import static Utils.Constants.helicopterVelocity;
 
+/**
+ * This class describes the helicopter behaviour.
+ * The code might be complicated, but it is not.
+ * It is nothing more than a state machine that describes the interactions with other components.
+ */
 public class Helicopter extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
@@ -101,7 +106,7 @@ public class Helicopter extends DynamicComponent {
 
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene = scene;
+        super.addMissingPartsAfterDeserialization(scene);
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Helicopter, collideBox.getPosition());
     }

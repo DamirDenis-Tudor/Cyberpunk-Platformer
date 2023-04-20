@@ -2,6 +2,9 @@ package Utils;
 
 import java.util.Random;
 
+/**
+ * This class is a simple id generator.
+ */
 public class RandomIdGenerator {
     private static final String ALPHABET = "ABCDEFGH123456789abcdefghijklmnopqrstuvwxyzIJKLMNOPQRSTUVWXYZ";
     private static final int LENGTH = 5;

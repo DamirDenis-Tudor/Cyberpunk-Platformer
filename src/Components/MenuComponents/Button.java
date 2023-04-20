@@ -1,4 +1,4 @@
-package Components.MenuItems;
+package Components.MenuComponents;
 
 import Components.StaticComponent;
 import Database.Database;
@@ -12,10 +12,12 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.GameWindow;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Button implements StaticComponent,Serializable {
+/**
+ * This class encapsulates the behavior of a button.
+ */
+public class Button implements StaticComponent {
     private final Scene scene;
     private final ComponentType currentType;
     private ColorType backgroundColor = ColorType.DefaultBackground;
@@ -43,6 +45,7 @@ public class Button implements StaticComponent,Serializable {
                 }
             }else {
                 previousClicked = false;
+
             }
         } else {
             if(!Objects.equals(Database.get().getSaveToBeLoaded(), text.getText().split(" ")[0])) {

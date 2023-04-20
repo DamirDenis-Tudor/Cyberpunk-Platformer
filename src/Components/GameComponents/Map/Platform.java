@@ -1,7 +1,7 @@
-package Components.GameItems.Map;
+package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.GameItems.DynamicComponent;
+import Components.GameComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import static Utils.Constants.platformVelocity;
 
+/**
+ * This class describes the platform behavior.The code might be complicated, but it is not.
+ * It is nothing more than a state machine that describes the interactions with other components.
+ */
 public class Platform extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
@@ -100,10 +104,19 @@ public class Platform extends DynamicComponent {
         return ComponentType.Platform;
     }
 
-    @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
-        this.scene=scene;
+        super.addMissingPartsAfterDeserialization(scene);
+
+        // restore animation handler
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Platform, collideBox.getPosition());
+        collideBox = animationHandler.getAnimation().getRectangle();
+
+        // restore animation direction
+        if (statuses.get(ComponentStatus.LeftCollision)){
+            animationHandler.getAnimation().setDirection(true);
+        }else if (statuses.get(ComponentStatus.RightCollision)){
+            animationHandler.getAnimation().setDirection(false);
+        }
     }
 }
