@@ -1,7 +1,9 @@
 # Cyberpunk 2030
 ## Current status:
-https://user-images.githubusercontent.com/101417927/233392430-5e01cb28-9737-47d1-b39c-f6b3fccb822b.mp4
--------
+-----
+https://user-images.githubusercontent.com/101417927/233394365-4a337295-40fa-43fb-94c1-39e31add5813.mp4
+
+
 # 1. Game arhitecture
 - ### Main structure
  The project follows the state machine principle(State Design Pattern). The game has multiple scenes, where each scene contains several components such as map , characters, and buttons. Modifying the current active scene can be easily achieved through its associated component or with other scene, without affecting the underlying structure.
