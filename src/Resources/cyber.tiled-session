@@ -1,0 +1,187 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "maps/industrial_map.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "backgrounds/green_background.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.5
+        },
+        "backgrounds/industrial_background.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.5
+        },
+        "green_map/green_background.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "green_map/green_map.tmx": {
+            "scale": 0.4522395833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 473.2005067373027,
+                "y": -496.41828860992746
+            }
+        },
+        "green_map/green_map/green_background.tsx": {
+            "scaleInDock": 1
+        },
+        "green_map/green_map/green_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "green_map/green_tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "in_game_assets/Weapons&Buletts.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "in_game_assets/animations.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "in_game_assets/players.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "industrial_map/green_tileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "industrial_map/industrial_background.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "industrial_map/industrial_map.tmx": {
+            "scale": 0.4522395833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 482.0453760221121,
+                "y": 960.773926062421
+            }
+        },
+        "industrial_map/industrial_map/industrial_background.tsx": {
+            "scaleInDock": 1
+        },
+        "industrial_map/industrial_map/industrial_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "industrial_map/industrial_tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "maps/green_map.tmx": {
+            "expandedGroupLayers": [
+                3,
+                1,
+                11
+            ],
+            "expandedObjectLayers": [
+                3,
+                7,
+                6,
+                5,
+                4,
+                10,
+                9
+            ],
+            "scale": 1.4201,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 311.2456869234561,
+                "y": 161.96042532216043
+            }
+        },
+        "maps/green_map/green_background.tsx": {
+            "scaleInDock": 1
+        },
+        "maps/green_map/green_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "maps/industrial_map.tmx": {
+            "expandedObjectLayers": [
+                8,
+                7,
+                5,
+                4,
+                9
+            ],
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 154.5,
+                "y": 518
+            }
+        },
+        "maps/industrial_map/industrial_background.tsx": {
+            "scaleInDock": 1
+        },
+        "maps/industrial_map/industrial_tileset.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "maps/proba.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "objects/greenzone_objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "objects/industrial_objects.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "tilesets/green_tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "tilesets/industrial_tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 2
+        }
+    },
+    "last.externalTilesetPath": "/home/denis/Facultate/PAOO/Game/Cyberpunk/src/Resources/objects",
+    "last.imagePath": "/home/denis/Facultate/PAOO/Game/Cyberpunk/src/Resources/resources/cyber_automobiles/cyber-drones/1 Drones/2",
+    "map.height": 60,
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "maps/green_map.tmx",
+        "maps/industrial_map.tmx",
+        "in_game_assets/animations.tsx",
+        "objects/greenzone_objects.tsx",
+        "tilesets/green_tileset.tsx"
+    ],
+    "project": "cyber.tiled-project",
+    "recentFiles": [
+        "maps/green_map.tmx",
+        "tilesets/green_tileset.tsx",
+        "objects/greenzone_objects.tsx",
+        "in_game_assets/animations.tsx",
+        "maps/industrial_map.tmx",
+        "in_game_assets/Weapons&Buletts.tsx",
+        "maps/proba.tsx",
+        "in_game_assets/players.tsx",
+        "objects/industrial_objects.tsx",
+        "industrial_map/industrial_background.tsx",
+        "green_map/green_map.tmx",
+        "green_map/green_tileset.tsx"
+    ],
+    "resizeMap.removeObjects": false,
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}

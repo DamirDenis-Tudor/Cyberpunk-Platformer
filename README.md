@@ -11,7 +11,7 @@ https://user-images.githubusercontent.com/101417927/233394365-4a337295-40fa-43fb
 - ### In game interations 
 Dynamic components that can alter the game's guidelines will interact via the Mediator Design Pattern, providing elegant and well-structured code practices.
 
-![diagram](https://user-images.githubusercontent.com/101417927/230668825-a2e3dc14-3266-4e0c-bc8f-3e016102440d.png)
+![diagram](https://user-images.githubusercontent.com/101417927/233398729-3ddbbb34-782c-4be1-8aa3-97692cf5df28.png)
 
 # 2. Story  
 
