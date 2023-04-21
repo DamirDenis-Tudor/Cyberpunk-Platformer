@@ -283,6 +283,7 @@ public class GameMap extends DynamicComponent {
         this.background = AssetsDeposit.get().getGameMap(mapType).background;
         this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
         this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
+        Camera.get().setGameMapPixelDimension(width * mapDim);
     }
 
     /**

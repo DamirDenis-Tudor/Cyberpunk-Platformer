@@ -49,8 +49,9 @@ public abstract class Scene implements Notifiable {
      * @return return the existence status
      */
     public boolean stillExists(DynamicComponent component){return components.contains(component);}
+
     /**
-     * this method search for a specific component by an identifier
+     * this method search for a specific component
      * @param name to be found
      * @return founded component
      */
