@@ -1,19 +1,100 @@
-# Cyberpunk 2030
-## Current status:
------
-https://user-images.githubusercontent.com/101417927/233394365-4a337295-40fa-43fb-94c1-39e31add5813.mp4
+# Content
 
+<br><br><br>
 
-# 1. Game arhitecture
-- ### Main structure
- The project follows the state machine principle(State Design Pattern). The game has multiple scenes, where each scene contains several components such as map , characters, and buttons. Modifying the current active scene can be easily achieved through its associated component or with other scene, without affecting the underlying structure.
+ ##  1) [Architecture](#architecture)
+ ##  2) [Status](#status)
+ ##  3) [Details](#details)
+ ##  4) [Story](#story)
+ ##  5) [Assets](#assets)
 
-- ### In game interations 
-Dynamic components that can alter the game's guidelines will interact via the Mediator Design Pattern, providing elegant and well-structured code practices.
+<br><br><br><br><br><br><br><br><br>
 
+# 1. Architecture<a name="architecture"></a>
+### The project is based on two behavioral design patterns: State and Mediator. Additionally, Singleton and Flyweight are used as needed. 
+#### 1. Game interfaces : StaticComponent, Interactive, Notifiable, Serializable
+- StaticComponent : allows to implement a frame by frame modifiable and drawble component.
+- Interactive : allows to interact with an Object.
+- Notifiable : allows to recieve a Message(Sender,Reciever,SenderId).
+- Serializable : built-in in java and allows an object to be serialized.(transient - specifies which fields are ignored)
+<br></br>
+#### 2. State & Mediator
+- The SceneHandler class is designed to manage multiple scenes, allowing it to activate or deactivate scenes based on incoming requests.
+- Additionally, by implementing the Notifiable interface, it is capable of notifying a specific scene when changes are made in another scene.
+<br></br>
+- The Scene abstract class not only implements the Notifiable interface but also serves as a mediator between its associated StaticComponents.
+- The Scene class is extended by subclasses such as PlayScene, LevelPauseScene, MainMenuScene, LoadScene, and so on. Each of these subclasses has different types of components.
+- For example, menu-related scenes will have Button and TextComponents, while PlayScene will have a series of DynamicComponents.
+<br></br>
+- The DynamicComponent class is an abstract class that implements the Notifiable, Interactive and Serializable interfaces and is extended by classes such as Player, Enemy, GameMap, Gun, Bullet, Platform, Helicopter, and Chest.
+- In the PlayScene, when a component is added, it needs to be upcasted to StaticComponent. When the component needs to be notified or to interact with an object, it needs to be downcasted to DynamicComponent.
+<br></br>
+- Code example from PlayScene and Scene : 
+```java
+     // Scene 
+     /**
+     * @param id specific identifier of the component
+     * @return null or founded component
+     */
+    public DynamicComponent findComponentWithId(int id){
+        for (StaticComponent component: components){
+            DynamicComponent dynamicComponent = (DynamicComponent) component;
+            if (id == dynamicComponent.getId()){
+                return dynamicComponent;
+            }
+        }
+        return null;
+    }
+
+    // PlayScene
+    @Override
+    public void notify(Message message) {
+        // no matter who is sending the 'Destroy' message, it must be handled first.
+        if (message.type() == MessageType.Destroy) {
+            removeComponent(findComponentWithId(message.componentId()));
+            return;
+        }
+
+        // handle the normal requests
+        switch (message.source()) {
+            // ...
+            case Player -> {
+                switch (message.type()) {
+                    case HandleCollision -> {
+                        // handle with a map
+                        findComponent(Map).interactionWith(findComponentWithId(message.componentId()));
+
+                        // handle with enemies
+                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
+                            if (component.getActiveStatus()) {
+                                findComponentWithId(message.componentId()).interactionWith(component);
+                            }
+                        }
+                    }
+                   // ...
+                }
+            }
+            // ...
+        }
+    }
+```
+<br></br>
+- Here is an UML diagram with the structure described :  
 ![diagram](https://user-images.githubusercontent.com/101417927/233398729-3ddbbb34-782c-4be1-8aa3-97692cf5df28.png)
 
-# 2. Story  
+# 2. Status<a name="status"></a>
+ - Loading and saving from the database is functional.
+ - Enemy behavior is complete (TODO: Boss enemies, Drones).
+ - Menu functionality is almost done (TODO: Add missing scenes).
+ - Interactive objects like Platforms, Helicopters, Guns, and Chests are functional (TODO: Add trap objects, collectible cards).
+ - The player is able to perform a double jump, a combo attack, and shoot with a gun (TODO: Implement player inventory).
+--------
+https://user-images.githubusercontent.com/101417927/233394365-4a337295-40fa-43fb-94c1-39e31add5813.mp4
+# 3. Details<a name="details"></a>
+
+<br></br>
+
+# 4. Story<a name="story"></a>
 
 - ### Introduction
  In a dystopian world ruled by the Illuminati, Blaze takes on the role of a lone fighter with extraordinary abilities. The fighter's mission is to stop the Illuminati from launching a mass destruction rocket that would devastate society.
@@ -30,15 +111,6 @@ Dynamic components that can alter the game's guidelines will interact via the Me
 - ### Happy end
  As the fighter rides off into the sunset, he knows that his mission was worth the risks. Blaze have proven that even in a world ruled by the Illuminati, there is still hope for a better future.
 
-# 3. Gameplay
-- This is a thrilling platformer game that can be played at a fast or medium pace.
-- The game features a main player who can be customized as a cyborg, punk, or biker character, and is equipped with body and fire weapons to fight against various enemies. The main player also possesses incredible parkour abilities to navigate through challenging levels filled with traps, dangerous animals, and six types of enemies, each with their unique behaviors.
-- As the game progresses, the player must face two boss fights and race against time, which adds an extra layer of excitement to the gameplay. To enhance the player's experience, there are several interactive elements such as citizens who provide helpful information, chests that contain collectable weapons, ladders to climb, barrels that explode, cards to collect, and control panels to operate.
-
-![Example Image](presentation_resources/game_preview.png "GamePreview")
-
-# 4. Game Assets
-![Example Image](presentation_resources/all_assets.png "Resources")
-
-
-# 5. User Interactions
+<br></br>
+# 5. Assets<a name="assets"></a>
+- Assets were dowloaded from <a href="https://craftpix.net/?s=cyberpunk">CRAPIX.NET</a>
