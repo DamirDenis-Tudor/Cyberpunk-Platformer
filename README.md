@@ -8,16 +8,16 @@
 ![Screenshot from 2023-04-21 12-01-03](https://user-images.githubusercontent.com/101417927/233596076-cb079189-a214-4561-a40b-efca02e63e28.png)
 
 # 1. Architecture<a name="architecture"></a>
-- ### The project is based on two behavioral design patterns: State and Mediator.
-- ### Additionally, Singleton and Flyweight are used as needed.
+- #### The project is based on two behavioral design patterns: State and Mediator.
+- #### Additionally, Singleton and Flyweight are used as needed.
 <br></br>
-#### 1. Game interfaces : StaticComponent, Interactive, Notifiable, Serializable
+### 1. Game interfaces : StaticComponent, Interactive, Notifiable, Serializable
 - StaticComponent: allows implementing a frame by frame-modifiable and drawable component.
 - Interactive: allows interacting with an Object.
 - Notifiable: allows receiving a Message(Sender,Message,SenderId).
 - Serializable: built-in in java and allows an object to be serialized.(transient—specifies which fields are ignored)
   <br></br>
-#### 2. State & Mediator
+### 2. State & Mediator
 - The SceneHandler class is designed to manage multiple scenes, allowing it to activate or deactivate scenes based on incoming requests.
 - Additionally, by implementing the Notifiable interface, it is capable of notifying a specific scene when changes are made in another scene.
   <br></br>
