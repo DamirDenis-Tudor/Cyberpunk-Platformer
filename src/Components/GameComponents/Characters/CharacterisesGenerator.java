@@ -136,7 +136,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy2Death);
             }
             case MachineGunEnemy -> {
-                TimersHandler.get().addTimer(new Timer(0.2f) , type.name()+id);
+                TimersHandler.get().addTimer(new Timer(0.4f) , type.name()+id);
                 animationsType.put(GeneralAnimationTypes.Idle, AnimationType.Enemy6Idle);
                 animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Enemy6Walk);
                 animationsType.put(GeneralAnimationTypes.Attack, AnimationType.Enemy6Attack);

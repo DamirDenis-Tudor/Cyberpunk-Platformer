@@ -9,9 +9,13 @@ public class Camera {
     private static Camera instance;
     private final GameWindow gameWindow;
     private Coordinate<Integer> focusComponentPosition; // reference to component position
-    private int gameMapPixelDimension = 0; // map width in pixels
+    private int gameMapPixelWidthDimension = 0; // map width in pixels
+    private int gameMapPixelHeightDimension = 0; // map width in pixels
 
     private boolean active = true;
+
+    private final Coordinate<Integer> horizontalOffsets; // current and past
+    private final Coordinate<Integer> verticalOffsets; // current and past
     private int currentOffset = 0; // current frame horizontal offset
     private int pastOffset = 0; // past frame horizontal offset
 
@@ -20,6 +24,8 @@ public class Camera {
      */
     private Camera() {
         gameWindow = GameWindow.get();
+        horizontalOffsets = new Coordinate<>(0,0);
+        verticalOffsets = new Coordinate<>(0,0);
         focusComponentPosition = new Coordinate<>(0, 0);
     }
 
@@ -36,22 +42,31 @@ public class Camera {
 
 
 
-    public int getCurrentOffset() {
-        return currentOffset;
+    public int getCurrentHorizontalOffset() {
+        return horizontalOffsets.getPosX();
+    }
+    public int getPastHorizontalOffset() {
+        return horizontalOffsets.getPosY();
+    }
+    public int getCurrentVerticalOffset() {
+        return verticalOffsets.getPosX();
+    }
+    public int getPastVerticalOffset() {
+        return verticalOffsets.getPosY();
     }
 
+
     public void disableCameraOffset(){
-        currentOffset = 0;
+
+        horizontalOffsets.setX(0);
+        verticalOffsets.setX(0);
         active = false;
     }
 
     public void enableCurrentOffset(){
-        currentOffset = pastOffset;
+        horizontalOffsets.setX(horizontalOffsets.getPosY());
+        verticalOffsets.setX(verticalOffsets.getPosY());
         active = true;
-    }
-
-    public int getPastOffset() {
-        return pastOffset;
     }
 
     /**
@@ -60,9 +75,11 @@ public class Camera {
     public void setFocusComponentPosition(Coordinate<Integer> component) {
         this.focusComponentPosition = component;
     }
-
-    public void setGameMapPixelDimension(int dimension){
-        gameMapPixelDimension = dimension;
+    public void setGameMapPixelWidthDimension(int dimension){
+        gameMapPixelWidthDimension = dimension;
+    }
+    public void setGameMapPixelHeightDimension(int dimension){
+        gameMapPixelHeightDimension = dimension;
     }
 
 
@@ -72,14 +89,26 @@ public class Camera {
     public void update() {
         if (active) {
             if (focusComponentPosition.getPosX() > gameWindow.GetWndWidth() / 2 &&
-                    focusComponentPosition.getPosX() < gameMapPixelDimension - gameWindow.GetWndWidth() / 2) {
-                pastOffset = currentOffset;
-                currentOffset = -focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2;
+                    focusComponentPosition.getPosX() < gameMapPixelWidthDimension - gameWindow.GetWndWidth() / 2) {
+                horizontalOffsets.setY(horizontalOffsets.getPosX());
+                horizontalOffsets.setX(-focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2);
             } else if(focusComponentPosition.getPosX() <= gameWindow.GetWndWidth() / 2){
-                currentOffset = 0;
-                pastOffset = 0;
-            } else if (focusComponentPosition.getPosX() >= gameMapPixelDimension - gameWindow.GetWndWidth()/2) {
-                currentOffset = pastOffset;
+                horizontalOffsets.setX(0);
+                horizontalOffsets.setY(0);
+            } else if (focusComponentPosition.getPosX() >= gameMapPixelWidthDimension - gameWindow.GetWndWidth()/2) {
+                horizontalOffsets.setX(horizontalOffsets.getPosY());
+            }
+
+            if (focusComponentPosition.getPosY() > gameWindow.GetWndHeight() / 2 &&
+                    focusComponentPosition.getPosY() < gameMapPixelHeightDimension - gameWindow.GetWndHeight()/2) {
+                verticalOffsets.setY(verticalOffsets.getPosX());
+                verticalOffsets.setX(-focusComponentPosition.getPosY() + gameWindow.GetWndHeight() / 2);
+            } else if(focusComponentPosition.getPosY() <= gameWindow.GetWndHeight() / 2){
+                verticalOffsets.setX(0);
+                verticalOffsets.setY(0);
+            } else if (focusComponentPosition.getPosY() >= gameMapPixelHeightDimension - gameWindow.GetWndHeight()/2) {
+                verticalOffsets.setX(-gameMapPixelHeightDimension + gameWindow.GetWndHeight());
+                verticalOffsets.setY(verticalOffsets.getPosX());
             }
         }
     }

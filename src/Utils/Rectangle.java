@@ -9,8 +9,8 @@ import java.io.Serializable;
  * for collision detection and solving.
  */
 public class Rectangle implements Serializable {
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
     private Coordinate<Integer> position;
     private double dx = 0.0, dy = 0.0;
 
@@ -61,6 +61,13 @@ public class Rectangle implements Serializable {
     }
 
     public void setPosition(Coordinate<Integer> position) {this.position = position;}
+
+    public void setWidth(int value){
+        width = value;
+    }
+    public void setHeight(int value){
+        height = value;
+    }
 
     public Coordinate<Integer> getCopyCenteredPosition(){
         return new Coordinate<>(getCenterX() , getCenterY());

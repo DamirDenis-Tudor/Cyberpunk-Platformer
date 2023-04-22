@@ -273,9 +273,9 @@ public class Player extends DynamicComponent {
         // movement on jumping logic
         if (jumpingTimer && !statuses.get(ComponentStatus.TopCollision)) {
             if (jumpsCounter == 1) {
-                collideBox.moveByY(-7);
+                collideBox.moveByY(-8);
             } else if (jumpsCounter == 2) {
-                collideBox.moveByY(-9);
+                collideBox.moveByY(-10);
             }
         } else if (!statuses.get(ComponentStatus.IsOnLadder) && !statuses.get(ComponentStatus.OnHelicopter) &&
                 (!statuses.get(ComponentStatus.BottomCollision) || statuses.get(ComponentStatus.TopCollision))) {

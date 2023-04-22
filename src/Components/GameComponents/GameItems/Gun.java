@@ -52,7 +52,7 @@ public class Gun extends DynamicComponent {
                 case PlayerDirectionLeft -> {
                     if (statuses.get(ComponentStatus.IsPickedUp)) {
                         direction = false;
-                        xOffset = 23;
+                        xOffset = 35;
                     }
                 }
                 case PLayerDirectionRight -> {
@@ -86,7 +86,7 @@ public class Gun extends DynamicComponent {
         if (component.getGeneralType() == ComponentType.Player) {
             if (statuses.get(ComponentStatus.IsPickedUp)) {
                 collideBox.setPosition(component.getCollideBox().getPosition());
-                yOffset = component.getCollideBox().getHeight() / 2 - 5;
+                yOffset = component.getCollideBox().getHeight() / 2 - 8;
             }
         }
     }

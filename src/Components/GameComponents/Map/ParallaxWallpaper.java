@@ -1,13 +1,15 @@
 package Components.GameComponents.Map;
 
 import Components.StaticComponent;
-import Window.GameWindow;
 import Window.Camera;
+import Window.GameWindow;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import static Utils.Constants.imageScale;
 
 /**
  * This class handles the behavior of a parallax background.
@@ -40,11 +42,20 @@ public class ParallaxWallpaper implements StaticComponent{
         background2Position.add(GameWindow.get().GetWndWidth());
     }
 
+    public void restoreImagesPositions(){
+        for (Integer pos : background1Position){
+            pos = Camera.get().getCurrentHorizontalOffset();
+        }
+        for (Integer pos : background2Position){
+            pos = Camera.get().getCurrentHorizontalOffset() + GameWindow.get().GetWndWidth();
+        }
+    }
+
     private int scrollingDirection() {
-        if (Camera.get().getCurrentOffset() - Camera.get().getPastOffset() > 0) {
-            return 1;
-        } else if (Camera.get().getCurrentOffset() - Camera.get().getPastOffset() < 0) {
-            return -1;
+        if (Camera.get().getCurrentHorizontalOffset() - Camera.get().getPastHorizontalOffset() > 0) {
+           return (Camera.get().getCurrentHorizontalOffset() - Camera.get().getPastHorizontalOffset());
+        } else if (Camera.get().getCurrentHorizontalOffset() - Camera.get().getPastHorizontalOffset() < 0) {
+            return Camera.get().getCurrentHorizontalOffset() - Camera.get().getPastHorizontalOffset();
         }
         return 0;
     }
@@ -54,7 +65,7 @@ public class ParallaxWallpaper implements StaticComponent{
         for (int index = 0; index < images.size(); index++) {
             int velocity = velocities.get(index);
             int direction = scrollingDirection();
-            int distance = velocity * direction;
+            int distance = velocity * direction / 5;
             background1Position.set(index, background1Position.get(index) + distance);
             background2Position.set(index, background2Position.get(index) + distance);
 
@@ -85,6 +96,6 @@ public class ParallaxWallpaper implements StaticComponent{
             g.drawImage(images.get(index), background2Position.get(index), 0, GameWindow.get().GetWndWidth(), GameWindow.get().GetWndHeight(), null);
         }
 
-        GameWindow.get().getGraphics().drawImage(bf,0,0,null);
+        GameWindow.get().getGraphics().drawImage(bf,0,Camera.get().getCurrentVerticalOffset(), (int) (bf.getWidth()*imageScale), (int) (bf.getHeight()*imageScale),null);
     }
 }

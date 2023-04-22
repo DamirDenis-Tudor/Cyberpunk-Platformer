@@ -52,7 +52,7 @@ final public class PlayScene extends Scene {
             components.clear();
         }
         // add the components specific to the scene
-        GameMap map = AssetsDeposit.get().getGameMap(IndustrialCity);
+        GameMap map = AssetsDeposit.get().getGameMap(GreenCity);
         map.setScene(this);
         addComponent(map);
 
@@ -231,12 +231,12 @@ final public class PlayScene extends Scene {
                 switch (message.type()) {
                     case HandleCollision -> {
                         // handle with a map
-                        findComponent(Map).interactionWith(findComponent(Player));
+                        findComponentWithName(Map).interactionWith(findComponentWithName(Player));
 
                         // handle with enemies
                         for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                             if (component.getActiveStatus()) {
-                                findComponent(Player).interactionWith(component);
+                                findComponentWithName(Player).interactionWith(component);
                             }
                         }
                     }
@@ -265,9 +265,9 @@ final public class PlayScene extends Scene {
                         DynamicComponent component = findComponentWithId(message.componentId());
                         if (findComponentWithId(message.componentId()).getActiveStatus()) {
                             // interaction with a map
-                            findComponent(Map).interactionWith(component);
+                            findComponentWithName(Map).interactionWith(component);
 
-                            component.interactionWith(findComponent(Player));
+                            component.interactionWith(findComponentWithName(Player));
 
                             // interaction with other enemies
                             for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
@@ -292,7 +292,7 @@ final public class PlayScene extends Scene {
             case Chest -> {
                 switch (message.type()) {
                     case HandleCollision ->
-                            findComponent(Player).interactionWith(findComponentWithId(message.componentId()));
+                            findComponentWithName(Player).interactionWith(findComponentWithId(message.componentId()));
                     case SpawnGun -> {
                         ComponentType type = null;
                         switch (rand.nextInt(10)) {
@@ -314,7 +314,7 @@ final public class PlayScene extends Scene {
             case Gun -> {
                 switch (message.type()) {
                     case HandleCollision ->
-                            findComponent(Player).interactionWith(findComponentWithId(message.componentId()));
+                            findComponentWithName(Player).interactionWith(findComponentWithId(message.componentId()));
                     case BulletLaunchRight, BulletLaunchLeft -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
                         DynamicComponent bullet = new Bullet(this, component.getCurrentType(),
@@ -324,18 +324,18 @@ final public class PlayScene extends Scene {
                     }
                     case GunNeedsRecalibration -> {
                         findComponentWithId(message.componentId()).getCollideBox().
-                            setPosition(findComponent(Player).getCollideBox().getPosition());
+                            setPosition(findComponentWithName(Player).getCollideBox().getPosition());
 
-                         findComponent(Player).notify(new Message(MessageType.GunNeedsRecalibration , Scene , -1));
+                         findComponentWithName(Player).notify(new Message(MessageType.GunNeedsRecalibration , Scene , -1));
                     }
                 }
             }
             case Bullet -> {
                 if (Objects.requireNonNull(message.type()) == MessageType.HandleCollision) {
                     DynamicComponent bullet = findComponentWithId(message.componentId());
-                    findComponent(Map).interactionWith(bullet);
-                    if (stillExists(bullet) && bullet.getCurrentType() != findComponent(Player).getGeneralType()) {
-                        bullet.interactionWith(findComponent(Player));
+                    findComponentWithName(Map).interactionWith(bullet);
+                    if (stillExists(bullet) && bullet.getCurrentType() != findComponentWithName(Player).getGeneralType()) {
+                        bullet.interactionWith(findComponentWithName(Player));
                     }
                     for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
                         if (component.getActiveStatus()) {
@@ -349,7 +349,7 @@ final public class PlayScene extends Scene {
             case Platform -> {
                 if (message.type() == MessageType.HandleCollision) {
                     DynamicComponent component = findComponentWithId(message.componentId());
-                    findComponent(Map).interactionWith(component);
+                    findComponentWithName(Map).interactionWith(component);
                     // interaction with other enemies
                     for (DynamicComponent otherComponent : getAllComponentsWithName(Platform)) {
                         if (otherComponent.getActiveStatus()) {
@@ -363,9 +363,9 @@ final public class PlayScene extends Scene {
             case Helicopter -> {
                 if (message.type() == MessageType.HandleCollision) {
                     DynamicComponent component = findComponentWithId(message.componentId());
-                    findComponent(Map).interactionWith(component);
-                    findComponent(Player).interactionWith(component);
-                    component.interactionWith(findComponent(Player));
+                    findComponentWithName(Map).interactionWith(component);
+                    findComponentWithName(Player).interactionWith(component);
+                    component.interactionWith(findComponentWithName(Player));
                 }
             }
         }

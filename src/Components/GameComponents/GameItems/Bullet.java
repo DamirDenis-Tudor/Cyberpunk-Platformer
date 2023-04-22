@@ -13,6 +13,9 @@ import Utils.Rectangle;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Random;
+
+import static Utils.Constants.bulletVelocity;
 
 /**
  * This class describes the bullet behaviors.
@@ -25,6 +28,7 @@ public class Bullet extends DynamicComponent {
     private boolean direction;
     private int xOffset = 0;
     private int yOffset = 0;
+    Random rand = new Random(17);
 
     public Bullet(BufferedImage image, Rectangle collideBox) throws IOException {
         this.collideBox = collideBox;
@@ -77,12 +81,12 @@ public class Bullet extends DynamicComponent {
         // bullet movement
         if (direction) {
             xOffset = -5;
-            collideBox.moveByX(10);
-            elapsedDistance += 10;
+            collideBox.moveByX(bulletVelocity);
+            elapsedDistance += bulletVelocity;
         } else {
             xOffset = -35;
-            collideBox.moveByX(-10);
-            elapsedDistance -= 10;
+            collideBox.moveByX(-bulletVelocity);
+            elapsedDistance -= bulletVelocity;
         }
 
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Bullet, getId()));
@@ -94,7 +98,7 @@ public class Bullet extends DynamicComponent {
 
     @Override
     public void draw() {
-        imageWrapper.draw(collideBox, xOffset, yOffset, direction);
+        imageWrapper.draw(collideBox, xOffset, rand.nextInt(-5,5), direction);
     }
 
     @Override

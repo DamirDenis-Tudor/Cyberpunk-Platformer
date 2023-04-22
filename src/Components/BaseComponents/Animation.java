@@ -109,13 +109,13 @@ public class Animation implements StaticComponent {
     @Override
     public void draw() {
         if (!direction) {
-            int posX = rectangle.getPosition().getPosX() + (rectangle.getWidth() ) + Camera.get().getCurrentOffset();
-            int posY = rectangle.getPosition().getPosY();
+            int posX = rectangle.getPosition().getPosX() + rectangle.getWidth() + Camera.get().getCurrentHorizontalOffset();
+            int posY = rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX , posY, -width, height, null);
             //gameWindow.getGraphics().drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
-            int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentOffset();
-            int posY =  rectangle.getPosition().getPosY();
+            int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentHorizontalOffset();
+            int posY =  rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
             gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX, posY, width, height, null);
             //gameWindow.getGraphics().drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
         }

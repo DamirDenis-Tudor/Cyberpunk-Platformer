@@ -55,7 +55,7 @@ public class AssetsDeposit {
             BufferedImage image = ImageIO.read(new File("src/Resources/resources/cyber-effects/Overlay/2.png"));
             BufferedImage transparentImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = transparentImage.createGraphics();
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f)); // 20% transparency
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // 20% transparency
             g2d.drawImage(image, 0, 0, null);
             g2d.dispose();
             gameOverlay = new ImageWrapper(transparentImage);
@@ -63,7 +63,7 @@ public class AssetsDeposit {
 
             // -----------------------load game maps
             gameMaps.put(ComponentType.GreenCity , new GameMap(null,ComponentType.GreenCity));
-            gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
+            //gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

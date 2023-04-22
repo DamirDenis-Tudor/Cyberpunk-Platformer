@@ -7,6 +7,8 @@ import Window.GameWindow;
 
 import java.awt.image.BufferedImage;
 
+import static Utils.Constants.mapScale;
+
 /**
  * This class wraps BufferedImage objects and provides the flexibility required for drawing images in code positioning calibration.
  */
@@ -23,9 +25,9 @@ public class ImageWrapper implements StaticComponent {
 
     public void draw(Rectangle box , int offsetX , int offsetY , boolean direction){
         if (direction) { // right
-            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,box.getWidth() , box.getHeight() , null);
+            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (box.getWidth()*mapScale*0.75), (int) (box.getHeight()*mapScale*0.75), null);
         }else {
-            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentOffset() + offsetX, box.getMinY()+offsetY,-box.getWidth() , box.getHeight() , null);
+            gameWindow.getGraphics().drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (-box.getWidth()*mapScale*0.75), (int) (box.getHeight()*mapScale*0.75), null);
         }
     }
 

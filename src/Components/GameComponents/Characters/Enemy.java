@@ -281,7 +281,7 @@ public class Enemy extends DynamicComponent {
 
         switch (subtype){
             case GunnerEnemy -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
-            case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.2f) , subtype.name()+getId());
+            case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
         }
     }
 }

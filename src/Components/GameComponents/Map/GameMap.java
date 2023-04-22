@@ -215,7 +215,8 @@ public class GameMap extends DynamicComponent {
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
-        Camera.get().setGameMapPixelDimension(width * mapDim);
+        Camera.get().setGameMapPixelWidthDimension(width * mapDim);
+        Camera.get().setGameMapPixelHeightDimension(height * mapDim);
     }
 
     @Override
@@ -263,8 +264,8 @@ public class GameMap extends DynamicComponent {
                     MapAsset asset = types.get(decorsIndexes[i][j]);
                     int dimW = asset.getWidth();
                     int dimH = asset.getHeight();
-                    int xPos = j * mapDim + Camera.get().getCurrentOffset();
-                    int yPos = i * mapDim - dimH + mapDim;
+                    int xPos = j * mapDim + Camera.get().getCurrentHorizontalOffset();
+                    int yPos = i * mapDim - dimH + mapDim + Camera.get().getCurrentVerticalOffset();
 
                     GameWindow.get().getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
                 }
@@ -280,10 +281,11 @@ public class GameMap extends DynamicComponent {
     @Override
     public void addMissingPartsAfterDeserialization(Scene scene) {
         super.addMissingPartsAfterDeserialization(scene);
-        this.background = AssetsDeposit.get().getGameMap(mapType).background;
         this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
         this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
-        Camera.get().setGameMapPixelDimension(width * mapDim);
+        Camera.get().setGameMapPixelWidthDimension(width * mapDim);
+        Camera.get().setGameMapPixelHeightDimension(height * mapDim);
+        this.background = AssetsDeposit.get().getGameMap(mapType).background;
     }
 
     /**

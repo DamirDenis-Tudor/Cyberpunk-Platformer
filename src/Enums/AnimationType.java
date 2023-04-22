@@ -190,5 +190,4 @@ public enum AnimationType {
     public String getStringValue() {
         return stringValue;
     }
-
 }
