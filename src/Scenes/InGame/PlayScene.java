@@ -24,6 +24,7 @@ import Scenes.Scene;
 import Utils.Coordinate;
 import Window.Camera;
 
+import java.awt.*;
 import java.io.*;
 import java.util.Objects;
 import java.util.Random;
@@ -37,7 +38,11 @@ import static Enums.ComponentType.*;
  * bullets, guns, chests, platforms, etc. It can also be notified about changes in other scenes.
  */
 final public class PlayScene extends Scene {
-    Random rand = new Random(17);
+
+    private ComponentType currentPlayer;
+
+    private ComponentType currentMap;
+    private final Random rand = new Random(17);
 
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
@@ -52,7 +57,7 @@ final public class PlayScene extends Scene {
             components.clear();
         }
         // add the components specific to the scene
-        GameMap map = AssetsDeposit.get().getGameMap(GreenCity);
+        GameMap map = AssetsDeposit.get().getGameMap(currentMap);
         map.setScene(this);
         addComponent(map);
 
@@ -97,12 +102,12 @@ final public class PlayScene extends Scene {
         }
 
         // add player
-        addComponent(new Player(this, map.getPlayerPosition(), Cyborg));
+        addComponent(new Player(this, map.getPlayerPosition(), currentPlayer));
     }
 
     /**
-     *  This method creates a snapshot of important aspects that each component has.
-     *  Please have a look in game component classes to see the fields that are saved in a database.
+     * This method creates a snapshot of important aspects that each component has.
+     * Please have a look in game component classes to see the fields that are saved in a database.
      */
     private void saveGame() {
         try {
@@ -199,9 +204,9 @@ final public class PlayScene extends Scene {
     }
 
     @Override
-    public void draw(){
-        super.draw();
-        AssetsDeposit.get().getGameOverlay().draw();
+    public void draw(Graphics2D graphics2D) {
+        super.draw(graphics2D);
+        AssetsDeposit.get().getGameOverlay().draw(graphics2D);
     }
 
     @Override
@@ -225,6 +230,11 @@ final public class PlayScene extends Scene {
                     case NewGame -> newGame();
                     case LoadGame -> loadGame();
                     case SaveGame -> saveGame();
+                    case BikerSelected -> currentPlayer = Biker;
+                    case PunkSelected -> currentPlayer = Punk;
+                    case CyborgSelected -> currentPlayer = Cyborg;
+                    case GreenMapSelected -> currentMap = GreenCity;
+                    case IndustrialMapSelected -> currentMap = IndustrialCity;
                 }
             }
             case Player -> {
@@ -235,26 +245,20 @@ final public class PlayScene extends Scene {
 
                         // handle with enemies
                         for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
-                            if (component.getActiveStatus()) {
-                                findComponentWithName(Player).interactionWith(component);
-                            }
+                            findComponentWithName(Player).interactionWith(component);
                         }
                     }
                     case PlayerDeath -> {
                         for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
-                            if (component.getActiveStatus()) {
-                                component.notify(new Message(MessageType.PlayerDeath, Player, message.componentId()));
-                            }
+                            component.notify(new Message(MessageType.PlayerDeath, Player, message.componentId()));
                         }
                     }
                     case PlayerDirectionLeft, PLayerDirectionRight, HideGun, ShowGun, Shoot -> {
                         for (DynamicComponent component : getAllComponentsWithName(Gun)) {
-                            if (component.getActiveStatus()) {
-                                if (message.type() == MessageType.Shoot){
-                                    System.out.println();
-                                }
-                                component.notify(new Message(message.type(), Player, message.componentId()));
+                            if (message.type() == MessageType.Shoot) {
+                                System.out.println();
                             }
+                            component.notify(new Message(message.type(), Player, message.componentId()));
                         }
                     }
                 }
@@ -263,19 +267,15 @@ final public class PlayScene extends Scene {
                 switch (message.type()) {
                     case HandleCollision -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
-                        if (findComponentWithId(message.componentId()).getActiveStatus()) {
-                            // interaction with a map
-                            findComponentWithName(Map).interactionWith(component);
+                        // interaction with a map
+                        findComponentWithName(Map).interactionWith(component);
 
-                            component.interactionWith(findComponentWithName(Player));
+                        component.interactionWith(findComponentWithName(Player));
 
-                            // interaction with other enemies
-                            for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
-                                if (otherComponent.getActiveStatus()) {
-                                    if (component != otherComponent) {
-                                        component.interactionWith(otherComponent);
-                                    }
-                                }
+                        // interaction with other enemies
+                        for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
+                            if (component != otherComponent) {
+                                component.interactionWith(otherComponent);
                             }
                         }
                     }
@@ -324,9 +324,9 @@ final public class PlayScene extends Scene {
                     }
                     case GunNeedsRecalibration -> {
                         findComponentWithId(message.componentId()).getCollideBox().
-                            setPosition(findComponentWithName(Player).getCollideBox().getPosition());
+                                setPosition(findComponentWithName(Player).getCollideBox().getPosition());
 
-                         findComponentWithName(Player).notify(new Message(MessageType.GunNeedsRecalibration , Scene , -1));
+                        findComponentWithName(Player).notify(new Message(MessageType.GunNeedsRecalibration, Scene, -1));
                     }
                 }
             }
@@ -338,11 +338,9 @@ final public class PlayScene extends Scene {
                         bullet.interactionWith(findComponentWithName(Player));
                     }
                     for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
-                        if (component.getActiveStatus()) {
-                            if (!stillExists(bullet) || bullet.getCurrentType() == component.getGeneralType())
-                                return;
-                            bullet.interactionWith(component);
-                        }
+                        if (!stillExists(bullet) || bullet.getCurrentType() == component.getGeneralType())
+                            return;
+                        bullet.interactionWith(component);
                     }
                 }
             }
@@ -352,10 +350,8 @@ final public class PlayScene extends Scene {
                     findComponentWithName(Map).interactionWith(component);
                     // interaction with other enemies
                     for (DynamicComponent otherComponent : getAllComponentsWithName(Platform)) {
-                        if (otherComponent.getActiveStatus()) {
-                            if (component != otherComponent) {
-                                component.interactionWith(otherComponent);
-                            }
+                        if (component != otherComponent) {
+                            component.interactionWith(otherComponent);
                         }
                     }
                 }

@@ -11,6 +11,7 @@ import Scenes.Scene;
 import Utils.Coordinate;
 import Utils.Rectangle;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -93,6 +94,7 @@ public class Gun extends DynamicComponent {
 
     @Override
     public void update() {
+        super.update();
         if(statuses.get(ComponentStatus.NeedsRecalibration)){
             statuses.put(ComponentStatus.NeedsRecalibration , false);
             scene.notify(new Message(MessageType.GunNeedsRecalibration, getGeneralType() , getId()));
@@ -100,8 +102,9 @@ public class Gun extends DynamicComponent {
         scene.notify(new Message(MessageType.HandleCollision, ComponentType.Gun, getId()));
     }
     @Override
-    public void draw() {
-        if (!statuses.get(ComponentStatus.Hide)) imageWrapper.draw(collideBox, xOffset, yOffset, direction);
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        if (!statuses.get(ComponentStatus.Hide)) imageWrapper.draw(graphics2D,collideBox, xOffset, yOffset, direction);
     }
     @Override
     public ComponentType getCurrentType() {

@@ -6,6 +6,7 @@ import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
+import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -18,8 +19,10 @@ import org.w3c.dom.NodeList;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 import static Utils.Constants.*;
 
@@ -215,10 +218,14 @@ public class GameMap extends DynamicComponent {
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
-        Camera.get().setGameMapPixelWidthDimension(width * mapDim);
-        Camera.get().setGameMapPixelHeightDimension(height * mapDim);
     }
 
+    @Override
+    public void setScene(Scene scene){
+        super.setScene(scene);
+        Camera.get().setGameMapPixelWidthDimension(this.width * mapDim);
+        Camera.get().setGameMapPixelHeightDimension(this.height * mapDim);
+    }
     @Override
     public void notify(Message message) {
     }
@@ -229,26 +236,26 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics2D graphics2D) {
         /*
          * drawing the parallax background
          */
-        background.draw();
+        background.draw(graphics2D);
 
         /*
          * drawing the tiles
          */
-        drawLayer(tilesIndexes, tiles);
+        drawLayer(graphics2D,tilesIndexes, tiles);
 
         /*
          * drawing the objects
          */
-        drawLayer(objectsIndexes, objects);
+        drawLayer(graphics2D,objectsIndexes, objects);
 
         /*
          * drawing decorations
          */
-        drawLayer(decorsIndexes, objects);
+        drawLayer(graphics2D,decorsIndexes, objects);
 
     }
 
@@ -257,9 +264,14 @@ public class GameMap extends DynamicComponent {
         return mapType;
     }
 
-    private void drawLayer(String[][] decorsIndexes, Map<String, MapAsset> types) {
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; j++) {
+    private void drawLayer(Graphics2D graphics2D , String[][] decorsIndexes, Map<String, MapAsset> types) {
+        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / mapDim -4 );
+        int xEnd = Math.min(width-1, (-Camera.get().getCurrentHorizontalOffset() + windowWidth) / mapDim + 4);
+        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / mapDim -4 );
+        int yEnd = Math.min(height-1, (-Camera.get().getCurrentVerticalOffset() + windowHeight) / mapDim + 4);
+
+        for (int i = yStart; i <= yEnd; i++) {
+            for (int j = xStart; j <= xEnd; j++) {
                 if (!Objects.equals(decorsIndexes[i][j], "0")) {
                     MapAsset asset = types.get(decorsIndexes[i][j]);
                     int dimW = asset.getWidth();
@@ -267,7 +279,7 @@ public class GameMap extends DynamicComponent {
                     int xPos = j * mapDim + Camera.get().getCurrentHorizontalOffset();
                     int yPos = i * mapDim - dimH + mapDim + Camera.get().getCurrentVerticalOffset();
 
-                    GameWindow.get().getGraphics().drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
+                    graphics2D.drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
                 }
             }
         }

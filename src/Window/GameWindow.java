@@ -2,9 +2,11 @@ package Window;
 
 import Input.KeyboardInput;
 import Input.MouseInput;
+import Utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -16,32 +18,31 @@ import static java.awt.Font.TRUETYPE_FONT;
  * and useful tools like on-screen drawing.
  * It implements Singleton Design Pattern.
  */
-public class GameWindow {
+public class    GameWindow {
     static GameWindow instance; // class instance
     Graphics2D graphics2D;
-    private Font font;
     private JFrame windowFrame;  // game frame
     private final String windowTitle;
     private final int windowWidth;
     private final int windowHeight;
     private Canvas canvas; // canvas is over the frame
+    private final BufferedImage bufferedImage;
 
     /**
      * This constructor initializes the properties.
      *
      * @param title  window title
-     * @param width  window width
-     * @param height window height
      */
-    private GameWindow(String title, int width, int height) {
+    private GameWindow(String title) {
         windowTitle = title;
-        windowWidth = width;
-        windowHeight = height;
+        windowWidth = Constants.windowWidth;
+        windowHeight = Constants.windowHeight;
         windowFrame = null;
 
         buildGameWindow();
 
-        graphics2D = (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
+        bufferedImage = new BufferedImage(windowWidth,windowHeight,BufferedImage.TYPE_INT_ARGB);
+        graphics2D = (Graphics2D) bufferedImage.getGraphics();
     }
 
     /**
@@ -68,17 +69,9 @@ public class GameWindow {
 
         windowFrame.add(canvas);
         windowFrame.pack();
+        windowFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         canvas.createBufferStrategy(3);
-
-        try {
-            font = Font.createFont( TRUETYPE_FONT , new File("src/Fonts/FutureMillennium.ttf") );
-        } catch (FontFormatException e){
-            System.out.println(e.getMessage());
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         Toolkit.getDefaultToolkit().sync();
     }
@@ -89,48 +82,13 @@ public class GameWindow {
      */
     public static GameWindow get() {
         if (instance == null) {
-            instance = new GameWindow("Cyberpunk", Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-            //instance = new GameWindow("Cyberpunk", 1200, 1080);
+            instance = new GameWindow("Cyberpunk");
         }
         return instance;
     }
 
-    /**
-     * @return window width
-     */
-    public int GetWndWidth() {
-        return windowWidth;
-    }
-
-    /**
-     * @return window height
-     */
-    public int GetWndHeight() {
-        return windowHeight;
-    }
-
     public Graphics2D getGraphics() {
         return graphics2D;
-    }
-
-    public void drawText(String text, int centerX, int centerY, Color color, float size) {
-        font = font.deriveFont(size);
-        graphics2D.setFont(font);
-        graphics2D.setColor(color);
-
-        FontMetrics fm = graphics2D.getFontMetrics();
-        int textWidth = fm.stringWidth(text);
-        int textHeight = fm.getHeight();
-
-        int x = centerX - textWidth / 2;
-        int y = centerY - textHeight / 2 + fm.getAscent();
-
-        graphics2D.drawString(text, x, y);
-    }
-
-    public void drawRectangle(Utils.Rectangle rectangle , Color color){
-        graphics2D.setColor(color);
-        graphics2D.fillRect(rectangle.getMinX(),rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
     }
 
     /**
@@ -138,8 +96,9 @@ public class GameWindow {
      * this method must be called.
      */
     public void clear() {
+        bufferedImage.getGraphics().clearRect(0, 0, windowWidth, windowHeight);
         canvas.getBufferStrategy().getDrawGraphics().
-                clearRect(0, 0, 2*windowWidth, 2*windowHeight);
+                clearRect(0, 0, windowWidth, windowHeight);
     }
 
     /**
@@ -147,6 +106,7 @@ public class GameWindow {
      * this method must be called
      */
     public void show() {
+        canvas.getBufferStrategy().getDrawGraphics().drawImage(bufferedImage , 0,0,null);
         canvas.getBufferStrategy().show();
     }
 
@@ -154,6 +114,7 @@ public class GameWindow {
      * this method deallocate remaining "garbage"
      */
     public void dispose() {
+        bufferedImage.getGraphics().dispose();
         canvas.getBufferStrategy().getDrawGraphics().dispose();
     }
 }

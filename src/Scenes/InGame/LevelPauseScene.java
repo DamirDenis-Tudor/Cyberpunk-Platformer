@@ -41,6 +41,4 @@ final public class LevelPauseScene extends Scene {
             }
         }
     }
-
-
 }

@@ -82,24 +82,24 @@
         },
         "maps/green_map.tmx": {
             "expandedGroupLayers": [
+                3,
                 1,
-                11,
-                3
+                11
             ],
             "expandedObjectLayers": [
-                10,
+                4,
+                6,
+                3,
                 9,
                 7,
-                6,
-                5,
-                4,
-                3
+                10,
+                5
             ],
             "scale": 1,
-            "selectedLayer": 9,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 725,
-                "y": 412
+                "x": 249,
+                "y": 360
             }
         },
         "maps/green_map/green_background.tsx": {
@@ -110,17 +110,17 @@
         },
         "maps/industrial_map.tmx": {
             "expandedObjectLayers": [
-                9,
                 8,
+                4,
+                9,
                 7,
-                5,
-                4
+                5
             ],
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 154.5,
-                "y": 518
+                "x": 829.5,
+                "y": 320.5
             }
         },
         "maps/industrial_map/industrial_background.tsx": {

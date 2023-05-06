@@ -9,6 +9,7 @@ import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
 
+import java.awt.*;
 import java.util.Map;
 
 import static Utils.Constants.enemyRange;
@@ -211,6 +212,7 @@ public class Enemy extends DynamicComponent {
 
     @Override
     public void update(){
+        super.update();
         if (!statuses.get(ComponentStatus.BottomCollision)) {
             collideBox.moveByY(gravitationForce);
         }
@@ -248,8 +250,9 @@ public class Enemy extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        animationHandler.draw();
+    public void draw(Graphics2D graphics2D) {
+        if (!getActiveStatus()) return;
+        animationHandler.draw(graphics2D);
     }
 
     @Override

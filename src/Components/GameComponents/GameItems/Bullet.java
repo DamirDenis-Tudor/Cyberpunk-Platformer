@@ -11,6 +11,7 @@ import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
@@ -78,6 +79,7 @@ public class Bullet extends DynamicComponent {
     }
     @Override
     public void update() {
+        super.update();
         // bullet movement
         if (direction) {
             xOffset = -5;
@@ -97,8 +99,9 @@ public class Bullet extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        imageWrapper.draw(collideBox, xOffset, rand.nextInt(-5,5), direction);
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        imageWrapper.draw(graphics2D,collideBox, xOffset, yOffset, direction);
     }
 
     @Override

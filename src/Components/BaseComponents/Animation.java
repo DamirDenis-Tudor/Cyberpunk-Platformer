@@ -2,6 +2,7 @@ package Components.BaseComponents;
 
 import Components.StaticComponent;
 import Enums.AnimationType;
+import Enums.ComponentType;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
@@ -10,6 +11,7 @@ import Window.Camera;
 import Window.GameWindow;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class Animation implements StaticComponent {
     private boolean lock = false;
     private int repeats = 0;
     private int currentCount = 0;
+
+    private int scale = 1;
 
     public Animation(){
         rectangle = new Rectangle(new Coordinate<>(0,0) , 0, 0);
@@ -73,7 +77,7 @@ public class Animation implements StaticComponent {
         idCounter++;
 
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.06F),timerId);
+        timersHandler.addTimer(new Timer(0.1F),timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
         // images will be shared
@@ -104,23 +108,23 @@ public class Animation implements StaticComponent {
                 }
             }
         }
+        //System.out.println(activeImageIndex);
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics2D graphics2D) {
         if (!direction) {
             int posX = rectangle.getPosition().getPosX() + rectangle.getWidth() + Camera.get().getCurrentHorizontalOffset();
             int posY = rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
-            gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX , posY, -width, height, null);
-            //gameWindow.getGraphics().drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
+            graphics2D.drawImage(images.get(activeImageIndex), posX , posY, -width*scale, height*scale, null);
+            //graphics2D.drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
             int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentHorizontalOffset();
             int posY =  rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
-            gameWindow.getGraphics().drawImage(images.get(activeImageIndex), posX, posY, width, height, null);
-            //gameWindow.getGraphics().drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
+            graphics2D.drawImage(images.get(activeImageIndex), posX, posY, width*scale, height*scale, null);
+            //graphics2D.drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
         }
     }
-
     public void setPosition(Coordinate<Integer> position) {
         this.rectangle.setPosition(position);
     }
@@ -136,11 +140,9 @@ public class Animation implements StaticComponent {
     public Rectangle getRectangle() {
         return rectangle;
     }
-
     public AnimationType getType() {
         return type;
     }
-
     public boolean animationIsOver(){
         if(images !=null) {
             return activeImageIndex == images.size()-1;
@@ -168,5 +170,9 @@ public class Animation implements StaticComponent {
 
     public boolean repeatsAreOver(){
         return currentCount == repeats;
+    }
+
+    public void setAnimationScale(int scale){
+        this.scale = scale;
     }
 }

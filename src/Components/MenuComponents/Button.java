@@ -12,6 +12,7 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.GameWindow;
 
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -55,9 +56,10 @@ public class Button implements StaticComponent {
         }
     }
     @Override
-    public void draw() {
-        GameWindow.get().drawRectangle(collideBox, backgroundColor.getColor());
-        text.draw();
+    public void draw(Graphics2D graphics2D) {
+        graphics2D.setColor( backgroundColor.getColor());
+        graphics2D.fillRect(collideBox.getMinX(),collideBox.getMinY(), collideBox.getWidth(), collideBox.getHeight());
+        text.draw(graphics2D);
     }
 
     public Text getText(){

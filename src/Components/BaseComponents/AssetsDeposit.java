@@ -34,8 +34,10 @@ public class AssetsDeposit {
     private final Map<ComponentType , Bullet> bullets;
     private final Map<ComponentType , ComponentType> gunsBulletsRelation;
     private ImageWrapper menuWallpaper = null;
-    private ImageWrapper gameOverlay = null;
 
+    private ImageWrapper greenMapPreview ;
+    private ImageWrapper industrialMapPreview ;
+    private ImageWrapper gameOverlay = null;
     private List<ImageWrapper> overlayEffects;
     /**
      * this constructor loads all the assets.
@@ -50,6 +52,10 @@ public class AssetsDeposit {
             // -------------------------load menu wallpaper
             menuWallpaper = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/menu_wallpaper1.png")));
 
+            //--------------------------load map previews
+            greenMapPreview = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/Green-Zone-Tileset-Pixel-Art.png")));
+            industrialMapPreview = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/Free-Industrial-Zone-Tileset-Pixel-Art.png")));
+
             // -------------------------load the overlay effects and set the transparency
             //TODO
             BufferedImage image = ImageIO.read(new File("src/Resources/resources/cyber-effects/Overlay/2.png"));
@@ -63,7 +69,7 @@ public class AssetsDeposit {
 
             // -----------------------load game maps
             gameMaps.put(ComponentType.GreenCity , new GameMap(null,ComponentType.GreenCity));
-            //gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
+            gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -174,4 +180,11 @@ public class AssetsDeposit {
     public ImageWrapper getMenuWallpaper() {return menuWallpaper;}
 
     public ImageWrapper getGameOverlay() {return gameOverlay;}
+
+    public ImageWrapper getGreenMapPreview() {
+        return greenMapPreview;
+    }
+    public ImageWrapper getIndustrialMapPreview() {
+        return industrialMapPreview;
+    }
 }

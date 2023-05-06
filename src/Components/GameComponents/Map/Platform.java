@@ -7,6 +7,7 @@ import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import static Utils.Constants.platformVelocity;
@@ -80,6 +81,7 @@ public class Platform extends DynamicComponent {
 
     @Override
     public void update() {
+        super.update();
         if (!statuses.get(ComponentStatus.LeftCollision)) {
             collideBox.moveByX(-platformVelocity);
         } else if (!statuses.get(ComponentStatus.RightCollision)) {
@@ -90,8 +92,9 @@ public class Platform extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        animationHandler.draw();
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        animationHandler.draw(graphics2D);
     }
 
     @Override

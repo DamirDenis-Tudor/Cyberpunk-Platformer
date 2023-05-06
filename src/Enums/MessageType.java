@@ -10,5 +10,8 @@ public enum MessageType {
     // Scenes Messages
     NewGame,SaveGame,LoadGame,
 
-    SaveHasBeenAdded , GunNeedsRecalibration
+    SaveHasBeenAdded , GunNeedsRecalibration,
+
+    CyborgSelected, BikerSelected , PunkSelected,
+    GreenMapSelected , IndustrialMapSelected
 }

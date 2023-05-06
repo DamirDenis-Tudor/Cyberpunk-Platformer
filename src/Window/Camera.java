@@ -1,5 +1,6 @@
 package Window;
 
+import Utils.Constants;
 import Utils.Coordinate;
 
 /**
@@ -57,7 +58,6 @@ public class Camera {
 
 
     public void disableCameraOffset(){
-
         horizontalOffsets.setX(0);
         verticalOffsets.setX(0);
         active = false;
@@ -82,33 +82,37 @@ public class Camera {
         gameMapPixelHeightDimension = dimension;
     }
 
+    public int getGameMapPixelHeightDimension() {
+        return gameMapPixelHeightDimension;
+    }
+
+    public int getGameMapPixelWidthDimension() {
+        return gameMapPixelWidthDimension;
+    }
 
     /**
      * This method is responsible for detecting the borders of the map and to stop camera movement when is necessary.
      */
     public void update() {
         if (active) {
-            if (focusComponentPosition.getPosX() > gameWindow.GetWndWidth() / 2 &&
-                    focusComponentPosition.getPosX() < gameMapPixelWidthDimension - gameWindow.GetWndWidth() / 2) {
+            if (focusComponentPosition.getPosX() > Constants.windowWidth / 2 &&
+                    focusComponentPosition.getPosX() < gameMapPixelWidthDimension - Constants.windowWidth / 2) {
                 horizontalOffsets.setY(horizontalOffsets.getPosX());
-                horizontalOffsets.setX(-focusComponentPosition.getPosX() + gameWindow.GetWndWidth() / 2);
-            } else if(focusComponentPosition.getPosX() <= gameWindow.GetWndWidth() / 2){
+                horizontalOffsets.setX(-focusComponentPosition.getPosX() + Constants.windowWidth / 2);
+            } else if(focusComponentPosition.getPosX() <= Constants.windowWidth / 2){
                 horizontalOffsets.setX(0);
                 horizontalOffsets.setY(0);
-            } else if (focusComponentPosition.getPosX() >= gameMapPixelWidthDimension - gameWindow.GetWndWidth()/2) {
+            } else if (focusComponentPosition.getPosX() >= gameMapPixelWidthDimension - Constants.windowWidth/2) {
                 horizontalOffsets.setX(horizontalOffsets.getPosY());
             }
 
-            if (focusComponentPosition.getPosY() > gameWindow.GetWndHeight() / 2 &&
-                    focusComponentPosition.getPosY() < gameMapPixelHeightDimension - gameWindow.GetWndHeight()/2) {
-                verticalOffsets.setY(verticalOffsets.getPosX());
-                verticalOffsets.setX(-focusComponentPosition.getPosY() + gameWindow.GetWndHeight() / 2);
-            } else if(focusComponentPosition.getPosY() <= gameWindow.GetWndHeight() / 2){
+            if(focusComponentPosition.getPosY() <= Constants.windowHeight / 2){
                 verticalOffsets.setX(0);
-                verticalOffsets.setY(0);
-            } else if (focusComponentPosition.getPosY() >= gameMapPixelHeightDimension - gameWindow.GetWndHeight()/2) {
-                verticalOffsets.setX(-gameMapPixelHeightDimension + gameWindow.GetWndHeight());
-                verticalOffsets.setY(verticalOffsets.getPosX());
+            } else if (focusComponentPosition.getPosY() > Constants.windowHeight / 2 &&
+                    focusComponentPosition.getPosY() < gameMapPixelHeightDimension - Constants.windowHeight/2) {
+                verticalOffsets.setX(-focusComponentPosition.getPosY() + Constants.windowHeight / 2);
+            } else if (focusComponentPosition.getPosY() >= gameMapPixelHeightDimension - Constants.windowHeight/2) {
+                verticalOffsets.setX(-gameMapPixelHeightDimension + Constants.windowHeight);
             }
         }
     }

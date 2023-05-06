@@ -1,6 +1,7 @@
 package Scenes.InMenu;
 
 import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Database.Database;
 import Enums.ComponentType;
@@ -10,6 +11,7 @@ import Input.MouseInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Scenes.SceneHandler;
+import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -21,7 +23,9 @@ public class LoadScene extends Scene {
 
     public LoadScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        components.add(AssetsDeposit.get().getMenuWallpaper());
+        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
+        components.add(menuWallpaper);
         components.add(new Button(this, ComponentType.LoadSave, "LOAD",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
         components.add(new Button(this, ComponentType.DeleteLatestSave, "DELETE LAST",
@@ -51,10 +55,7 @@ public class LoadScene extends Scene {
     @Override
     public void notify(Message message) {
         switch (message.type()) {
-            case SceneHasBeenActivated -> {
-                Camera.get().disableCameraOffset();
-                MouseInput.get().reset();
-            }
+            case SceneHasBeenActivated -> MouseInput.get().reset();
             case SaveGame, SaveHasBeenAdded -> loadSaves();
             case ButtonClicked -> {
                 switch (message.source()) {

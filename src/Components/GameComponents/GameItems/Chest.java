@@ -6,7 +6,9 @@ import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
+import Window.GameWindow;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public class Chest extends DynamicComponent {
 
     @Override
     public void update() {
+        super.update();
         if (statuses.get(ComponentStatus.IsOpened) &&
                 animationHandler.getAnimation().animationIsOver() &&
                 !statuses.get(ComponentStatus.HasDroppedWeapon)) {
@@ -62,8 +65,9 @@ public class Chest extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        animationHandler.draw();
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        animationHandler.draw(graphics2D);
     }
 
     @Override

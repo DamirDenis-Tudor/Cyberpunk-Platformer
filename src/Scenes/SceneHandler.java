@@ -8,11 +8,7 @@ import Scenes.InGame.LevelCompletedScene;
 import Scenes.InGame.LevelFailedScene;
 import Scenes.InGame.LevelPauseScene;
 import Scenes.InGame.PlayScene;
-import Scenes.InMenu.InitGameScene;
-import Scenes.InMenu.LoadScene;
-import Scenes.InMenu.LogoStartScene;
-import Scenes.InMenu.MainMenuScene;
-import Scenes.InMenu.SettingsScene;
+import Scenes.InMenu.*;
 import Scenes.Messages.Message;
 
 import java.io.Serializable;
@@ -33,7 +29,8 @@ public class SceneHandler implements Notifiable, Serializable {
         scenes = new HashMap<>();
         scenes.put(LogoStartScene, new LogoStartScene(this));
         scenes.put(MainMenuScene, new MainMenuScene(this));
-        scenes.put(InitGameScene, new InitGameScene(this));
+        scenes.put(ChoosePlayerScene, new ChoosePlayerScene(this));
+        scenes.put(ChooseLevelScene, new ChooseLevelScene(this));
         scenes.put(SettingsScene, new SettingsScene(this));
         scenes.put(PlayScene, new PlayScene(this));
         scenes.put(LoadScene, new LoadScene(this));
@@ -77,14 +74,10 @@ public class SceneHandler implements Notifiable, Serializable {
 
     @Override
     public void notify(Message message) {
-        if(message.source() == ComponentType.Scene) {
-            switch (message.type()){
-                case NewGame,LoadGame,SaveGame->{
-                    scenes.get(PlayScene).notify(message);
-                    if(message.type() == MessageType.SaveGame){
-                        scenes.get(LoadScene).notify(message);
-                    }
-                }
+        if (message.source() == ComponentType.Scene) {
+            scenes.get(PlayScene).notify(message);
+            if (message.type() == MessageType.SaveGame) {
+                scenes.get(LoadScene).notify(message);
             }
         }
     }

@@ -5,9 +5,16 @@ import Components.Notifiable;
 import Components.StaticComponent;
 import Enums.ComponentType;
 import Scenes.Scene;
+import Utils.Constants;
+import Utils.Coordinate;
 import Utils.Rectangle;
+import Window.Camera;
+import Window.GameWindow;
 
 import java.io.Serializable;
+
+import static Utils.Constants.mapDim;
+import static Utils.Constants.windowWidth;
 
 /**
  * This allows for the updating and drawing of any component, the ability to make requests
@@ -21,7 +28,6 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
     private boolean active = true;
 
     transient protected Scene scene = null;
-
     protected Rectangle collideBox;
     protected ComponentType subtype;
     public DynamicComponent(){
@@ -54,6 +60,17 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
     }
     public abstract ComponentType getCurrentType();
     public abstract ComponentType getGeneralType();
+
+    @Override
+    public void update(){
+        if(collideBox == null) return;
+
+        Rectangle window = new Rectangle(
+                new Coordinate<>(Math.max(0, -Camera.get().getCurrentHorizontalOffset()),  Math.max(0, -Camera.get().getCurrentVerticalOffset()))
+                        , Constants.windowWidth , Constants.windowHeight);
+
+        active = collideBox.intersects(window);
+    }
     public void addMissingPartsAfterDeserialization(Scene scene){
         this.scene = scene;
 

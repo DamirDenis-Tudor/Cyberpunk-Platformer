@@ -5,6 +5,7 @@ import Components.Notifiable;
 import Components.StaticComponent;
 import Enums.ComponentType;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public abstract class Scene implements Notifiable {
         }
     }
 
-    public void draw() {
+    public void draw(Graphics2D graphics2D) {
         for (int index = 0; index < components.size(); index++) {
-            components.get(index).draw();
+            components.get(index).draw(graphics2D);
         }
     }
 

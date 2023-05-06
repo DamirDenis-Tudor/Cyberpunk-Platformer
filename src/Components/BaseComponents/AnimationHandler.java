@@ -4,6 +4,8 @@ import Components.StaticComponent;
 import Enums.AnimationType;
 import Utils.Coordinate;
 
+import java.awt.*;
+
 /**
  * This class encapsulates the animation behavior, and its main feature is handling the animation changes.
  */
@@ -31,8 +33,8 @@ public class AnimationHandler implements StaticComponent {
         }
     }
 
-    public void draw(){
-        animation.draw();
+    public void draw(Graphics2D graphics2D){
+        animation.draw(graphics2D);
     }
 
     public void update(){

@@ -14,6 +14,7 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +221,7 @@ public class Player extends DynamicComponent {
 
     @Override
     public void update() {
+        super.update();
         // horizontal movement
         statuses.put(ComponentStatus.HorizontalMove, false);
         if (keyboardInput.getKeyD()) {
@@ -349,9 +351,10 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        animationHandler.draw();
-        healthText.draw();
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        animationHandler.draw(graphics2D);
+        healthText.draw(graphics2D);
     }
 
     @Override

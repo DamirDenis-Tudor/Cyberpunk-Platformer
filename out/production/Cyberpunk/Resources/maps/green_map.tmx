@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="200" height="25" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="387">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="25" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="387">
  <tileset firstgid="1" source="../tilesets/green_tileset.tsx"/>
  <tileset firstgid="193" source="../backgrounds/green_background.tsx"/>
  <tileset firstgid="203" source="../objects/greenzone_objects.tsx"/>
@@ -101,8 +101,8 @@
   <object id="375" x="2023" y="103" width="7" height="81"/>
   <object id="376" x="905" y="582" width="4" height="81"/>
  </objectgroup>
- <objectgroup id="4" name="player" visible="0">
-  <object id="245" name="Player" x="21.67" y="564.282" width="33" height="37"/>
+ <objectgroup id="4" name="player">
+  <object id="245" name="Player" x="43.67" y="554.282" width="33" height="37"/>
  </objectgroup>
  <objectgroup id="9" name="platforms" opacity="0.97">
   <object id="256" name="Platform" x="1679.33" y="270.333" width="70" height="40"/>

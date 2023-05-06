@@ -1,6 +1,10 @@
 package Utils;
 
+import java.awt.*;
+
 public record Constants() {
+    public static final int windowWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+    public static final int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
     public static final float mapScale = 2f;
     public static final float imageScale = 1.48148f;
     public static final int mapDim = (int)(32 * mapScale);

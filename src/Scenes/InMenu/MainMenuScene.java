@@ -1,6 +1,7 @@
 package Scenes.InMenu;
 
 import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
 import Enums.ComponentType;
@@ -10,6 +11,7 @@ import Input.MouseInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Scenes.SceneHandler;
+import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -19,7 +21,9 @@ final public class MainMenuScene extends Scene {
 
     public MainMenuScene(SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
-        components.add(AssetsDeposit.get().getMenuWallpaper());
+        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
+        components.add(menuWallpaper);
         components.add(new Text("CYBERPUNK", new Coordinate<>(1250, 450), 150));
         components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
         components.add(new Button(this, ComponentType.NewGameButton, "NEW GAME",
@@ -39,10 +43,7 @@ final public class MainMenuScene extends Scene {
             }
             case ButtonClicked -> {
                 switch (message.source()) {
-                    case NewGameButton -> {
-                        sceneHandler.notify(new Message(MessageType.NewGame, ComponentType.Scene, -1));
-                        sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
-                    }
+                    case NewGameButton -> sceneHandler.handleSceneChangeRequest(SceneType.ChooseLevelScene);
                     case LoadButton -> sceneHandler.handleSceneChangeRequest(SceneType.LoadScene);
                     case SettingsButton -> sceneHandler.handleSceneChangeRequest(SceneType.SettingsScene);
                     case ExitButton -> sceneHandler.handleSceneChangeRequest(SceneType.NoScene);

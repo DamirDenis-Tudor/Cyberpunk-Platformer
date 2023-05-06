@@ -143,4 +143,22 @@ public class KeyboardInput implements KeyListener {
     public boolean isPreviousEsc() {
         return previousEsc;
     }
+
+    public void reset(){
+        previousSpace = false;
+        previousKeyA = false;
+        previousKeyW = false;
+        previousKeyS = false;
+        previousKeyD = false;
+        previousKeyE = false;
+        previousEsc = false;
+        keyW = false;
+        keyA = false;
+        keyS = false;
+        keyD = false;
+        keyEnter = false;
+        keyShift = false;
+        space = false;
+        esc = false;
+    }
 }

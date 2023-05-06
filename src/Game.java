@@ -1,5 +1,10 @@
+import Components.MenuComponents.Text;
+import Enums.ColorType;
 import Input.MouseInput;
 import Timing.Timer;
+import Timing.TimersHandler;
+import Utils.Constants;
+import Utils.Coordinate;
 import Window.Camera;
 import Window.GameWindow;
 import Input.KeyboardInput;
@@ -41,10 +46,14 @@ public class Game implements Runnable {
 
         try {
             GameWindow window = GameWindow.get();
-            MouseInput mouseInput = MouseInput.get();
             KeyboardInput keyboardInput = KeyboardInput.get();
             Camera camera = Camera.get();
             SceneHandler sceneHandler = SceneHandler.getInstance();
+            TimersHandler timersHandler = TimersHandler.get();
+
+            Text framerate = new Text(" " , new Coordinate<>(Constants.windowWidth - 150,50) , 56);
+            framerate.setTextColor(ColorType.BlackColor);
+            timersHandler.addTimer(new Timer(0.5f) , "FRAMERATE_REFRESH");
 
             while (runState) {
                 curentTime = System.nanoTime();
@@ -52,9 +61,14 @@ public class Game implements Runnable {
                 if ((curentTime - oldTime) > timeFrame) {
                     Timer.deltaTime = (curentTime-oldTime)/1000000000.f;
 
+                    if(!timersHandler.getTimer("FRAMERATE_REFRESH").getTimerState()) {
+                        framerate.setText("FPS : " + Integer.valueOf((int) (1 / Timer.deltaTime + 1)).toString());
+                        timersHandler.getTimer("FRAMERATE_REFRESH").resetTimer();
+                    }
+
                     keyboardInput.updateInputKey();
 
-                        sceneHandler.getActiveScene().update();
+                    sceneHandler.getActiveScene().update();
 
                     if(sceneHandler.getActiveScene()==null){;
                         System.exit(-1);
@@ -64,7 +78,9 @@ public class Game implements Runnable {
 
                     window.clear();
 
-                    sceneHandler.getActiveScene().draw();
+                    sceneHandler.getActiveScene().draw(window.getGraphics());
+
+                    framerate.draw(window.getGraphics());
 
                     window.show();
 

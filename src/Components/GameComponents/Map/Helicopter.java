@@ -2,6 +2,7 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.DynamicComponent;
+import Components.GameComponents.GameItems.Gun;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -10,6 +11,7 @@ import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,6 +77,7 @@ public class Helicopter extends DynamicComponent {
 
     @Override
     public void update() {
+        super.update();
         if (!statuses.get(ComponentStatus.TopCollision)) {
             collideBox.moveByY(-helicopterVelocity);
         } else if (!statuses.get(ComponentStatus.BottomCollision)) {
@@ -90,8 +93,9 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void draw() {
-        animationHandler.draw();
+    public void draw(Graphics2D graphics2D) {
+        if(!getActiveStatus()) return;
+        animationHandler.draw(graphics2D);
     }
 
     @Override
