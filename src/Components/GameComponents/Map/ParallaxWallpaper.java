@@ -42,7 +42,7 @@ public class ParallaxWallpaper implements StaticComponent{
         images.add(image);
         background1Position.add(0);
         background2Position.add(Constants.windowWidth);
-        bufferedImage.getGraphics().drawImage(image,0,0,(int)(windowWidth),(int)(windowHeight),null);
+        bufferedImage.getGraphics().drawImage(image,0,0, (int)(windowWidth),(int)(windowHeight),null);
     }
 
     public void restoreImagesPositions(){

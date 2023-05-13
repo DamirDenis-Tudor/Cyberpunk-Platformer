@@ -3,6 +3,7 @@ package Components.BaseComponents;
 import Components.GameComponents.GameItems.Bullet;
 import Components.GameComponents.GameItems.Gun;
 import Components.GameComponents.Map.GameMap;
+import Database.Database;
 import Enums.AnimationType;
 import Enums.ComponentType;
 import Utils.Coordinate;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static Utils.Constants.mapScale;
 
@@ -50,15 +52,24 @@ public class AssetsDeposit {
         bullets = new HashMap<>();
         try {
             // -------------------------load menu wallpaper
-            menuWallpaper = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/menu_wallpaper1.png")));
+            String source1 = "Resources/wallpapers/menu_wallpaper1.png";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            menuWallpaper = new ImageWrapper(ImageIO.read(new File(source1)));
 
             //--------------------------load map previews
-            greenMapPreview = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/Green-Zone-Tileset-Pixel-Art.png")));
-            industrialMapPreview = new ImageWrapper(ImageIO.read(new File("src/Resources/wallpapers/Free-Industrial-Zone-Tileset-Pixel-Art.png")));
+            source1 = "Resources/wallpapers/Green-Zone-Tileset-Pixel-Art.png";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            greenMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
+
+            source1 = "Resources/wallpapers/Free-Industrial-Zone-Tileset-Pixel-Art.png";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            industrialMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
 
             // -------------------------load the overlay effects and set the transparency
             //TODO
-            BufferedImage image = ImageIO.read(new File("src/Resources/resources/cyber-effects/Overlay/2.png"));
+            source1 = "Resources/resources/cyber-effects/Overlay/2.png";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            BufferedImage image = ImageIO.read(new File(source1));
             BufferedImage transparentImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = transparentImage.createGraphics();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // 20% transparency
@@ -74,7 +85,9 @@ public class AssetsDeposit {
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-            Document document = builder.parse(new File("src/Resources/in_game_assets/animations.tsx"));
+            source1 = "Resources/in_game_assets/animations.tsx";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            Document document = builder.parse(new File(source1));
 
             Element root = document.getDocumentElement();
 
@@ -85,7 +98,8 @@ public class AssetsDeposit {
                 Element property = (Element) element.getElementsByTagName("property").item(0);
                 Element imageElement = (Element) element.getElementsByTagName("image").item(0);
 
-                String source = imageElement.getAttribute("source").replace("..", "src/Resources");
+                String source = imageElement.getAttribute("source").replace("..", "Resources");
+                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
                 String id = element.getAttribute("class");
                 int spriteSheetWidth = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));
@@ -116,8 +130,10 @@ public class AssetsDeposit {
             gunsBulletsRelation.put(ComponentType.Gun10, ComponentType.Bullet10);
 
 
+            source1 = "Resources/in_game_assets/weapons&buletts.tsx";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20" , " ");
 
-            document = builder.parse(new File("src/Resources/in_game_assets/weapons&buletts.tsx"));
+            document = builder.parse(new File(source1));
             root = document.getDocumentElement();
             elements = root.getElementsByTagName("tile");
 
@@ -125,7 +141,8 @@ public class AssetsDeposit {
                 Element element = (Element) elements.item(index);
                 Element imageElement = (Element) element.getElementsByTagName("image").item(0);
 
-                String source = imageElement.getAttribute("source").replace("..", "src/Resources");
+                String source = imageElement.getAttribute("source").replace("..", "Resources");
+                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
                 String id = element.getAttribute("class");
                 int width = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));

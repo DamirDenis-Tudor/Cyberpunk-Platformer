@@ -26,7 +26,7 @@ final public class MainMenuScene extends Scene {
         components.add(menuWallpaper);
         components.add(new Text("CYBERPUNK", new Coordinate<>(1250, 450), 150));
         components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
-        components.add(new Button(this, ComponentType.NewGameButton, "NEW GAME",
+        components.add(new Button(this, ComponentType.NewGameButton, "DOCKER",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
         components.add(new Button(this, ComponentType.LoadButton, "LOAD GAME",
                 new Rectangle(new Coordinate<>(350, 500), 400, 150), 56));

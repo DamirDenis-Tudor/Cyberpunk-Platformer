@@ -3,12 +3,17 @@ package Database;
 import Enums.ComponentType;
 import Utils.RandomIdGenerator;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is a rigid database implementation and is focused on the needs for this project.
@@ -23,8 +28,10 @@ public class Database {
 
     private Database() {
         try {
+
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:src/Database/CYBERPUNK_DATABASE.db");
+            String relativePath = Objects.requireNonNull(Database.class.getClassLoader().getResource("Database/CYBERPUNK_DATABASE.db")).getPath();
+            connection = DriverManager.getConnection("jdbc:sqlite:" + relativePath);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);

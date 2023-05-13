@@ -37,7 +37,6 @@ public class Animation implements StaticComponent {
     private boolean lock = false;
     private int repeats = 0;
     private int currentCount = 0;
-
     private int scale = 1;
 
     public Animation(){
@@ -77,7 +76,7 @@ public class Animation implements StaticComponent {
         idCounter++;
 
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.1F),timerId);
+        timersHandler.addTimer(new Timer(0.05F),timerId);
         timersHandler.getTimer(timerId).resetTimer();
 
         // images will be shared

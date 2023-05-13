@@ -1,6 +1,7 @@
 package Components.MenuComponents;
 
 import Components.StaticComponent;
+import Database.Database;
 import Enums.ColorType;
 import Utils.Coordinate;
 import Window.GameWindow;
@@ -9,6 +10,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static java.awt.Font.TRUETYPE_FONT;
 
@@ -24,7 +26,9 @@ public class Text implements StaticComponent, Serializable {
 
     static {
         try {
-            font = Font.createFont( TRUETYPE_FONT , new File("src/Fonts/FutureMillennium.ttf") );
+            String source = "Fonts/FutureMillennium.ttf";
+            source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath();
+            font = Font.createFont( TRUETYPE_FONT , new File(source) );
         } catch (FontFormatException e){
             System.out.println(e.getMessage());
         } catch (IOException e) {

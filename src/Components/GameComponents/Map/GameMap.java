@@ -2,6 +2,7 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.GameComponents.DynamicComponent;
+import Database.Database;
 import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
@@ -29,7 +30,6 @@ import static Utils.Constants.*;
 /**
  * This class contains all the information about the game map:
  * matrix of objects|tiles, dimensions, predefined object positions.
- *
  */
 public class GameMap extends DynamicComponent {
     private int width; // lines
@@ -48,8 +48,10 @@ public class GameMap extends DynamicComponent {
         this.mapType = mapType;
         String path = "";
         switch (mapType) {
-            case GreenCity -> path = "src/Resources/maps/green_map.tmx";
-            case IndustrialCity -> path = "src/Resources/maps/industrial_map.tmx";
+            case GreenCity ->
+                    path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/green_map.tmx")).getPath();
+            case IndustrialCity ->
+                    path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/industrial_map.tmx")).getPath();
         }
         try {
             //   first initialize the document element
@@ -66,8 +68,9 @@ public class GameMap extends DynamicComponent {
             // the necessary information
             tiles = new HashMap<>();
             Element source = (Element) root.getElementsByTagName("tileset").item(0);
-
-            Document tilesDocument = builder.parse(new File(source.getAttribute("source").replace("..", "src/Resources")));
+            String source1 = source.getAttribute("source").replace("..", "Resources");
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            Document tilesDocument = builder.parse(new File(source1));
             Element tilesRoot = tilesDocument.getDocumentElement();
             NodeList elements = tilesRoot.getElementsByTagName("tile");
 
@@ -77,7 +80,8 @@ public class GameMap extends DynamicComponent {
                 Element tileElement = (Element) elements.item(index);
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
 
-                String tileSource = imageElement.getAttribute("source").replace("..", "src/Resources");
+                String tileSource = imageElement.getAttribute("source").replace("..", "Resources");
+                tileSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(tileSource)).getPath().replace("%20" , " ");
                 String tileId = Integer.toString(Integer.parseInt(tileElement.getAttribute("id")) + 1);
                 int tileWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
                 int tileHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
@@ -91,7 +95,9 @@ public class GameMap extends DynamicComponent {
             background = new ParallaxWallpaper();
 
             Element backGroundSource = (Element) root.getElementsByTagName("tileset").item(1);
-            Document backgroundDocument = builder.parse(new File(backGroundSource.getAttribute("source").replace("..", "src/Resources")));
+            source1 = backGroundSource.getAttribute("source").replace("..", "Resources");
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            Document backgroundDocument = builder.parse(new File(source1));
             document.getDocumentElement().normalize();
 
             Element backgroundRoot = backgroundDocument.getDocumentElement();
@@ -103,7 +109,9 @@ public class GameMap extends DynamicComponent {
             for (int index = 0; index < backgrounds.getLength(); ++index) {
                 Element tileElement = (Element) backgrounds.item(index);
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
-                background.addImage(ImageIO.read(new File(imageElement.getAttribute("source").replace("../", "src/Resources/"))));
+                source1 = imageElement.getAttribute("source").replace("..", "Resources");
+                source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20" , " ");
+                background.addImage(ImageIO.read(new File(source1)));
             }
 
             // -------------------------------------
@@ -114,7 +122,9 @@ public class GameMap extends DynamicComponent {
 
             Element objSource = (Element) root.getElementsByTagName("tileset").item(2);
             String lastMapId = objSource.getAttribute("firstgid");
-            Document objectsDocument = builder.parse(new File(objSource.getAttribute("source").replace("..", "src/Resources")));
+            source1 = objSource.getAttribute("source").replace("..", "Resources");
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            Document objectsDocument = builder.parse(new File(source1));
             Element objectsRoot = objectsDocument.getDocumentElement();
             NodeList objectsElements = objectsRoot.getElementsByTagName("tile");
 
@@ -124,7 +134,8 @@ public class GameMap extends DynamicComponent {
                 Element objectElement = (Element) objectsElements.item(index);
                 Element imageElement = (Element) objectElement.getFirstChild().getNextSibling();
 
-                String objectSource = imageElement.getAttribute("source").replace("..", "src/Resources");
+                String objectSource = imageElement.getAttribute("source").replace("..", "Resources");
+                objectSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(objectSource)).getPath().replace("%20" , " ");
                 String objectId = Integer.toString(Integer.parseInt(objectElement.getAttribute("id")) + Integer.parseInt(lastMapId));
                 int objectWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
                 int objectHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
@@ -221,11 +232,12 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public void setScene(Scene scene){
+    public void setScene(Scene scene) {
         super.setScene(scene);
         Camera.get().setGameMapPixelWidthDimension(this.width * mapDim);
         Camera.get().setGameMapPixelHeightDimension(this.height * mapDim);
     }
+
     @Override
     public void notify(Message message) {
     }
@@ -245,17 +257,17 @@ public class GameMap extends DynamicComponent {
         /*
          * drawing the tiles
          */
-        drawLayer(graphics2D,tilesIndexes, tiles);
+        drawLayer(graphics2D, tilesIndexes, tiles);
 
         /*
          * drawing the objects
          */
-        drawLayer(graphics2D,objectsIndexes, objects);
+        drawLayer(graphics2D, objectsIndexes, objects);
 
         /*
          * drawing decorations
          */
-        drawLayer(graphics2D,decorsIndexes, objects);
+        drawLayer(graphics2D, decorsIndexes, objects);
 
     }
 
@@ -264,11 +276,11 @@ public class GameMap extends DynamicComponent {
         return mapType;
     }
 
-    private void drawLayer(Graphics2D graphics2D , String[][] decorsIndexes, Map<String, MapAsset> types) {
-        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / mapDim -4 );
-        int xEnd = Math.min(width-1, (-Camera.get().getCurrentHorizontalOffset() + windowWidth) / mapDim + 4);
-        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / mapDim -4 );
-        int yEnd = Math.min(height-1, (-Camera.get().getCurrentVerticalOffset() + windowHeight) / mapDim + 4);
+    private void drawLayer(Graphics2D graphics2D, String[][] decorsIndexes, Map<String, MapAsset> types) {
+        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / mapDim - 4);
+        int xEnd = Math.min(width - 1, (-Camera.get().getCurrentHorizontalOffset() + windowWidth) / mapDim + 4);
+        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / mapDim - 4);
+        int yEnd = Math.min(height - 1, (-Camera.get().getCurrentVerticalOffset() + windowHeight) / mapDim + 4);
 
         for (int i = yStart; i <= yEnd; i++) {
             for (int j = xStart; j <= xEnd; j++) {
