@@ -28,9 +28,9 @@ final public class MainMenuScene extends Scene {
         components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
         components.add(new Button(this, ComponentType.NewGameButton, "DOCKER",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
-        components.add(new Button(this, ComponentType.LoadButton, "LOAD GAME",
+        components.add(new Button(this, ComponentType.LoadButton, "ESTE",
                 new Rectangle(new Coordinate<>(350, 500), 400, 150), 56));
-        components.add(new Button(this, ComponentType.ExitButton, "EXIT",
+        components.add(new Button(this, ComponentType.ExitButton, "MISTO",
                 new Rectangle(new Coordinate<>(350, 700), 400, 150),56));
     }
 
