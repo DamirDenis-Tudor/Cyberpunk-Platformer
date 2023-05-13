@@ -24,13 +24,13 @@ final public class MainMenuScene extends Scene {
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
         components.add(menuWallpaper);
-        components.add(new Text("CYBERPUNK", new Coordinate<>(1250, 450), 150));
-        components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
-        components.add(new Button(this, ComponentType.NewGameButton, "START",
+        components.add(new Text("Saluut", new Coordinate<>(1250, 450), 150));
+        components.add(new Text("Xeniaaa", new Coordinate<>(1250, 650), 200));
+        components.add(new Button(this, ComponentType.NewGameButton, "Multumesc",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
-        components.add(new Button(this, ComponentType.LoadButton, "LOAD",
+        components.add(new Button(this, ComponentType.LoadButton, "mult",
                 new Rectangle(new Coordinate<>(350, 500), 400, 150), 56));
-        components.add(new Button(this, ComponentType.ExitButton, "EXIT",
+        components.add(new Button(this, ComponentType.ExitButton, "!!!!!",
                 new Rectangle(new Coordinate<>(350, 700), 400, 150),56));
     }
 
