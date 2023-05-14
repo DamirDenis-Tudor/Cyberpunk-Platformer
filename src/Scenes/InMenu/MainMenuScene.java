@@ -24,7 +24,7 @@ final public class MainMenuScene extends Scene {
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
         components.add(menuWallpaper);
-        components.add(new Text("v.1.1", new Coordinate<>(100, 50), 50));
+        components.add(new Text("version.1.2", new Coordinate<>(100, 50), 50));
         components.add(new Text("CYBERPUNK", new Coordinate<>(1250, 450), 150));
         components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
         components.add(new Button(this, ComponentType.NewGameButton, "START",
