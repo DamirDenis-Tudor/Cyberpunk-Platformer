@@ -8,38 +8,54 @@
 
 ![Screenshot from 2023-04-21 12-01-03](https://user-images.githubusercontent.com/101417927/233596076-cb079189-a214-4561-a40b-efca02e63e28.png)
 
-# 1. Release<a name="release"></a>
-- #### Available for : <i>UBUNTU</i> , <i>DEBIAN</i> , <i>FEDORA</i> , <i>CENTOS</i>
-- #### This release is a docker container debian-based that comes with the current version of the game available to GitHub with all the libraries and dependencies preinstalled. This container will have access to X11 TCP protocol, that is necessary for displaying the window on you machine. 
-- #### The image of this container is on DockerHub and is automatically actualized when a commit is made on GitHub. This CI CD is applied using a local server that runs Jenkins(container based on UBUNTU). When the Jenkins is trigger he makes a clone of the repository, and then it runs a bash script that actualize the game image from DockerHub.
-## Video with the CI CD project implementation: 
+# 1. Game Docker Container<a name="release"></a>
+## Description
+This Docker container provides a Debian-based environment with the latest version of the game sourced from GitHub. It comes with all the necessary libraries and dependencies preinstalled. The container is configured to have access to the X11 TCP protocol, enabling the game window to be displayed on your machine.
 
+## Availability
+This Docker container is available for the following operating systems:
+- Ubuntu
+- Debian
+- Fedora
+- CentOS
+
+## Docker Image
+The Docker image for this container is hosted on DockerHub. It is automatically updated whenever a commit is made to the GitHub repository, ensuring that the container always reflects the latest version of the game.
+
+## CI/CD with Jenkins
+This setup utilizes a local server running Jenkins, which is also a Docker container based on Ubuntu. Here's an overview of the CI/CD pipeline process:
+1. When triggered, Jenkins clones the GitHub repository containing the game source code.
+2. Jenkins then executes a bash script that updates the game image from DockerHub.
+3. This ensures that the game image within the Docker container is always up to date with the latest changes from the GitHub repository.
+
+## Video with the CI CD project implementation: 
+[Screencast from 2023-05-14 13-55-28.webm](https://github.com/DamirDenis-Tudor/Cyberpunk_Platformer/assets/101417927/78f8459b-7499-4f3a-a455-5b43f07b294f)
 
 ## Install
 - #### Download the 'setup' folder and make the scrips executables : 
-```bash
+```shell
   chmod 777 docker.sh
   chmod 777 cyberpunk.sh
 ```
-- #### Run the script that installs the docker on you linux distribution :
-``` bash
+- #### Run the script that installs the docker on your linux distribution :
+``` shell
   ./docker.sh --install    
 ```
 - #### Now it's time to download the newest game container : 
-```bash
+```shell
   ./cyberpunk.sh --pull
 ```
 - #### If you want to restart the game run :
-```bash 
+```shell
   ./cyberpunk.sh --start
 ```
-- ### If you want to delete the container and its image run :
-```bash
+- #### If you want to delete the container and its image run :
+```shell
   ./cyberpunk.sh --delete
 ```
 
 ## Uninstall 
-```bash
+```shell
   ./docker.sh --uninstall
 ```
 
