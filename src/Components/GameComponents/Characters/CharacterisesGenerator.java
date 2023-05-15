@@ -143,6 +143,10 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.Hurt, AnimationType.Enemy6Hurt);
                 animationsType.put(GeneralAnimationTypes.Death, AnimationType.Enemy6Death);
             }
+            case Airplane -> {
+                animationsType.put(GeneralAnimationTypes.Walk, AnimationType.Airplane);
+                animationsType.put(GeneralAnimationTypes.Attack, AnimationType.AirplaneBomb);
+            }
         }
         return animationsType;
     }
@@ -165,7 +169,7 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.OnHelicopter, false);
                 statuses.put(ComponentStatus.DetachedFromHelicopter, false);
             }
-            case Enemy -> {
+            case GroundEnemy -> {
                 statuses.put(ComponentStatus.BottomCollision, false);
                 statuses.put(ComponentStatus.LeftCollision, false);
                 statuses.put(ComponentStatus.RightCollision, false);
@@ -179,6 +183,11 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.HasEnemyCollision, false);
                 statuses.put(ComponentStatus.HasDetectedPLayer, false);
                 statuses.put(ComponentStatus.Idle, false);
+            }
+            case AirEnemy -> {
+                statuses.put(ComponentStatus.Attack , true);
+                statuses.put(ComponentStatus.LeftCollision , false);
+                statuses.put(ComponentStatus.RightCollision , false);
             }
         }
         return statuses;
@@ -194,6 +203,7 @@ public class CharacterisesGenerator {
             case Cat1, Cat2, Dog1, Dog2 -> velocity = Constants.animalEnemyVelocity;
             case Helicopter -> velocity = Constants.helicopterVelocity;
             case Platform -> velocity = Constants.platformVelocity;
+            case Airplane -> velocity = Constants.airplaneVelocity;
         }
         return velocity;
     }

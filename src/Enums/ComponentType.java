@@ -15,7 +15,7 @@ public enum ComponentType implements Serializable {
 
     Map , GreenCity , IndustrialCity,
 
-    Enemy, BaseballEnemy, SkaterEnemy, GunnerEnemy,MachineGunEnemy, Cat1,Dog1,Cat2,Dog2,
+    GroundEnemy, BaseballEnemy, SkaterEnemy, GunnerEnemy,MachineGunEnemy,Animal, Cat1,Dog1,Cat2,Dog2,AirEnemy,Airplane,
 
     /*
         ITEMS

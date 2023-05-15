@@ -59,12 +59,12 @@ public class Platform extends DynamicComponent {
         if (component.getGeneralType() == ComponentType.Platform) {
             collideBox.solveCollision(component.getCollideBox());
             if (collideBox.getDx() > 0) {
-                component.notify(new Message(MessageType.RightCollision, ComponentType.Enemy, getId()));
+                component.notify(new Message(MessageType.RightCollision, ComponentType.GroundEnemy, getId()));
                 statuses.put(ComponentStatus.LeftCollision, true);
                 statuses.put(ComponentStatus.RightCollision, false);
                 animationHandler.getAnimation().setDirection(true);
             } else if (collideBox.getDx() < 0) {
-                component.notify(new Message(MessageType.LeftCollision, ComponentType.Enemy, getId()));
+                component.notify(new Message(MessageType.LeftCollision, ComponentType.GroundEnemy, getId()));
                 statuses.put(ComponentStatus.RightCollision, true);
                 statuses.put(ComponentStatus.LeftCollision, false);
                 animationHandler.getAnimation().setDirection(false);

@@ -87,7 +87,7 @@ public class Player extends DynamicComponent {
                     case IsNoLongerOnLadder -> statuses.put(ComponentStatus.IsOnLadder, false);
                 }
             }
-            case Enemy, Bullet -> {
+            case GroundEnemy, Bullet -> {
                 if (message.type() == MessageType.Attack) {
                     if (!statuses.get(ComponentStatus.Attack)) {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
@@ -120,7 +120,7 @@ public class Player extends DynamicComponent {
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         switch (component.getGeneralType()) {
-            case Enemy -> {
+            case GroundEnemy -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.Attack) &&
                         !statuses.get(ComponentStatus.FirstHit)) {

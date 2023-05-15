@@ -25,13 +25,13 @@ public abstract class Scene implements Notifiable {
 
     public void update() throws Exception {
         for (int index = 0; index < components.size(); index++) {
-            components.get(index).update();
+            if(components.get(index)!= null) components.get(index).update();
         }
     }
 
     public void draw(Graphics2D graphics2D) {
         for (int index = 0; index < components.size(); index++) {
-            components.get(index).draw(graphics2D);
+            if(components.get(index)!= null) components.get(index).draw(graphics2D);
         }
     }
 

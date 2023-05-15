@@ -5,7 +5,6 @@ import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
 import Enums.ComponentType;
-import Enums.MessageType;
 import Enums.SceneType;
 import Input.MouseInput;
 import Scenes.Messages.Message;

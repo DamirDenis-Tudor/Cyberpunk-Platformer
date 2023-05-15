@@ -1,8 +1,9 @@
 package Scenes.InGame;
 
 import Components.BaseComponents.AssetsDeposit;
+import Components.GameComponents.Characters.AirEnemy;
 import Components.GameComponents.Characters.CharacterisesGenerator;
-import Components.GameComponents.Characters.Enemy;
+import Components.GameComponents.Characters.GroundEnemy;
 import Components.GameComponents.Characters.Player;
 import Components.GameComponents.DynamicComponent;
 import Components.GameComponents.GameItems.Bullet;
@@ -62,47 +63,52 @@ final public class PlayScene extends Scene {
         addComponent(map);
 
         //add basic enemies
-        for (Coordinate<Integer> position : map.getEnemiesPositions()) {
-            ComponentType type = null;
+        for (Coordinate<Integer> position : map.getPositionForEntities(GroundEnemy)) {
+            ComponentType type = None;
             switch (rand.nextInt(4)) {
                 case 0 -> type = BaseballEnemy;
                 case 1 -> type = SkaterEnemy;
                 case 2 -> type = GunnerEnemy;
                 case 3 -> type = MachineGunEnemy;
             }
-            DynamicComponent comp = new Enemy(this, position, type);
+            DynamicComponent comp = new GroundEnemy(this, position, type);
             addComponent(comp);
         }
 
         //   add animals
-        for (Coordinate<Integer> position : map.getAnimalsPositions()) {
-            ComponentType type = null;
+        for (Coordinate<Integer> position : map.getPositionForEntities(Animal)) {
+            ComponentType type = None;
             switch (rand.nextInt(4)) {
                 case 0 -> type = Dog1;
                 case 1 -> type = Dog2;
                 case 2 -> type = Cat1;
                 case 3 -> type = Cat2;
             }
-            addComponent(new Enemy(this, position, type));
+            addComponent(new GroundEnemy(this, position, type));
         }
 
         // add platforms
-        for (Coordinate<Integer> position : map.getPlatformsPositions()) {
+        for (Coordinate<Integer> position : map.getPositionForEntities(Platform)) {
             addComponent(new Platform(this, position));
         }
 
         // add helicopters
-        for (Coordinate<Integer> position : map.getHelicoptersPositions()) {
+        for (Coordinate<Integer> position : map.getPositionForEntities(Helicopter)) {
             addComponent(new Helicopter(this, position));
         }
 
+        // add airplanes
+        for (Coordinate<Integer> position : map.getPositionForEntities(Airplane)) {
+            addComponent(new AirEnemy(this, position, Airplane));
+        }
+
         //  add chests
-        for (Coordinate<Integer> position : map.getChestsPositions()) {
+        for (Coordinate<Integer> position : map.getPositionForEntities(Chest)) {
             addComponent(new Chest(this, position));
         }
 
         // add player
-        addComponent(new Player(this, map.getPlayerPosition(), currentPlayer));
+        addComponent(new Player(this, map.getPositionForEntities(Player).get(0), currentPlayer));
     }
 
     /**
@@ -157,8 +163,8 @@ final public class PlayScene extends Scene {
                         component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
                     }
-                    case Enemy -> {
-                        DynamicComponent component = (Enemy) objectStream.readObject();
+                    case GroundEnemy -> {
+                        DynamicComponent component = (GroundEnemy) objectStream.readObject();
                         component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
                     }
@@ -244,12 +250,12 @@ final public class PlayScene extends Scene {
                         findComponentWithName(Map).interactionWith(findComponentWithName(Player));
 
                         // handle with enemies
-                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent component : getAllComponentsWithName(GroundEnemy)) {
                             findComponentWithName(Player).interactionWith(component);
                         }
                     }
                     case PlayerDeath -> {
-                        for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent component : getAllComponentsWithName(GroundEnemy)) {
                             component.notify(new Message(MessageType.PlayerDeath, Player, message.componentId()));
                         }
                     }
@@ -263,7 +269,7 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-            case Enemy -> {
+            case GroundEnemy -> {
                 switch (message.type()) {
                     case HandleCollision -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
@@ -273,7 +279,7 @@ final public class PlayScene extends Scene {
                         component.interactionWith(findComponentWithName(Player));
 
                         // interaction with other enemies
-                        for (DynamicComponent otherComponent : getAllComponentsWithName(Enemy)) {
+                        for (DynamicComponent otherComponent : getAllComponentsWithName(GroundEnemy)) {
                             if (component != otherComponent) {
                                 component.interactionWith(otherComponent);
                             }
@@ -282,7 +288,7 @@ final public class PlayScene extends Scene {
                     case BulletLaunchLeft, BulletLaunchRight -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
 
-                        DynamicComponent bullet = new Bullet(this, CharacterisesGenerator.getGunTypeForEnemy(component.getCurrentType()), component.getCollideBox().getPosition(), Enemy);
+                        DynamicComponent bullet = new Bullet(this, CharacterisesGenerator.getGunTypeForEnemy(component.getCurrentType()), component.getCollideBox().getPosition(), GroundEnemy);
 
                         bullet.notify(new Message(message.type(), Gun, message.componentId()));
                         addComponent(bullet);
@@ -337,7 +343,7 @@ final public class PlayScene extends Scene {
                     if (stillExists(bullet) && bullet.getCurrentType() != findComponentWithName(Player).getGeneralType()) {
                         bullet.interactionWith(findComponentWithName(Player));
                     }
-                    for (DynamicComponent component : getAllComponentsWithName(Enemy)) {
+                    for (DynamicComponent component : getAllComponentsWithName(GroundEnemy)) {
                         if (!stillExists(bullet) || bullet.getCurrentType() == component.getGeneralType())
                             return;
                         bullet.interactionWith(component);
@@ -362,6 +368,21 @@ final public class PlayScene extends Scene {
                     findComponentWithName(Map).interactionWith(component);
                     findComponentWithName(Player).interactionWith(component);
                     component.interactionWith(findComponentWithName(Player));
+                }
+            }
+            case Airplane -> {
+                switch (message.type()) {
+                    case HandleCollision -> {
+                        DynamicComponent component = findComponentWithId(message.componentId());
+                        findComponentWithName(Map).interactionWith(component);
+                        component.interactionWith(findComponentWithName(Player));
+                    }
+                    case BulletLaunchLeft , BulletLaunchRight -> {
+                        DynamicComponent component = findComponentWithId(message.componentId());
+                        DynamicComponent bullet = new Bullet(this, Airplane, component.getCollideBox().getPosition(), None);
+                        bullet.notify(new Message(message.type(),   Airplane, message.componentId()));
+                        addComponent(bullet);
+                    }
                 }
             }
         }

@@ -404,7 +404,7 @@ public class GameMap extends DynamicComponent {
             }
         }
 
-        if (component.getGeneralType() != ComponentType.Platform) {
+        if (component.getGeneralType() != ComponentType.Platform && component.getCurrentType() != ComponentType.Airplane) {
             // notify the component
             if (wasGroundCollision) {
                 component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
@@ -418,7 +418,7 @@ public class GameMap extends DynamicComponent {
 
         // particular behavior for some components
         if (component.getGeneralType() != ComponentType.Player) {
-            if (component.getGeneralType() != ComponentType.Platform) {
+            if (component.getGeneralType() == ComponentType.GroundEnemy) {
                 // collision verification is necessary to prevent components from falling off the platform
                 if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
                     wasLeftCollision = true;
@@ -446,49 +446,24 @@ public class GameMap extends DynamicComponent {
         return new Rectangle(pos, mapDim, mapDim);
     }
 
-    public Coordinate<Integer> getPlayerPosition() {
-        return entitiesCoordinates.get("player").get(0).getPosition();
-    }
-
-    public List<Coordinate<Integer>> getEnemiesPositions() {
+    public List<Coordinate<Integer>> getPositionForEntities(ComponentType componentType){
+        String componentName = "";
+        switch (componentType){
+            case Player -> componentName = "player";
+            case GroundEnemy -> componentName = "enemies";
+            case Animal -> componentName = "animals";
+            case Chest -> componentName = "chests";
+            case Platform -> componentName = "platforms";
+            case Helicopter -> componentName = "helicopters";
+            case Airplane -> componentName = "airplanes";
+        }
         List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get("enemies")) {
+        for (Rectangle rectangle : entitiesCoordinates.get(componentName)) {
             coordinates.add(rectangle.getPosition());
         }
         return coordinates;
     }
 
-    public List<Coordinate<Integer>> getAnimalsPositions() {
-        List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get("animals")) {
-            coordinates.add(rectangle.getPosition());
-        }
-        return coordinates;
-    }
-
-    public List<Coordinate<Integer>> getChestsPositions() {
-        List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get("chests")) {
-            coordinates.add(rectangle.getPosition());
-        }
-        return coordinates;
-    }
-
-    public List<Coordinate<Integer>> getPlatformsPositions() {
-        List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get("platforms")) {
-            coordinates.add(rectangle.getPosition());
-        }
-        return coordinates;
-    }
-
-    public List<Coordinate<Integer>> getHelicoptersPositions() {
-        List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get("helicopters")) {
-            coordinates.add(rectangle.getPosition());
-        }
-        return coordinates;
-    }
 
     public int getHeight() {
         return height;
