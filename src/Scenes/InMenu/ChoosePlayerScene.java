@@ -30,15 +30,15 @@ public class ChoosePlayerScene extends Scene {
     public ChoosePlayerScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
-        components.add(new Button(this, ComponentType.Biker, "Biker",
+        components.add(new Button(this, ComponentType.BIKER, "Biker",
                 new Rectangle(new Coordinate<>(350, 300), 400, 100), 56));
-        components.add(new Button(this, ComponentType.Cyborg, "Cyborg",
+        components.add(new Button(this, ComponentType.CYBORG, "Cyborg",
                 new Rectangle(new Coordinate<>(350, 425), 400, 100), 56));
-        components.add(new Button(this, ComponentType.Punk, "Punk",
+        components.add(new Button(this, ComponentType.PUNK, "Punk",
                 new Rectangle(new Coordinate<>(350, 550), 400, 100), 56));
-        components.add(new Button(this, ComponentType.Back, "BACK",
+        components.add(new Button(this, ComponentType.BACK, "BACK",
                 new Rectangle(new Coordinate<>(350, 700), 400, 150), 56));
     }
 
@@ -58,9 +58,9 @@ public class ChoosePlayerScene extends Scene {
         }
         if(KeyboardInput.get().getKeyEnter() && selectedPlayer!=null){
             changeableComponents.clear();
-            sceneHandler.notify(new Message(selectedPlayer, ComponentType.Scene , -1));
-            sceneHandler.notify(new Message(MessageType.NewGame , ComponentType.Scene , -1));
-            sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
+            sceneHandler.notify(new Message(selectedPlayer, ComponentType.SCENE, -1));
+            sceneHandler.notify(new Message(MessageType.NEW_GAME, ComponentType.SCENE, -1));
+            sceneHandler.handleSceneChangeRequest(SceneType.PLAY_SCENE);
             selectedPlayer = null;
         }
     }
@@ -68,30 +68,30 @@ public class ChoosePlayerScene extends Scene {
     @Override
     public void notify(Message message) {
         switch (message.type()) {
-            case SceneHasBeenActivated -> {
+            case SCENE_HAS_BEEN_ACTIVATED -> {
                 MouseInput.get().reset();
                 KeyboardInput.get().reset();
                 Text text = new Text("Select player ..." , new Coordinate<>(1300 , 500) , 55);
                 changeableComponents.add(text);
             }
-            case ButtonClicked -> {
+            case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case Cyborg,Punk,Biker -> {
+                    case CYBORG, PUNK, BIKER -> {
                         changeableComponents.clear();
                         Text text = new Text("Press ENTER to start ..." , new Coordinate<>(1250 , 350) , 55);
                         AnimationType animationType = null ;
                         switch (message.source()){
-                            case Biker -> {
-                                animationType = AnimationType.BikerIdle;
-                                selectedPlayer = MessageType.BikerSelected;
+                            case BIKER -> {
+                                animationType = AnimationType.Bomb4;
+                                selectedPlayer = MessageType.BIKER_SELECTED;
                             }
-                            case Cyborg -> {
+                            case CYBORG -> {
                                 animationType = AnimationType.CyborgIdle;
-                                selectedPlayer = MessageType.CyborgSelected;
+                                selectedPlayer = MessageType.CYBORG_SELECTED;
                             }
-                            case Punk -> {
+                            case PUNK -> {
                                 animationType = AnimationType.PunkIdle;
-                                selectedPlayer = MessageType.PunkSelected;
+                                selectedPlayer = MessageType.PUNK_SELECTED;
                             }
                         }
                         Animation animation = new Animation(AssetsDeposit.get().getAnimation(animationType));
@@ -100,10 +100,10 @@ public class ChoosePlayerScene extends Scene {
                         changeableComponents.add(animation);
                         changeableComponents.add(text);
                     }
-                    case Back -> {
+                    case BACK -> {
                         changeableComponents.clear();
                         selectedPlayer = null;
-                        sceneHandler.handleSceneChangeRequest(SceneType.ChooseLevelScene);
+                        sceneHandler.handleSceneChangeRequest(SceneType.CHOOSE_LEVEL_SCENE);
                     }
                 }
             }

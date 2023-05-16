@@ -7,10 +7,6 @@ import Utils.Constants;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import static java.awt.Font.TRUETYPE_FONT;
 
 /**
  * This class describes a basic game window with
@@ -35,8 +31,8 @@ public class    GameWindow {
      */
     private GameWindow(String title) {
         windowTitle = title;
-        windowWidth = Constants.windowWidth;
-        windowHeight = Constants.windowHeight;
+        windowWidth = Constants.WINDOW_WIDTH;
+        windowHeight = Constants.WINDOW_HEIGHT;
         windowFrame = null;
 
         buildGameWindow();
