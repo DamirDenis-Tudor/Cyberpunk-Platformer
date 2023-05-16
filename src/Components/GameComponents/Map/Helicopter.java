@@ -2,7 +2,6 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.DynamicComponent;
-import Components.GameComponents.GameItems.Gun;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -15,7 +14,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Utils.Constants.helicopterVelocity;
+import static Utils.Constants.HELICOPTER_VELOCITY;
 
 /**
  * This class describes the helicopter behaviour.
@@ -31,9 +30,9 @@ public class Helicopter extends DynamicComponent {
         super();
         this.scene = scene;
         statuses = new HashMap<>();
-        statuses.put(ComponentStatus.TopCollision, false);
-        statuses.put(ComponentStatus.BottomCollision, false);
-        statuses.put(ComponentStatus.HasPlayer, false);
+        statuses.put(ComponentStatus.TOP_COLLISION, false);
+        statuses.put(ComponentStatus.BOTTOM_COLLISION, false);
+        statuses.put(ComponentStatus.HAS_PLAYER, false);
 
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Helicopter, new Coordinate<>(position));
@@ -44,20 +43,20 @@ public class Helicopter extends DynamicComponent {
     @Override
     public void notify(Message message)  {
         switch (message.source()) {
-            case Map -> {
+            case MAP -> {
                 switch (message.type()) {
-                    case ActivateTopCollision -> {
-                        statuses.put(ComponentStatus.TopCollision, true);
-                        statuses.put(ComponentStatus.BottomCollision, false);
+                    case ACTIVATE_TOP_COLLISION -> {
+                        statuses.put(ComponentStatus.TOP_COLLISION, true);
+                        statuses.put(ComponentStatus.BOTTOM_COLLISION, false);
                         animationHandler.getAnimation().setDirection(true);
                     }
                 }
             }
-            case Player -> {
-                if (message.type() == MessageType.OnHelicopter) {
-                    statuses.put(ComponentStatus.HasPlayer, true);
-                } else if (message.type() == MessageType.DetachedFromHelicopter) {
-                    statuses.put(ComponentStatus.HasPlayer, false);
+            case PLAYER -> {
+                if (message.type() == MessageType.ON_HELICOPTER) {
+                    statuses.put(ComponentStatus.HAS_PLAYER, true);
+                } else if (message.type() == MessageType.DETACHED_FROM_HELICOPTER) {
+                    statuses.put(ComponentStatus.HAS_PLAYER, false);
                 }
 
             }
@@ -67,8 +66,8 @@ public class Helicopter extends DynamicComponent {
     @Override
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
-        if (component.getGeneralType() == ComponentType.Player) {
-            if (statuses.get(ComponentStatus.HasPlayer)) {
+        if (component.getGeneralType() == ComponentType.PLAYER) {
+            if (statuses.get(ComponentStatus.HAS_PLAYER)) {
                 component.getCollideBox().getPosition().setX(collideBox.getCenterX() - component.getCollideBox().getWidth() / 2);
                 component.getCollideBox().getPosition().setY(collideBox.getMaxY()-28);
             }
@@ -78,17 +77,17 @@ public class Helicopter extends DynamicComponent {
     @Override
     public void update() {
         super.update();
-        if (!statuses.get(ComponentStatus.TopCollision)) {
-            collideBox.moveByY(-helicopterVelocity);
-        } else if (!statuses.get(ComponentStatus.BottomCollision)) {
-            collideBox.moveByY(helicopterVelocity);
+        if (!statuses.get(ComponentStatus.TOP_COLLISION)) {
+            collideBox.moveByY(-HELICOPTER_VELOCITY);
+        } else if (!statuses.get(ComponentStatus.BOTTOM_COLLISION)) {
+            collideBox.moveByY(HELICOPTER_VELOCITY);
         }
         if(initialPosition.getPosY() < collideBox.getPosition().getPosY()) {
-            statuses.put(ComponentStatus.TopCollision, false);
-            statuses.put(ComponentStatus.BottomCollision, true);
+            statuses.put(ComponentStatus.TOP_COLLISION, false);
+            statuses.put(ComponentStatus.BOTTOM_COLLISION, true);
             animationHandler.getAnimation().setDirection(true);
         }
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Helicopter, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.HELICOPTER, getId()));
         animationHandler.update();
     }
 
@@ -105,7 +104,7 @@ public class Helicopter extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Helicopter;
+        return ComponentType.HELICOPTER;
     }
 
     @Override

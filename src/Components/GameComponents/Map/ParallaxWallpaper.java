@@ -3,7 +3,6 @@ package Components.GameComponents.Map;
 import Components.StaticComponent;
 import Utils.Constants;
 import Window.Camera;
-import Window.GameWindow;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,7 +17,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
  * For additional info, see how the Parallax effect works.
  */
 public class ParallaxWallpaper implements StaticComponent{
-    BufferedImage bufferedImage = new BufferedImage(Constants.windowWidth , Constants.windowHeight , TYPE_INT_ARGB);
+    BufferedImage bufferedImage = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, TYPE_INT_ARGB);
     private final List<BufferedImage> images;
     private final List<Integer> velocities;
     private final List<Integer> background1Position;
@@ -41,8 +40,8 @@ public class ParallaxWallpaper implements StaticComponent{
     public void addImage(BufferedImage image) {
         images.add(image);
         background1Position.add(0);
-        background2Position.add(Constants.windowWidth);
-        bufferedImage.getGraphics().drawImage(image,0,0, (int)(windowWidth),(int)(windowHeight),null);
+        background2Position.add(Constants.WINDOW_WIDTH);
+        bufferedImage.getGraphics().drawImage(image,0,0, (int)(WINDOW_WIDTH),(int)(WINDOW_HEIGHT),null);
     }
 
     public void restoreImagesPositions(){
@@ -50,7 +49,7 @@ public class ParallaxWallpaper implements StaticComponent{
             pos = Camera.get().getCurrentHorizontalOffset();
         }
         for (Integer pos : background2Position){
-            pos = Camera.get().getCurrentHorizontalOffset() + Constants.windowWidth;
+            pos = Camera.get().getCurrentHorizontalOffset() + Constants.WINDOW_WIDTH;
         }
     }
 
@@ -72,14 +71,14 @@ public class ParallaxWallpaper implements StaticComponent{
             background1Position.set(index, background1Position.get(index) + distance);
             background2Position.set(index, background2Position.get(index) + distance);
 
-            if (background1Position.get(index) <= -Constants.windowWidth + 10) {
-                background1Position.set(index, Constants.windowWidth - 10);
-            } else if (background1Position.get(index) >= Constants.windowWidth - 10) {
-                background1Position.set(index, -Constants.windowWidth + 10);
+            if (background1Position.get(index) <= -Constants.WINDOW_WIDTH + 10) {
+                background1Position.set(index, Constants.WINDOW_WIDTH - 10);
+            } else if (background1Position.get(index) >= Constants.WINDOW_WIDTH - 10) {
+                background1Position.set(index, -Constants.WINDOW_WIDTH + 10);
             }
-            if (background2Position.get(index) <= -Constants.windowWidth + 10) {
-                background2Position.set(index, Constants.windowWidth - 10);
-            } else if (background2Position.get(index) >= Constants.windowWidth - 10) {
+            if (background2Position.get(index) <= -Constants.WINDOW_WIDTH + 10) {
+                background2Position.set(index, Constants.WINDOW_WIDTH - 10);
+            } else if (background2Position.get(index) >= Constants.WINDOW_WIDTH - 10) {
             }
         }
     }

@@ -9,12 +9,8 @@ import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
-import Window.GameWindow;
 
 import java.io.Serializable;
-
-import static Utils.Constants.mapDim;
-import static Utils.Constants.windowWidth;
 
 /**
  * This allows for the updating and drawing of any component, the ability to make requests
@@ -67,7 +63,7 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
 
         Rectangle window = new Rectangle(
                 new Coordinate<>(Math.max(0, -Camera.get().getCurrentHorizontalOffset()),  Math.max(0, -Camera.get().getCurrentVerticalOffset()))
-                        , Constants.windowWidth , Constants.windowHeight);
+                        , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
 
         active = collideBox.intersects(window);
     }

@@ -12,8 +12,8 @@ import Utils.Coordinate;
 import java.awt.*;
 import java.util.Map;
 
-import static Utils.Constants.enemyRange;
-import static Utils.Constants.gravitationForce;
+import static Utils.Constants.ENEMY_RANGE;
+import static Utils.Constants.GRAVITATION_FORCE;
 
 /**
  * This class describes a basic enemy behavior.The code might be complicated, but it is not.
@@ -33,66 +33,66 @@ public class GroundEnemy extends DynamicComponent {
         animationHandler = new AnimationHandler();
 
         timersHandler = TimersHandler.get();
-        timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
+        timersHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
 
         subtype = type;
         velocity = CharacterisesGenerator.getVelocityFor(type);
-        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GroundEnemy);
+        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GROUND_ENEMY);
         animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), new Coordinate<>(position));
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
     }
 
     @Override
     public void notify(Message message) {
         switch (message.source()) {
-            case Map -> {
+            case MAP -> {
                 switch (message.type()) {
-                    case LeftCollision -> {
-                        statuses.put(ComponentStatus.LeftCollision, true);
-                        statuses.put(ComponentStatus.RightCollision, false);
+                    case LEFT_COLLISION -> {
+                        statuses.put(ComponentStatus.LEFT_COLLISION, true);
+                        statuses.put(ComponentStatus.RIGHT_COLLISION, false);
                     }
-                    case RightCollision -> {
-                        statuses.put(ComponentStatus.LeftCollision, false);
-                        statuses.put(ComponentStatus.RightCollision, true);
+                    case RIGHT_COLLISION -> {
+                        statuses.put(ComponentStatus.LEFT_COLLISION, false);
+                        statuses.put(ComponentStatus.RIGHT_COLLISION, true);
                     }
-                    case ActivateBottomCollision -> statuses.put(ComponentStatus.BottomCollision, true);
+                    case ACTIVATE_BOTTOM_COLLISION -> statuses.put(ComponentStatus.BOTTOM_COLLISION, true);
 
                 }
             }
-            case GroundEnemy -> {
+            case GROUND_ENEMY -> {
                 switch (message.type()) {
-                    case LeftCollisionWithOther -> {
-                        statuses.put(ComponentStatus.LeftCollision, true);
-                        statuses.put(ComponentStatus.RightCollision, false);
-                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    case LEFT_COLLISION_WITH_OTHER -> {
+                        statuses.put(ComponentStatus.LEFT_COLLISION, true);
+                        statuses.put(ComponentStatus.RIGHT_COLLISION, false);
+                        statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, true);
                     }
-                    case RightCollisionWithOther -> {
-                        statuses.put(ComponentStatus.LeftCollision, false);
-                        statuses.put(ComponentStatus.RightCollision, true);
-                        statuses.put(ComponentStatus.HasEnemyCollision, true);
+                    case RIGHT_COLLISION_WITH_OTHER -> {
+                        statuses.put(ComponentStatus.LEFT_COLLISION, false);
+                        statuses.put(ComponentStatus.RIGHT_COLLISION, true);
+                        statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, true);
                     }
                 }
             }
-            case Player, Bullet -> {
+            case PLAYER, BULLET -> {
                 switch (message.type()) {
-                    case Attack, HasCollision -> {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
+                    case ATTACK, HAS_COLLISION -> {
+                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
-                        statuses.put(ComponentStatus.Hurt, true);
+                        statuses.put(ComponentStatus.HURT, true);
                         health -= 25;
                         if (health <= 0) {
-                            statuses.put(ComponentStatus.Death, true);
+                            statuses.put(ComponentStatus.DEATH, true);
                             collideBox.getPosition().setX(-1);
                             collideBox.getPosition().setY(-1);
                             setActiveStatus(false);
-                            scene.notify(new Message(MessageType.Destroy, ComponentType.GroundEnemy, getId()));
+                            scene.notify(new Message(MessageType.DESTROY, ComponentType.GROUND_ENEMY, getId()));
                         }
                     }
-                    case PlayerDeath -> {
-                        statuses.put(ComponentStatus.Idle, false);
-                        statuses.put(ComponentStatus.Attack, false);
+                    case PLAYER_DEATH -> {
+                        statuses.put(ComponentStatus.IDLE, false);
+                        statuses.put(ComponentStatus.ATTACK, false);
                     }
                 }
             }
@@ -103,109 +103,109 @@ public class GroundEnemy extends DynamicComponent {
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent)object;
         switch (component.getGeneralType()) {
-            case Player -> {
-                if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.Hurt)) {
-                    statuses.put(ComponentStatus.Attack, true);
-                    if (!timersHandler.getTimer(TimerType.LockTarget.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FirstHit)) {
-                        statuses.put(ComponentStatus.FirstHit, true);
-                        component.notify(new Message(MessageType.Attack, ComponentType.GroundEnemy, getId()));
+            case PLAYER -> {
+                if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.HURT)) {
+                    statuses.put(ComponentStatus.ATTACK, true);
+                    if (!timersHandler.getTimer(TimerType.LOCK_TARGET.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FIRST_HIT)) {
+                        statuses.put(ComponentStatus.FIRST_HIT, true);
+                        component.notify(new Message(MessageType.ATTACK, ComponentType.GROUND_ENEMY, getId()));
                     }
-                } else if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
-                    statuses.put(ComponentStatus.Attack, false);
+                } else if (statuses.get(ComponentStatus.ATTACK) && animationHandler.getAnimation().animationIsOver()) {
+                    statuses.put(ComponentStatus.ATTACK, false);
                 }
 
-                if ((!statuses.get(ComponentStatus.HasEnemyCollision) || subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) &&
+                if ((!statuses.get(ComponentStatus.HAS_ENEMY_COLLISION) || subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY) &&
                         collideBox.getMinY() < component.getCollideBox().getCenterY() &&
                         collideBox.getMaxY() > component.getCollideBox().getCenterY() &&
-                        collideBox.calculateDistanceWith(component.getCollideBox()) < enemyRange) {
-                    statuses.put(ComponentStatus.HasDetectedPLayer, true);
+                        collideBox.calculateDistanceWith(component.getCollideBox()) < ENEMY_RANGE) {
+                    statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, true);
                     if (collideBox.getCenterX() - component.getCollideBox().getCenterX() > 0) {
                         if (!animationHandler.getAnimation().getDirection() &&
-                                statuses.get(ComponentStatus.LeftCollision)) {
-                            if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
-                                statuses.put(ComponentStatus.Attack, true);
+                                statuses.get(ComponentStatus.LEFT_COLLISION)) {
+                            if (subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY) {
+                                statuses.put(ComponentStatus.ATTACK, true);
                             } else {
-                                statuses.put(ComponentStatus.Idle, true);
+                                statuses.put(ComponentStatus.IDLE, true);
                             }
                         } else {
-                            statuses.put(ComponentStatus.RightCollision, true);
-                            statuses.put(ComponentStatus.LeftCollision, false);
+                            statuses.put(ComponentStatus.RIGHT_COLLISION, true);
+                            statuses.put(ComponentStatus.LEFT_COLLISION, false);
                         }
                     } else if (collideBox.getCenterX() - component.getCollideBox().getCenterX() < 0) {
                         if (animationHandler.getAnimation().getDirection() &&
-                                statuses.get(ComponentStatus.RightCollision)) {
-                            if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
-                                statuses.put(ComponentStatus.Attack, true);
+                                statuses.get(ComponentStatus.RIGHT_COLLISION)) {
+                            if (subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY) {
+                                statuses.put(ComponentStatus.ATTACK, true);
                             } else {
-                                statuses.put(ComponentStatus.Idle, true);
+                                statuses.put(ComponentStatus.IDLE, true);
                             }
                         } else {
-                            statuses.put(ComponentStatus.RightCollision, false);
-                            statuses.put(ComponentStatus.LeftCollision, true);
+                            statuses.put(ComponentStatus.RIGHT_COLLISION, false);
+                            statuses.put(ComponentStatus.LEFT_COLLISION, true);
                         }
                     } else {
-                        statuses.put(ComponentStatus.HasDetectedPLayer, false);
+                        statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, false);
                     }
                 } else {
-                    statuses.put(ComponentStatus.Idle, false);
-                    statuses.put(ComponentStatus.HasDetectedPLayer, false);
+                    statuses.put(ComponentStatus.IDLE, false);
+                    statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, false);
                 }
             }
-            case GroundEnemy -> {
+            case GROUND_ENEMY -> {
                 if (collideBox.intersects(component.getCollideBox())) {
                     collideBox.solveCollision(component.getCollideBox());
                     if (collideBox.getDx() > 0) {
-                        component.notify(new Message(MessageType.RightCollisionWithOther, ComponentType.GroundEnemy, getId()));
-                        if (!(statuses.get(ComponentStatus.HasDetectedPLayer))) {
-                            statuses.put(ComponentStatus.LeftCollision, true);
-                            statuses.put(ComponentStatus.RightCollision, false);
-                            statuses.put(ComponentStatus.HasEnemyCollision, true);
+                        component.notify(new Message(MessageType.RIGHT_COLLISION_WITH_OTHER, ComponentType.GROUND_ENEMY, getId()));
+                        if (!(statuses.get(ComponentStatus.HAS_DETECTED_PLAYER))) {
+                            statuses.put(ComponentStatus.LEFT_COLLISION, true);
+                            statuses.put(ComponentStatus.RIGHT_COLLISION, false);
+                            statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, true);
                         }
                     } else if (collideBox.getDx() < 0) {
-                        component.notify(new Message(MessageType.LeftCollisionWithOther, ComponentType.GroundEnemy, getId()));
-                        if (!(statuses.get(ComponentStatus.HasDetectedPLayer))) {
-                            statuses.put(ComponentStatus.RightCollision, true);
-                            statuses.put(ComponentStatus.LeftCollision, false);
-                            statuses.put(ComponentStatus.HasEnemyCollision, true);
+                        component.notify(new Message(MessageType.LEFT_COLLISION_WITH_OTHER, ComponentType.GROUND_ENEMY, getId()));
+                        if (!(statuses.get(ComponentStatus.HAS_DETECTED_PLAYER))) {
+                            statuses.put(ComponentStatus.RIGHT_COLLISION, true);
+                            statuses.put(ComponentStatus.LEFT_COLLISION, false);
+                            statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, true);
                         }
                     }
                 } else {
-                    statuses.put(ComponentStatus.HasEnemyCollision, false);
+                    statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
                 }
             }
         }
     }
 
     protected void handleAnimations(){
-        if (statuses.get(ComponentStatus.Death)) {
+        if (statuses.get(ComponentStatus.DEATH)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Death), collideBox.getPosition());
+            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
         } else {
-            if (statuses.get(ComponentStatus.Hurt)) {
+            if (statuses.get(ComponentStatus.HURT)) {
                 if (animationHandler.getAnimation().repeatsAreOver()) {
-                    statuses.put(ComponentStatus.Hurt, false);
+                    statuses.put(ComponentStatus.HURT, false);
                 }
-            } else if (statuses.get(ComponentStatus.Attack)) {
-                if (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy) {
+            } else if (statuses.get(ComponentStatus.ATTACK)) {
+                if (subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY) {
                     if (!timersHandler.getTimer(subtype.toString() + getId()).getTimerState()) {
                         timersHandler.getTimer(subtype.toString() + getId()).resetTimer();
                         if (animationHandler.getAnimation().getDirection()) {
-                            scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.GroundEnemy, getId()));
+                            scene.notify(new Message(MessageType.BULLET_LAUNCH_RIGHT, ComponentType.GROUND_ENEMY, getId()));
                         } else {
-                            scene.notify(new Message(MessageType.BulletLaunchLeft, ComponentType.GroundEnemy, getId()));
+                            scene.notify(new Message(MessageType.BULLET_LAUNCH_LEFT, ComponentType.GROUND_ENEMY, getId()));
                         }
                     }
                 }
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                 if (animationHandler.getAnimation().animationIsOver()) {
-                    statuses.put(ComponentStatus.FirstHit, false);
+                    statuses.put(ComponentStatus.FIRST_HIT, false);
                 }
-            } else if (statuses.get(ComponentStatus.Idle)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
-            } else if (statuses.get(ComponentStatus.HorizontalMove)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Walk), collideBox.getPosition());
+            } else if (statuses.get(ComponentStatus.IDLE)) {
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
+            } else if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
             }
         }
     }
@@ -213,28 +213,28 @@ public class GroundEnemy extends DynamicComponent {
     @Override
     public void update(){
         super.update();
-        if (!statuses.get(ComponentStatus.BottomCollision)) {
-            collideBox.moveByY(gravitationForce);
+        if (!statuses.get(ComponentStatus.BOTTOM_COLLISION)) {
+            collideBox.moveByY(GRAVITATION_FORCE);
         }
-        if (!statuses.get(ComponentStatus.Hurt) &&
-                !statuses.get(ComponentStatus.Attack) &&
-                !statuses.get(ComponentStatus.Idle)) {
-            if (!statuses.get(ComponentStatus.LeftCollision)) {
-                statuses.put(ComponentStatus.HorizontalMove, true);
+        if (!statuses.get(ComponentStatus.HURT) &&
+                !statuses.get(ComponentStatus.ATTACK) &&
+                !statuses.get(ComponentStatus.IDLE)) {
+            if (!statuses.get(ComponentStatus.LEFT_COLLISION)) {
+                statuses.put(ComponentStatus.HORIZONTAL_MOVE, true);
                 animationHandler.getAnimation().setDirection(false);
-            } else if (!statuses.get(ComponentStatus.RightCollision)) {
-                statuses.put(ComponentStatus.HorizontalMove, true);
+            } else if (!statuses.get(ComponentStatus.RIGHT_COLLISION)) {
+                statuses.put(ComponentStatus.HORIZONTAL_MOVE, true);
                 animationHandler.getAnimation().setDirection(true);
             }
         } else {
-            statuses.put(ComponentStatus.HorizontalMove, false);
+            statuses.put(ComponentStatus.HORIZONTAL_MOVE, false);
         }
 
-        if (statuses.get(ComponentStatus.HorizontalMove)) {
-            if (statuses.get(ComponentStatus.HasDetectedPLayer) &&
-                    (subtype == ComponentType.GunnerEnemy || subtype == ComponentType.MachineGunEnemy)) {
-                statuses.put(ComponentStatus.HorizontalMove, false);
-                statuses.put(ComponentStatus.Attack, true);
+        if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
+            if (statuses.get(ComponentStatus.HAS_DETECTED_PLAYER) &&
+                    (subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY)) {
+                statuses.put(ComponentStatus.HORIZONTAL_MOVE, false);
+                statuses.put(ComponentStatus.ATTACK, true);
             } else {
                 if (animationHandler.getAnimation().getDirection()) {
                     collideBox.moveByX(velocity);
@@ -245,7 +245,7 @@ public class GroundEnemy extends DynamicComponent {
         }
 
         handleAnimations();
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.GroundEnemy, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.GROUND_ENEMY, getId()));
         animationHandler.update();
     }
 
@@ -262,7 +262,7 @@ public class GroundEnemy extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.GroundEnemy;
+        return ComponentType.GROUND_ENEMY;
     }
 
     @Override
@@ -270,21 +270,21 @@ public class GroundEnemy extends DynamicComponent {
         super.addMissingPartsAfterDeserialization(scene);
 
         timersHandler = TimersHandler.get();
-        timersHandler.addTimer(new Timer(0.2f), TimerType.LockTarget.toString() + getId());
+        timersHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
 
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Walk), collideBox.getPosition());
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
 
         collideBox = animationHandler.getAnimation().getRectangle();
-        if (statuses.get(ComponentStatus.LeftCollision)){
+        if (statuses.get(ComponentStatus.LEFT_COLLISION)){
             animationHandler.getAnimation().setDirection(true);
-        }else if (statuses.get(ComponentStatus.RightCollision)){
+        }else if (statuses.get(ComponentStatus.RIGHT_COLLISION)){
             animationHandler.getAnimation().setDirection(false);
         }
 
         switch (subtype){
-            case GunnerEnemy -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
-            case MachineGunEnemy -> TimersHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
+            case GUNNER_ENEMY -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
+            case MACHINE_GUN_ENEMY -> TimersHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
         }
     }
 }

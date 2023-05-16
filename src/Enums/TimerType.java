@@ -4,5 +4,5 @@ package Enums;
  *
  */
 public enum TimerType {
-    HitStan , LockTarget
+    TIMER_TYPE, LOCK_TARGET
 }

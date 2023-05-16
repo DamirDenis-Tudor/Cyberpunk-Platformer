@@ -16,7 +16,6 @@ import Scenes.SceneHandler;
 import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
-import Window.Camera;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,13 +28,13 @@ final public class ChooseLevelScene extends Scene {
     public ChooseLevelScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
-        components.add(new Button(this, ComponentType.GreenCity, "GreenCity",
+        components.add(new Button(this, ComponentType.GREEN_CITY, "GreenCity",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
-        components.add(new Button(this, ComponentType.IndustrialCity, "Industrial",
+        components.add(new Button(this, ComponentType.INDUSTRIAL_CITY, "Industrial",
                 new Rectangle(new Coordinate<>(350, 500), 400, 150), 56));
-        components.add(new Button(this, ComponentType.Back, "BACK",
+        components.add(new Button(this, ComponentType.BACK, "BACK",
                 new Rectangle(new Coordinate<>(350, 700), 400, 150), 56));
     }
 
@@ -45,10 +44,10 @@ final public class ChooseLevelScene extends Scene {
         for (StaticComponent changeableComponent:changeableComponents){
             changeableComponent.update();
         }
-        if(KeyboardInput.get().getKeyEnter()){
+        if(KeyboardInput.get().getKeyEnter() && selectedMap!=null){
             changeableComponents.clear();
-            sceneHandler.notify(new Message(selectedMap, ComponentType.Scene , -1));
-            sceneHandler.handleSceneChangeRequest(SceneType.ChoosePlayerScene);
+            sceneHandler.notify(new Message(selectedMap, ComponentType.SCENE, -1));
+            sceneHandler.handleSceneChangeRequest(SceneType.CHOOSE_PLAYER_SCENE);
         }
     }
 
@@ -63,25 +62,25 @@ final public class ChooseLevelScene extends Scene {
     @Override
     public void notify(Message message) {
         switch (message.type()) {
-            case SceneHasBeenActivated -> {
+            case SCENE_HAS_BEEN_ACTIVATED -> {
                 MouseInput.get().reset();
                 Text text = new Text("Select map ..." , new Coordinate<>(1300 , 500) , 55);
                 changeableComponents.add(text);
             }
-            case ButtonClicked -> {
+            case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case GreenCity ,IndustrialCity-> {
+                    case GREEN_CITY, INDUSTRIAL_CITY -> {
                         changeableComponents.clear();
                         Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 350) , 55);
                         ImageWrapper imageWrapper = null;
                         switch (message.source()){
-                            case GreenCity -> {
-                                selectedMap = MessageType.GreenMapSelected;
+                            case GREEN_CITY -> {
+                                selectedMap = MessageType.GREEN_MAP_SELECTED;
                                 imageWrapper = AssetsDeposit.get().getGreenMapPreview();
                                 imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,400) , 650,450));
                             }
-                            case IndustrialCity -> {
-                                selectedMap = MessageType.IndustrialMapSelected;
+                            case INDUSTRIAL_CITY -> {
+                                selectedMap = MessageType.INDUSTRIAL_MAP_SELECTED;
                                 imageWrapper = AssetsDeposit.get().getIndustrialMapPreview();
                                 imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,400) , 650,450));
                             }
@@ -89,9 +88,9 @@ final public class ChooseLevelScene extends Scene {
                         changeableComponents.add(imageWrapper);
                         changeableComponents.add(text);
                     }
-                    case Back -> {
+                    case BACK -> {
                         changeableComponents.clear();
-                        sceneHandler.handleSceneChangeRequest(SceneType.MainMenuScene);
+                        sceneHandler.handleSceneChangeRequest(SceneType.MAIN_MENU_SCENE);
                     }
                 }
             }

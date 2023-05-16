@@ -7,11 +7,9 @@ import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
-import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
-import Window.GameWindow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -48,9 +46,9 @@ public class GameMap extends DynamicComponent {
         this.mapType = mapType;
         String path = "";
         switch (mapType) {
-            case GreenCity ->
+            case GREEN_CITY ->
                     path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/green_map.tmx")).getPath();
-            case IndustrialCity ->
+            case INDUSTRIAL_CITY ->
                     path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/industrial_map.tmx")).getPath();
         }
         try {
@@ -81,10 +79,10 @@ public class GameMap extends DynamicComponent {
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
 
                 String tileSource = imageElement.getAttribute("source").replace("..", "Resources");
-                tileSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(tileSource)).getPath().replace("%20" , " ");
+                tileSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(tileSource)).getPath().replace("%20", " ");
                 String tileId = Integer.toString(Integer.parseInt(tileElement.getAttribute("id")) + 1);
-                int tileWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
-                int tileHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
+                int tileWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * MAP_SCALE);
+                int tileHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * MAP_SCALE);
 
                 tiles.put(tileId, new MapAsset(tileSource, tileWidth, tileHeight));
             }
@@ -110,7 +108,7 @@ public class GameMap extends DynamicComponent {
                 Element tileElement = (Element) backgrounds.item(index);
                 Element imageElement = (Element) tileElement.getFirstChild().getNextSibling();
                 source1 = imageElement.getAttribute("source").replace("..", "Resources");
-                source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20" , " ");
+                source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20", " ");
                 background.addImage(ImageIO.read(new File(source1)));
             }
 
@@ -135,10 +133,10 @@ public class GameMap extends DynamicComponent {
                 Element imageElement = (Element) objectElement.getFirstChild().getNextSibling();
 
                 String objectSource = imageElement.getAttribute("source").replace("..", "Resources");
-                objectSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(objectSource)).getPath().replace("%20" , " ");
+                objectSource = Objects.requireNonNull(Database.class.getClassLoader().getResource(objectSource)).getPath().replace("%20", " ");
                 String objectId = Integer.toString(Integer.parseInt(objectElement.getAttribute("id")) + Integer.parseInt(lastMapId));
-                int objectWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * mapScale);
-                int objectHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * mapScale);
+                int objectWidth = (int) (Integer.parseInt(imageElement.getAttribute("width")) * MAP_SCALE);
+                int objectHeight = (int) (Integer.parseInt(imageElement.getAttribute("height")) * MAP_SCALE);
 
                 objects.put(objectId, new MapAsset(objectSource, objectWidth, objectHeight));
             }
@@ -214,10 +212,10 @@ public class GameMap extends DynamicComponent {
                 for (int objectIndex = 0; objectIndex < objectList.getLength(); ++objectIndex) {
                     Node objectNode = objectList.item(objectIndex);
                     Element objectElement = (Element) objectNode;
-                    int x = (int) (Float.parseFloat(objectElement.getAttributeNode("x").getValue()) * mapScale);
-                    int y = (int) (Float.parseFloat(objectElement.getAttributeNode("y").getValue()) * mapScale);
-                    int w = (int) (Float.parseFloat(objectElement.getAttributeNode("width").getValue()) * mapScale);
-                    int h = (int) (Float.parseFloat(objectElement.getAttributeNode("height").getValue()) * mapScale);
+                    int x = (int) (Float.parseFloat(objectElement.getAttributeNode("x").getValue()) * MAP_SCALE);
+                    int y = (int) (Float.parseFloat(objectElement.getAttributeNode("y").getValue()) * MAP_SCALE);
+                    int w = (int) (Float.parseFloat(objectElement.getAttributeNode("width").getValue()) * MAP_SCALE);
+                    int h = (int) (Float.parseFloat(objectElement.getAttributeNode("height").getValue()) * MAP_SCALE);
                     list.add(new Rectangle(new Coordinate<Integer>(x, y), w, h));
 
                     entitiesCoordinates.put(objectgroupName, list);
@@ -234,8 +232,8 @@ public class GameMap extends DynamicComponent {
     @Override
     public void setScene(Scene scene) {
         super.setScene(scene);
-        Camera.get().setGameMapPixelWidthDimension(this.width * mapDim);
-        Camera.get().setGameMapPixelHeightDimension(this.height * mapDim);
+        Camera.get().setGameMapPixelWidthDimension(this.width * MAP_DIM);
+        Camera.get().setGameMapPixelHeightDimension(this.height * MAP_DIM);
     }
 
     @Override
@@ -277,10 +275,10 @@ public class GameMap extends DynamicComponent {
     }
 
     private void drawLayer(Graphics2D graphics2D, String[][] decorsIndexes, Map<String, MapAsset> types) {
-        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / mapDim - 4);
-        int xEnd = Math.min(width - 1, (-Camera.get().getCurrentHorizontalOffset() + windowWidth) / mapDim + 4);
-        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / mapDim - 4);
-        int yEnd = Math.min(height - 1, (-Camera.get().getCurrentVerticalOffset() + windowHeight) / mapDim + 4);
+        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / MAP_DIM - 4);
+        int xEnd = Math.min(width - 1, (-Camera.get().getCurrentHorizontalOffset() + WINDOW_WIDTH) / MAP_DIM + 4);
+        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / MAP_DIM - 4);
+        int yEnd = Math.min(height - 1, (-Camera.get().getCurrentVerticalOffset() + WINDOW_HEIGHT) / MAP_DIM + 4);
 
         for (int i = yStart; i <= yEnd; i++) {
             for (int j = xStart; j <= xEnd; j++) {
@@ -288,8 +286,8 @@ public class GameMap extends DynamicComponent {
                     MapAsset asset = types.get(decorsIndexes[i][j]);
                     int dimW = asset.getWidth();
                     int dimH = asset.getHeight();
-                    int xPos = j * mapDim + Camera.get().getCurrentHorizontalOffset();
-                    int yPos = i * mapDim - dimH + mapDim + Camera.get().getCurrentVerticalOffset();
+                    int xPos = j * MAP_DIM + Camera.get().getCurrentHorizontalOffset();
+                    int yPos = i * MAP_DIM - dimH + MAP_DIM + Camera.get().getCurrentVerticalOffset();
 
                     graphics2D.drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
                 }
@@ -299,7 +297,7 @@ public class GameMap extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Map;
+        return ComponentType.MAP;
     }
 
     @Override
@@ -307,8 +305,8 @@ public class GameMap extends DynamicComponent {
         super.addMissingPartsAfterDeserialization(scene);
         this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
         this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
-        Camera.get().setGameMapPixelWidthDimension(width * mapDim);
-        Camera.get().setGameMapPixelHeightDimension(height * mapDim);
+        Camera.get().setGameMapPixelWidthDimension(width * MAP_DIM);
+        Camera.get().setGameMapPixelHeightDimension(height * MAP_DIM);
         this.background = AssetsDeposit.get().getGameMap(mapType).background;
     }
 
@@ -325,26 +323,26 @@ public class GameMap extends DynamicComponent {
         rectangle1.moveByY(1);
 
         // if the message is from player
-        if (component.getGeneralType() == ComponentType.Player) {
+        if (component.getGeneralType() == ComponentType.PLAYER) {
             // => check if is on a ladder
             for (Rectangle ladder : entitiesCoordinates.get("ladders")) {
                 if (rectangle.intersects(ladder)) {
-                    component.notify(new Message(MessageType.IsOnLadder, ComponentType.Map, getId()));
+                    component.notify(new Message(MessageType.IS_ON_LADDER, ComponentType.MAP, getId()));
                     return;
                 }
             }
-            component.notify(new Message(MessageType.IsNoLongerOnLadder, ComponentType.Map, getId()));
+            component.notify(new Message(MessageType.IS_NO_LONGER_ON_LADDER, ComponentType.MAP, getId()));
             // => check if is on a platform
                                 /*
                         the explanation is quite funny
                      */
-            for (DynamicComponent platform : scene.getAllComponentsWithName(ComponentType.Platform)) {
+            for (DynamicComponent platform : scene.getAllComponentsWithName(ComponentType.PLATFORM)) {
                 if (rectangle1.intersects(platform.getCollideBox())) {
                     if (rectangle1.getDy() < 0) {
-                        component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
+                        component.notify(new Message(MessageType.ACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));
                         platform.interactionWith(component);
                     } else if (rectangle.getDy() > 0) {
-                        component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map, getId()));
+                        component.notify(new Message(MessageType.ACTIVATE_TOP_COLLISION, ComponentType.MAP, getId()));
                     }
                     rectangle.solveCollision(platform.getCollideBox());
                     return;
@@ -353,20 +351,20 @@ public class GameMap extends DynamicComponent {
         }
 
         // if the message is from bullet => check if it has a collision
-        if (component.getGeneralType() == ComponentType.Bullet) {
-            int x = component.getCollideBox().getMinX() / mapDim;
-            int y = component.getCollideBox().getCenterY() / mapDim;
+        if (component.getGeneralType() == ComponentType.BULLET) {
+            int x = component.getCollideBox().getMinX() / MAP_DIM;
+            int y = component.getCollideBox().getCenterY() / MAP_DIM;
             if (x <= 0 || x > width - 1 || !Objects.equals(tilesIndexes[y][x], "0")) {
-                component.notify(new Message(MessageType.HasCollision, ComponentType.Map, getId()));
+                component.notify(new Message(MessageType.HAS_COLLISION, ComponentType.MAP, getId()));
             }
             return;
         }
 
         // the message is from a component that has map collision and needs recalibraion
-        int xStart = Math.max(0, rectangle.getPosition().getPosX() / mapDim - 5);
-        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / mapDim + 2);
-        int yStart = Math.max(0, rectangle.getPosition().getPosY() / mapDim - 1);
-        int yEnd = Math.min(height, (rectangle.getPosition().getPosY() + rectangle.getHeight()) / mapDim + 1);
+        int xStart = Math.max(0, rectangle.getPosition().getPosX() / MAP_DIM - 5);
+        int xEnd = Math.min(width, (rectangle.getPosition().getPosX() + rectangle.getWidth()) / MAP_DIM + 2);
+        int yStart = Math.max(0, rectangle.getPosition().getPosY() / MAP_DIM - 1);
+        int yEnd = Math.min(height, (rectangle.getPosition().getPosY() + rectangle.getHeight()) / MAP_DIM + 1);
 
         // variables for special cases collision detection
         boolean wasGroundCollision = false;
@@ -404,34 +402,43 @@ public class GameMap extends DynamicComponent {
             }
         }
 
-        if (component.getGeneralType() != ComponentType.Platform && component.getCurrentType() != ComponentType.Airplane) {
+        // now let's verify the borders with the world
+        if (rectangle.getMinY() < 0) {
+            wasTopCollision = true;
+        } else if (rectangle.getMinX() < 0) {
+            wasLeftCollision = true;
+        }
+
+        if (component.getGeneralType() != ComponentType.PLATFORM && component.getCurrentType() != ComponentType.AIRPLANE) {
             // notify the component
             if (wasGroundCollision) {
-                component.notify(new Message(MessageType.ActivateBottomCollision, ComponentType.Map, getId()));
+                component.notify(new Message(MessageType.ACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));
             } else {
-                component.notify(new Message(MessageType.DeactivateBottomCollision, ComponentType.Map, getId()));
+                component.notify(new Message(MessageType.DEACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));
             }
             if (wasTopCollision) {
-                component.notify(new Message(MessageType.ActivateTopCollision, ComponentType.Map, getId()));
+                component.notify(new Message(MessageType.ACTIVATE_TOP_COLLISION, ComponentType.MAP, getId()));
             }
         }
 
         // particular behavior for some components
-        if (component.getGeneralType() != ComponentType.Player) {
-            if (component.getGeneralType() == ComponentType.GroundEnemy) {
+        if (component.getGeneralType() != ComponentType.PLAYER) {
+            if (component.getGeneralType() == ComponentType.GROUND_ENEMY) {
                 // collision verification is necessary to prevent components from falling off the platform
-                if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMaxX() / mapDim - 1], "0")) {
+                if (Objects.equals(tilesIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMaxX() / MAP_DIM - 1], "0")) {
                     wasLeftCollision = true;
-                } else if (Objects.equals(tilesIndexes[rectangle.getCenterY() / mapDim + 1][rectangle.getMinX() / mapDim + 1], "0")) {
+                } else if (Objects.equals(tilesIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMinX() / MAP_DIM + 1], "0")) {
                     wasRightCollision = true;
                 }
             }
 
             // notify the component
-            if (wasLeftCollision) {
-                component.notify(new Message(MessageType.LeftCollision, ComponentType.Map, getId()));
-            } else if (wasRightCollision) {
-                component.notify(new Message(MessageType.RightCollision, ComponentType.Map, getId()));
+            if (component.getCurrentType() != ComponentType.DRONE_ENEMY) {
+                if (wasLeftCollision) {
+                    component.notify(new Message(MessageType.LEFT_COLLISION, ComponentType.MAP, getId()));
+                } else if (wasRightCollision) {
+                    component.notify(new Message(MessageType.RIGHT_COLLISION, ComponentType.MAP, getId()));
+                }
             }
         }
     }
@@ -442,20 +449,21 @@ public class GameMap extends DynamicComponent {
      * @return rectangle object
      */
     public Rectangle getRectangle(int x, int y) {
-        Coordinate<Integer> pos = new Coordinate<>(x * mapDim, y * mapDim);
-        return new Rectangle(pos, mapDim, mapDim);
+        Coordinate<Integer> pos = new Coordinate<>(x * MAP_DIM, y * MAP_DIM);
+        return new Rectangle(pos, MAP_DIM, MAP_DIM);
     }
 
-    public List<Coordinate<Integer>> getPositionForEntities(ComponentType componentType){
+    public List<Coordinate<Integer>> getPositionForEntities(ComponentType componentType) {
         String componentName = "";
-        switch (componentType){
-            case Player -> componentName = "player";
-            case GroundEnemy -> componentName = "enemies";
-            case Animal -> componentName = "animals";
-            case Chest -> componentName = "chests";
-            case Platform -> componentName = "platforms";
-            case Helicopter -> componentName = "helicopters";
-            case Airplane -> componentName = "airplanes";
+        switch (componentType) {
+            case PLAYER -> componentName = "player";
+            case GROUND_ENEMY -> componentName = "enemies";
+            case ANIMAL -> componentName = "animals";
+            case CHEST -> componentName = "chests";
+            case PLATFORM -> componentName = "platforms";
+            case HELICOPTER -> componentName = "helicopters";
+            case AIRPLANE -> componentName = "airplanes";
+            case DRONE_ENEMY -> componentName = "drones";
         }
         List<Coordinate<Integer>> coordinates = new ArrayList<>();
         for (Rectangle rectangle : entitiesCoordinates.get(componentName)) {

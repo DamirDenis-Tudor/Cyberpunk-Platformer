@@ -4,7 +4,6 @@ import Components.StaticComponent;
 import Database.Database;
 import Enums.ColorType;
 import Utils.Coordinate;
-import Window.GameWindow;
 
 import java.awt.*;
 import java.io.File;
@@ -19,7 +18,7 @@ import static java.awt.Font.TRUETYPE_FONT;
  */
 public class Text implements StaticComponent, Serializable {
     private final Coordinate<Integer> position;
-    private ColorType textColor = ColorType.DefaultText;
+    private ColorType textColor = ColorType.DEFAULT_TEXT;
     private String text;
     private float size;
     private static Font font;

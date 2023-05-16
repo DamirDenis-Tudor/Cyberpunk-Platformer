@@ -12,25 +12,24 @@ import Scenes.SceneHandler;
 import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
-import Window.Camera;
 
 final public class SettingsScene extends Scene {
     public SettingsScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.windowWidth , Constants.windowHeight));
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
-        components.add(new Button(this, ComponentType.Back,"BACK",
+        components.add(new Button(this, ComponentType.BACK,"BACK",
                 new Rectangle(new Coordinate<>(200, 800), 400, 150),56));
     }
 
     @Override
     public void notify(Message message) {
         switch (message.type()) {
-            case SceneHasBeenActivated -> MouseInput.get().reset();
-            case ButtonClicked -> {
+            case SCENE_HAS_BEEN_ACTIVATED -> MouseInput.get().reset();
+            case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case Back -> sceneHandler.handleSceneChangeRequest(SceneType.MainMenuScene);
+                    case BACK -> sceneHandler.handleSceneChangeRequest(SceneType.MAIN_MENU_SCENE);
                 }
             }
         }

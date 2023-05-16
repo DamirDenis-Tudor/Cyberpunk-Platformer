@@ -2,7 +2,6 @@ package Components.BaseComponents;
 
 import Components.StaticComponent;
 import Enums.AnimationType;
-import Enums.ComponentType;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
@@ -17,7 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Utils.Constants.mapScale;
+import static Utils.Constants.MAP_SCALE;
 
 /**
  * This class encapsulates the animation behavior.It has a default constructor, an initialization constructor and a copy one.
@@ -56,8 +55,8 @@ public class Animation implements StaticComponent {
     public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationType type ) throws Exception {
         this.type = type;
         activeImageIndex = 0;
-        this.width = (int)(width*mapScale);
-        this.height = (int)((height-box.getMinY()-1)*mapScale);
+        this.width = (int)(width* MAP_SCALE);
+        this.height = (int)((height-box.getMinY()-1)* MAP_SCALE);
         images = new ArrayList<>();
 
         BufferedImage spriteSheet = ImageIO.read(new File(path));
@@ -107,7 +106,6 @@ public class Animation implements StaticComponent {
                 }
             }
         }
-        //System.out.println(activeImageIndex);
     }
 
     @Override
@@ -116,12 +114,12 @@ public class Animation implements StaticComponent {
             int posX = rectangle.getPosition().getPosX() + rectangle.getWidth() + Camera.get().getCurrentHorizontalOffset();
             int posY = rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
             graphics2D.drawImage(images.get(activeImageIndex), posX , posY, -width*scale, height*scale, null);
-            graphics2D.drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
+            //graphics2D.drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
             int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentHorizontalOffset();
             int posY =  rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
             graphics2D.drawImage(images.get(activeImageIndex), posX, posY, width*scale, height*scale, null);
-            graphics2D.drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
+            //graphics2D.drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
         }
     }
     public void setPosition(Coordinate<Integer> position) {

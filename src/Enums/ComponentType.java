@@ -6,32 +6,32 @@ import java.io.Serializable;
  * This class contains all possible base-types or subtypes of components.
  */
 public enum ComponentType implements Serializable {
-    None,
+    NONE,
 
     /*
         ENTITIES
      */
-    Player, Biker , Punk , Cyborg ,
+    PLAYER, BIKER, PUNK, CYBORG,
 
-    Map , GreenCity , IndustrialCity,
+    MAP, GREEN_CITY, INDUSTRIAL_CITY,
 
-    GroundEnemy, BaseballEnemy, SkaterEnemy, GunnerEnemy,MachineGunEnemy,Animal, Cat1,Dog1,Cat2,Dog2,AirEnemy,Airplane,
+    GROUND_ENEMY, BASEBALL_ENEMY, SKATER_ENEMY, GUNNER_ENEMY, MACHINE_GUN_ENEMY , DRONE_ENEMY , ANIMAL, CAT_1, DOG_1, CAT_2, DOG_2, AIR_ENEMY, AIRPLANE,
 
     /*
         ITEMS
      */
-    Chest , Gun, Bullet,Platform, Helicopter,
-    Gun1, Gun2, Gun3, Gun4, Gun5, Gun6, Gun7, Gun8, Gun9, Gun10,
-    Bullet1, Bullet2, Bullet3, Bullet4, Bullet5, Bullet6, Bullet7, Bullet8, Bullet9, Bullet10,
+    CHEST, GUN, BULLET, PLATFORM, HELICOPTER,DRONE,
+    GUN_1, GUN_2, GUN_3, GUN_4, GUN_5, GUN_6, GUN_7, GUN_8, GUN_9, GUN_10,
+    BULLET_1, BULLET_2, BULLET_3, BULLET_4, BULLET_5, BULLET_6, BULLET_7, BULLET_8, BULLET_9, BULLET_10,
 
     // SCENE RELATED
-    SceneHandler,Scene , Wallpaper,
+    SCENE_HANDLER, SCENE, WALLPAPER,
 
     // BUTTONS
-    NewGameButton, LoadButton , SettingsButton ,ExitButton,Back,BackToMenu,
-    Continue , DeleteSave , DeleteLatestSave, LoadSave,SaveButton,SaveInfo,
+    NEW_GAME_BUTTON, LOAD_BUTTON, SETTINGS_BUTTON, EXIT_BUTTON, BACK, BACK_TO_MENU,
+    CONTINUE, DELETE_SAVE, DELETE_LATEST_SAVE, LOAD_SAVE, SAVE_BUTTON, SAVE_INFO,
 
     // LEVELS
-    LEVEL1 , LEVEL2 , LEVEL3, LEVEL4
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
 
 }

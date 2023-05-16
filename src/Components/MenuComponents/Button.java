@@ -10,7 +10,6 @@ import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
 import Utils.Rectangle;
-import Window.GameWindow;
 
 import java.awt.*;
 import java.util.Objects;
@@ -21,7 +20,7 @@ import java.util.Objects;
 public class Button implements StaticComponent {
     private final Scene scene;
     private final ComponentType currentType;
-    private ColorType backgroundColor = ColorType.DefaultBackground;
+    private ColorType backgroundColor = ColorType.DEFAULT_BACKGROUND;
     private final Rectangle collideBox;
     private final Text text;
     private boolean previousClicked = false;
@@ -34,14 +33,14 @@ public class Button implements StaticComponent {
     @Override
     public void update(){
         if (collideBox.contains(MouseInput.get().getPosition())) {
-            backgroundColor = ColorType.HoverBackground;
-            text.setTextColor(ColorType.HoverText);
+            backgroundColor = ColorType.HOVER_BACKGROUND;
+            text.setTextColor(ColorType.HOVER_TEXT);
             if (MouseInput.get().isLeftMousePressed()) {
                 if(!previousClicked) {
-                    if(currentType == ComponentType.SaveInfo){
+                    if(currentType == ComponentType.SAVE_INFO){
                         Database.get().setSaveToBeLoaded(text.getText().split(" ")[0]);
                     }
-                    scene.notify(new Message(MessageType.ButtonClicked, currentType, -1));
+                    scene.notify(new Message(MessageType.BUTTON_CLICKED, currentType, -1));
                     previousClicked = true;
                 }
             }else {
@@ -50,8 +49,8 @@ public class Button implements StaticComponent {
             }
         } else {
             if(!Objects.equals(Database.get().getSaveToBeLoaded(), text.getText().split(" ")[0])) {
-                backgroundColor = ColorType.DefaultBackground;
-                text.setTextColor(ColorType.DefaultText);
+                backgroundColor = ColorType.DEFAULT_BACKGROUND;
+                text.setTextColor(ColorType.DEFAULT_TEXT);
             }
         }
     }

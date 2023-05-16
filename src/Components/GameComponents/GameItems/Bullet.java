@@ -9,16 +9,14 @@ import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
-import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Random;
 
-import static Utils.Constants.bulletVelocity;
+import static Utils.Constants.BULLET_VELOCITY;
 
 /**
  * This class describes the bullet behaviors.
@@ -32,17 +30,17 @@ public class Bullet extends DynamicComponent {
     private boolean direction;
     private int xOffset = 0;
     private int yOffset = 0;
+
     public Bullet(BufferedImage image, Rectangle collideBox) throws IOException {
         this.collideBox = collideBox;
         this.imageWrapper = new ImageWrapper(image);
     }
 
     public Bullet(Scene scene, ComponentType type, Coordinate<Integer> position, ComponentType possessor) {
-        System.out.println("NEW BULLET : " + getId());
         this.scene = scene;
         this.possessor = possessor;
         this.bulletType = type;
-        if (type == ComponentType.Airplane) {
+        if (type == ComponentType.AIRPLANE) {
             this.animationHandler = new AnimationHandler();
             this.animationHandler.changeAnimation(AnimationType.AirplaneBomb, new Coordinate<>(position));
             collideBox = this.animationHandler.getAnimation().getRectangle();
@@ -57,23 +55,22 @@ public class Bullet extends DynamicComponent {
     @Override
     public void notify(Message message) {
         switch (message.source()) {
-            case Gun -> {
-                if (message.type() == MessageType.BulletLaunchLeft) {
+            case GUN -> {
+                if (message.type() == MessageType.BULLET_LAUNCH_LEFT) {
                     direction = false;
-                } else if (message.type() == MessageType.BulletLaunchRight) {
+                } else if (message.type() == MessageType.BULLET_LAUNCH_RIGHT) {
                     direction = true;
                 }
             }
-            case Map -> {
-                if (message.type() == MessageType.HasCollision) {
-                    System.out.println("Bulet destroyed : " + getId());
-                    scene.notify(new Message(MessageType.Destroy, ComponentType.Bullet, getId()));
+            case MAP -> {
+                if (message.type() == MessageType.HAS_COLLISION) {
+                    scene.notify(new Message(MessageType.DESTROY, ComponentType.BULLET, getId()));
                 }
             }
-            case Airplane -> {
-                if(message.type() == MessageType.BulletLaunchLeft){
+            case AIRPLANE -> {
+                if (message.type() == MessageType.BULLET_LAUNCH_LEFT) {
                     collideBox.getPosition().setX(collideBox.getMinX() + xOffset - 50);
-                }else if(message.type() == MessageType.BulletLaunchRight){
+                } else if (message.type() == MessageType.BULLET_LAUNCH_RIGHT) {
                     collideBox.getPosition().setX(collideBox.getMinX() + xOffset);
                 }
             }
@@ -84,13 +81,13 @@ public class Bullet extends DynamicComponent {
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         // a bullet can interact with player or enemy
-        if (component.getGeneralType() == ComponentType.GroundEnemy || component.getGeneralType() == ComponentType.Player) {
+        if (component.getGeneralType() == ComponentType.GROUND_ENEMY || component.getGeneralType() == ComponentType.AIR_ENEMY|| component.getGeneralType() == ComponentType.PLAYER) {
             if (collideBox.intersects(component.getCollideBox())) {
                 // the component is notified that is attacked.
-                component.notify(new Message(MessageType.Attack, ComponentType.Bullet, getId()));
+                component.notify(new Message(MessageType.ATTACK, ComponentType.BULLET, getId()));
 
                 // the bullet request to be destroyed.
-                scene.notify(new Message(MessageType.Destroy, ComponentType.Bullet, getId()));
+                scene.notify(new Message(MessageType.DESTROY, ComponentType.BULLET, getId()));
             }
         }
     }
@@ -99,35 +96,35 @@ public class Bullet extends DynamicComponent {
     public void update() {
         super.update();
         // bullet movement
-        if (bulletType == ComponentType.Airplane) {
-            collideBox.moveByY(bulletVelocity/2);
-            if(animationHandler.getAnimation().animationIsOver()) {
+        if (bulletType == ComponentType.AIRPLANE) {
+            collideBox.moveByY(BULLET_VELOCITY / 2);
+            if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
             animationHandler.update();
         } else {
             if (direction) {
                 xOffset = -5;
-                collideBox.moveByX(bulletVelocity);
-                elapsedDistance += bulletVelocity;
+                collideBox.moveByX(BULLET_VELOCITY);
+                elapsedDistance += BULLET_VELOCITY;
             } else {
                 xOffset = -35;
-                collideBox.moveByX(-bulletVelocity);
-                elapsedDistance -= bulletVelocity;
+                collideBox.moveByX(-BULLET_VELOCITY);
+                elapsedDistance -= BULLET_VELOCITY;
             }
             //if (Math.abs(elapsedDistance) > Constants.bulletMaxRange) {
             //    scene.notify(new Message(MessageType.Destroy, ComponentType.Bullet, getId()));
-           // }
+            // }
         }
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Bullet, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.BULLET, getId()));
     }
 
     @Override
     public void draw(Graphics2D graphics2D) {
         if (!getActiveStatus()) return;
-        if(bulletType == ComponentType.Airplane){
+        if (bulletType == ComponentType.AIRPLANE) {
             animationHandler.draw(graphics2D);
-        }else {
+        } else {
             imageWrapper.draw(graphics2D, collideBox, xOffset, yOffset, direction);
         }
     }
@@ -139,7 +136,7 @@ public class Bullet extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Bullet;
+        return ComponentType.BULLET;
     }
 
     @Override
@@ -147,6 +144,13 @@ public class Bullet extends DynamicComponent {
         super.addMissingPartsAfterDeserialization(scene);
 
         // restore the image
-        imageWrapper = AssetsDeposit.get().getBulletByGunName(bulletType).imageWrapper;
+        if (bulletType == ComponentType.AIRPLANE) {
+            animationHandler = new AnimationHandler();
+            this.animationHandler.changeAnimation(AnimationType.AirplaneBomb, new Coordinate<>(collideBox.getPosition()));
+            collideBox = this.animationHandler.getAnimation().getRectangle();
+            xOffset = 100;
+        } else {
+            imageWrapper = AssetsDeposit.get().getBulletByGunName(bulletType).imageWrapper;
+        }
     }
 }

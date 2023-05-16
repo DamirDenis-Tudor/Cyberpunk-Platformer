@@ -5,9 +5,9 @@
     },
     "activeFile": "maps/green_map.tmx",
     "expandedProjectPaths": [
+        ".",
         "maps",
-        "in_game_assets",
-        "."
+        "in_game_assets"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -85,24 +85,23 @@
         },
         "maps/green_map.tmx": {
             "expandedGroupLayers": [
-                3,
                 11,
-                1
+                1,
+                3
             ],
             "expandedObjectLayers": [
-                10,
-                3,
+                5,
                 7,
+                10,
                 9,
                 6,
-                4,
-                5
+                4
             ],
             "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": -1155,
-                "y": 275
+                "x": 429,
+                "y": 466
             }
         },
         "maps/green_map/green_background.tsx": {
@@ -113,11 +112,11 @@
         },
         "maps/industrial_map.tmx": {
             "expandedObjectLayers": [
+                8,
+                5,
                 7,
                 9,
-                4,
-                8,
-                5
+                4
             ],
             "scale": 1,
             "selectedLayer": 0,

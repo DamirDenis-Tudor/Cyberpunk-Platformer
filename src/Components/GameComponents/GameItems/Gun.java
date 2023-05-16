@@ -38,42 +38,42 @@ public class Gun extends DynamicComponent {
         this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
         this.collideBox.setPosition(new Coordinate<>(position));
         statuses = new HashMap<>();
-        statuses.put(ComponentStatus.IsPickedUp, false);
-        statuses.put(ComponentStatus.HasLaunchedBullet, false);
-        statuses.put(ComponentStatus.Hide, false);
-        statuses.put(ComponentStatus.NeedsRecalibration , false);
+        statuses.put(ComponentStatus.IS_PICKED_UP, false);
+        statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, false);
+        statuses.put(ComponentStatus.HIDE, false);
+        statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
     }
 
     @Override
     public void notify(Message message) {
-        if (message.source() == ComponentType.Player) {
+        if (message.source() == ComponentType.PLAYER) {
             switch (message.type()) {
-                case IsPickedUp -> statuses.put(ComponentStatus.IsPickedUp, true);
-                case LaunchBullet -> statuses.put(ComponentStatus.HasLaunchedBullet, true);
-                case PlayerDirectionLeft -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) {
+                case IS_PICKED_UP -> statuses.put(ComponentStatus.IS_PICKED_UP, true);
+                case LAUNCH_BULLET -> statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, true);
+                case PLAYER_DIRECTION_LEFT -> {
+                    if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
                         direction = false;
                         xOffset = 35;
                     }
                 }
-                case PLayerDirectionRight -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) {
+                case PLAYER_DIRECTION_RIGHT -> {
+                    if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
                         direction = true;
                         xOffset = 27;
                     }
                 }
-                case HideGun -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) statuses.put(ComponentStatus.Hide, true);
+                case HIDE_GUN -> {
+                    if (statuses.get(ComponentStatus.IS_PICKED_UP)) statuses.put(ComponentStatus.HIDE, true);
                 }
-                case ShowGun -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)) statuses.put(ComponentStatus.Hide, false);
+                case SHOW_GUN -> {
+                    if (statuses.get(ComponentStatus.IS_PICKED_UP)) statuses.put(ComponentStatus.HIDE, false);
                 }
-                case Shoot -> {
-                    if (statuses.get(ComponentStatus.IsPickedUp)){
+                case SHOOT -> {
+                    if (statuses.get(ComponentStatus.IS_PICKED_UP)){
                         if(direction){
-                            scene.notify(new Message(MessageType.BulletLaunchRight, ComponentType.Gun, getId()));
+                            scene.notify(new Message(MessageType.BULLET_LAUNCH_RIGHT, ComponentType.GUN, getId()));
                         } else {
-                            scene.notify(new Message(MessageType.BulletLaunchLeft, ComponentType.Gun, getId()));
+                            scene.notify(new Message(MessageType.BULLET_LAUNCH_LEFT, ComponentType.GUN, getId()));
                         }
                     }
                 }
@@ -84,8 +84,8 @@ public class Gun extends DynamicComponent {
     @Override
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
-        if (component.getGeneralType() == ComponentType.Player) {
-            if (statuses.get(ComponentStatus.IsPickedUp)) {
+        if (component.getGeneralType() == ComponentType.PLAYER) {
+            if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
                 collideBox.setPosition(component.getCollideBox().getPosition());
                 yOffset = component.getCollideBox().getHeight() / 2 - 8;
             }
@@ -95,16 +95,16 @@ public class Gun extends DynamicComponent {
     @Override
     public void update() {
         super.update();
-        if(statuses.get(ComponentStatus.NeedsRecalibration)){
-            statuses.put(ComponentStatus.NeedsRecalibration , false);
-            scene.notify(new Message(MessageType.GunNeedsRecalibration, getGeneralType() , getId()));
+        if(statuses.get(ComponentStatus.NEEDS_RECALIBRATION)){
+            statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
+            scene.notify(new Message(MessageType.GUN_NEEDS_RECALIBRATION, getGeneralType() , getId()));
         }
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Gun, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.GUN, getId()));
     }
     @Override
     public void draw(Graphics2D graphics2D) {
         if(!getActiveStatus()) return;
-        if (!statuses.get(ComponentStatus.Hide)) imageWrapper.draw(graphics2D,collideBox, xOffset, yOffset, direction);
+        if (!statuses.get(ComponentStatus.HIDE)) imageWrapper.draw(graphics2D,collideBox, xOffset, yOffset, direction);
     }
     @Override
     public ComponentType getCurrentType() {
@@ -113,7 +113,7 @@ public class Gun extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Gun;
+        return ComponentType.GUN;
     }
 
     @Override
@@ -125,8 +125,8 @@ public class Gun extends DynamicComponent {
 
         // if in the previous save was in the hands of player,
         // the gun needs recalibration -> his position will be a reference of the player
-        if(statuses.get(ComponentStatus.IsPickedUp)){
-            statuses.put(ComponentStatus.NeedsRecalibration , true);
+        if(statuses.get(ComponentStatus.IS_PICKED_UP)){
+            statuses.put(ComponentStatus.NEEDS_RECALIBRATION, true);
         }
     }
 }

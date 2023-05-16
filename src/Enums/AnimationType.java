@@ -77,6 +77,7 @@ public enum AnimationType {
     Screen2("Screen2"),
     Screen1("Screen1"),
     Platform("Platform"),
+    Platform1("Platform1"),
     Money("Money"),
     Hammer("Hammer"),
     Entry("Entry"),
@@ -180,7 +181,15 @@ public enum AnimationType {
     CyborgJumpGun("CyborgJumpGun"),
     Helicopter("Helicopter"),
     Airplane("Airplane"),
-    AirplaneBomb("AirplaneBomb");
+    AirplaneBomb("AirplaneBomb"),
+
+    BikerThrow("BikerThrow"),
+    CyberThrow("CyberThrow"),
+    PunkThrow("PunkThrow"),
+    Bomb1("Bomb1"),
+    Bomb2("Bomb2"),
+    Bomb3("Bomb3"),
+    Bomb4("Bomb4");
     private final String stringValue;
 
     AnimationType(String s) {

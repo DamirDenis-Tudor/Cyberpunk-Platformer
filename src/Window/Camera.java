@@ -95,24 +95,24 @@ public class Camera {
      */
     public void update() {
         if (active) {
-            if (focusComponentPosition.getPosX() > Constants.windowWidth / 2 &&
-                    focusComponentPosition.getPosX() < gameMapPixelWidthDimension - Constants.windowWidth / 2) {
+            if (focusComponentPosition.getPosX() > Constants.WINDOW_WIDTH / 2 &&
+                    focusComponentPosition.getPosX() < gameMapPixelWidthDimension - Constants.WINDOW_WIDTH / 2) {
                 horizontalOffsets.setY(horizontalOffsets.getPosX());
-                horizontalOffsets.setX(-focusComponentPosition.getPosX() + Constants.windowWidth / 2);
-            } else if(focusComponentPosition.getPosX() <= Constants.windowWidth / 2){
+                horizontalOffsets.setX(-focusComponentPosition.getPosX() + Constants.WINDOW_WIDTH / 2);
+            } else if(focusComponentPosition.getPosX() <= Constants.WINDOW_WIDTH / 2){
                 horizontalOffsets.setX(0);
                 horizontalOffsets.setY(0);
-            } else if (focusComponentPosition.getPosX() >= gameMapPixelWidthDimension - Constants.windowWidth/2) {
+            } else if (focusComponentPosition.getPosX() >= gameMapPixelWidthDimension - Constants.WINDOW_WIDTH /2) {
                 horizontalOffsets.setX(horizontalOffsets.getPosY());
             }
 
-            if(focusComponentPosition.getPosY() <= Constants.windowHeight / 2){
+            if(focusComponentPosition.getPosY() <= Constants.WINDOW_HEIGHT / 2){
                 verticalOffsets.setX(0);
-            } else if (focusComponentPosition.getPosY() > Constants.windowHeight / 2 &&
-                    focusComponentPosition.getPosY() < gameMapPixelHeightDimension - Constants.windowHeight/2) {
-                verticalOffsets.setX(-focusComponentPosition.getPosY() + Constants.windowHeight / 2);
-            } else if (focusComponentPosition.getPosY() >= gameMapPixelHeightDimension - Constants.windowHeight/2) {
-                verticalOffsets.setX(-gameMapPixelHeightDimension + Constants.windowHeight);
+            } else if (focusComponentPosition.getPosY() > Constants.WINDOW_HEIGHT / 2 &&
+                    focusComponentPosition.getPosY() < gameMapPixelHeightDimension - Constants.WINDOW_HEIGHT /2) {
+                verticalOffsets.setX(-focusComponentPosition.getPosY() + Constants.WINDOW_HEIGHT / 2);
+            } else if (focusComponentPosition.getPosY() >= gameMapPixelHeightDimension - Constants.WINDOW_HEIGHT /2) {
+                verticalOffsets.setX(-gameMapPixelHeightDimension + Constants.WINDOW_HEIGHT);
             }
         }
     }

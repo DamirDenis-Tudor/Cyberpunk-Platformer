@@ -18,8 +18,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
-import static Utils.Constants.gravitationForce;
-import static Utils.Constants.playerVelocity;
+import static Utils.Constants.GRAVITATION_FORCE;
+import static Utils.Constants.PLAYER_VELOCITY;
 
 /**
  * This class implements the player behaviour.The code might be complicated, but it is not.
@@ -44,15 +44,15 @@ public class Player extends DynamicComponent {
         this.scene = scene;
 
         healthText = new Text("HEALTH : " + health, new Coordinate<>(200, 50), 60);
-        healthText.setTextColor(ColorType.RedColor);
+        healthText.setTextColor(ColorType.RED_COLOR);
         timersHandler.addTimer(new Timer(0.30f), getGeneralType().name());
         timersHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
 
-        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.Player);
+        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.PLAYER);
         animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
         attackCombo = CharacterisesGenerator.generateAttackComboFor(type);
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), new Coordinate<>(position));
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
 
         Camera.get().setFocusComponentPosition(collideBox.getPosition());
@@ -61,55 +61,55 @@ public class Player extends DynamicComponent {
     @Override
     public void notify(Message message) {
         switch (message.source()) {
-            case Map -> {
+            case MAP -> {
                 switch (message.type()) {
-                    case ActivateBottomCollision, OnPlatform -> {
-                        statuses.put(ComponentStatus.TopCollision, false);
-                        if (message.type() == MessageType.ActivateBottomCollision && !statuses.get(ComponentStatus.BottomCollision)) {
+                    case ACTIVATE_BOTTOM_COLLISION, ON_PLATFORM -> {
+                        statuses.put(ComponentStatus.TOP_COLLISION, false);
+                        if (message.type() == MessageType.ACTIVATE_BOTTOM_COLLISION && !statuses.get(ComponentStatus.BOTTOM_COLLISION)) {
                             jumpsCounter = 0;
-                            statuses.put(ComponentStatus.BottomCollision, true);
-                            statuses.put(ComponentStatus.DetachedFromHelicopter, false);
+                            statuses.put(ComponentStatus.BOTTOM_COLLISION, true);
+                            statuses.put(ComponentStatus.DETACHED_FROM_HELICOPTER, false);
                         }
                     }
-                    case DeactivateBottomCollision -> {
-                        statuses.put(ComponentStatus.BottomCollision, false);
-                        if (jumpsCounter == 0 && !statuses.get(ComponentStatus.OnHelicopter) && !statuses.get(ComponentStatus.DetachedFromHelicopter)) {
+                    case DEACTIVATE_BOTTOM_COLLISION -> {
+                        statuses.put(ComponentStatus.BOTTOM_COLLISION, false);
+                        if (jumpsCounter == 0 && !statuses.get(ComponentStatus.ON_HELICOPTER) && !statuses.get(ComponentStatus.DETACHED_FROM_HELICOPTER)) {
                             jumpsCounter = 1;
                         }
                     }
-                    case ActivateTopCollision -> {
-                        statuses.put(ComponentStatus.TopCollision, true);
+                    case ACTIVATE_TOP_COLLISION -> {
+                        statuses.put(ComponentStatus.TOP_COLLISION, true);
                     }
-                    case IsOnLadder -> {
-                        statuses.put(ComponentStatus.IsOnLadder, true);
+                    case IS_ON_LADDER -> {
+                        statuses.put(ComponentStatus.IS_ON_LADDER, true);
                         jumpsCounter = 1;
                     }
-                    case IsNoLongerOnLadder -> statuses.put(ComponentStatus.IsOnLadder, false);
+                    case IS_NO_LONGER_ON_LADDER -> statuses.put(ComponentStatus.IS_ON_LADDER, false);
                 }
             }
-            case GroundEnemy, Bullet -> {
-                if (message.type() == MessageType.Attack) {
-                    if (!statuses.get(ComponentStatus.Attack)) {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Hurt), collideBox.getPosition());
+            case GROUND_ENEMY, BULLET , AIR_ENEMY -> {
+                if (message.type() == MessageType.ATTACK) {
+                    if (!statuses.get(ComponentStatus.ATTACK)) {
+                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(2);
-                        statuses.put(ComponentStatus.Hurt, true);
+                        statuses.put(ComponentStatus.HURT, true);
                     }
                     health -= 1;
                     if (health <= 0) {
                         health = 0;
-                        statuses.put(ComponentStatus.Death, true);
+                        statuses.put(ComponentStatus.DEATH, true);
                         setActiveStatus(false);
-                        scene.notify(new Message(MessageType.PlayerDeath, ComponentType.Player, getId()));
+                        scene.notify(new Message(MessageType.PLAYER_DEATH, ComponentType.PLAYER, getId()));
                     }
                     healthText.setText("HEALTH : " + health);
                 }
             }
-            case Scene -> {
-                if (message.type() == MessageType.GunNeedsRecalibration) {
+            case SCENE -> {
+                if (message.type() == MessageType.GUN_NEEDS_RECALIBRATION) {
                     if (animationHandler.getAnimation().getDirection()) {
-                        scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
+                        scene.notify(new Message(MessageType.PLAYER_DIRECTION_RIGHT, ComponentType.PLAYER, getId()));
                     } else {
-                        scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
+                        scene.notify(new Message(MessageType.PLAYER_DIRECTION_LEFT, ComponentType.PLAYER, getId()));
                     }
                 }
             }
@@ -120,32 +120,32 @@ public class Player extends DynamicComponent {
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         switch (component.getGeneralType()) {
-            case GroundEnemy -> {
+            case GROUND_ENEMY,AIR_ENEMY -> {
                 if (collideBox.intersects(component.getCollideBox()) &&
-                        statuses.get(ComponentStatus.Attack) &&
-                        !statuses.get(ComponentStatus.FirstHit)) {
-                    component.notify(new Message(MessageType.Attack, ComponentType.Player, getId()));
-                    statuses.put(ComponentStatus.FirstHit, true);
+                        statuses.get(ComponentStatus.ATTACK) &&
+                        !statuses.get(ComponentStatus.FIRST_HIT)) {
+                    component.notify(new Message(MessageType.ATTACK, ComponentType.PLAYER, getId()));
+                    statuses.put(ComponentStatus.FIRST_HIT, true);
                 }
             }
-            case Chest -> {
-                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TryingToOpenOrPickSomething)) {
-                    component.notify(new Message(MessageType.ReadyToBeOpened, ComponentType.Player, getId()));
+            case CHEST -> {
+                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING)) {
+                    component.notify(new Message(MessageType.READY_TO_BE_OPENED, ComponentType.PLAYER, getId()));
                 }
             }
-            case Gun -> {
-                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TryingToOpenOrPickSomething) && !statuses.get(ComponentStatus.GunPicked)) {
-                    component.notify(new Message(MessageType.IsPickedUp, ComponentType.Player, getId()));
+            case GUN -> {
+                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING) && !statuses.get(ComponentStatus.GUN_PICKED)) {
+                    component.notify(new Message(MessageType.IS_PICKED_UP, ComponentType.PLAYER, getId()));
                     if (animationHandler.getAnimation().getDirection()) {
-                        component.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
+                        component.notify(new Message(MessageType.PLAYER_DIRECTION_RIGHT, ComponentType.PLAYER, getId()));
                     } else {
-                        component.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
+                        component.notify(new Message(MessageType.PLAYER_DIRECTION_LEFT, ComponentType.PLAYER, getId()));
                     }
                     component.interactionWith(this);
-                    statuses.put(ComponentStatus.GunPicked, true);
+                    statuses.put(ComponentStatus.GUN_PICKED, true);
                 }
             }
-            case Helicopter -> {
+            case HELICOPTER -> {
                 Rectangle hookCollideBox = new Rectangle(
                         new Coordinate<>(
                                 component.getCollideBox().getMinX() + 37,
@@ -155,66 +155,66 @@ public class Player extends DynamicComponent {
                 );
 
                 if (collideBox.intersects(hookCollideBox) &&
-                        !statuses.get(ComponentStatus.OnHelicopter) &&
-                        !statuses.get(ComponentStatus.DetachedFromHelicopter)) {
+                        !statuses.get(ComponentStatus.ON_HELICOPTER) &&
+                        !statuses.get(ComponentStatus.DETACHED_FROM_HELICOPTER)) {
                     collideBox.solveCollision(component.getCollideBox());
-                    statuses.put(ComponentStatus.DetachedFromHelicopter, false);
-                    statuses.put(ComponentStatus.TopCollision, false);
-                    statuses.put(ComponentStatus.OnHelicopter, true);
-                    component.notify(new Message(MessageType.OnHelicopter, ComponentType.Player, getId()));
+                    statuses.put(ComponentStatus.DETACHED_FROM_HELICOPTER, false);
+                    statuses.put(ComponentStatus.TOP_COLLISION, false);
+                    statuses.put(ComponentStatus.ON_HELICOPTER, true);
+                    component.notify(new Message(MessageType.ON_HELICOPTER, ComponentType.PLAYER, getId()));
                     jumpsCounter = 0;
-                } else if (statuses.get(ComponentStatus.DetachedFromHelicopter)) {
-                    statuses.put(ComponentStatus.OnHelicopter, false);
-                    component.notify(new Message(MessageType.DetachedFromHelicopter, ComponentType.Player, getId()));
+                } else if (statuses.get(ComponentStatus.DETACHED_FROM_HELICOPTER)) {
+                    statuses.put(ComponentStatus.ON_HELICOPTER, false);
+                    component.notify(new Message(MessageType.DETACHED_FROM_HELICOPTER, ComponentType.PLAYER, getId()));
                 }
             }
         }
     }
 
     protected void handleAnimations() {
-        if (statuses.get(ComponentStatus.Death)) {
+        if (statuses.get(ComponentStatus.DEATH)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Death), collideBox.getPosition());
+            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
         } else {
-            if (statuses.get(ComponentStatus.Hurt)) {
+            if (statuses.get(ComponentStatus.HURT)) {
                 if (animationHandler.getAnimation().repeatsAreOver()) {
-                    statuses.put(ComponentStatus.Hurt, false);
+                    statuses.put(ComponentStatus.HURT, false);
                 }
-            } else if (statuses.get(ComponentStatus.IsOnLadder)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Climb), collideBox.getPosition());
-                if (statuses.get(ComponentStatus.IsMovingOnLadder)) {
+            } else if (statuses.get(ComponentStatus.IS_ON_LADDER)) {
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.CLIMB), collideBox.getPosition());
+                if (statuses.get(ComponentStatus.IS_MOVING_ON_LADDER)) {
                     animationHandler.getAnimation().unlock();
                 } else {
                     animationHandler.getAnimation().lockAtLastFrame();
                 }
             } else if (jumpsCounter == 0) {
-                if (statuses.get(ComponentStatus.Attack)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Attack), collideBox.getPosition());
+                if (statuses.get(ComponentStatus.ATTACK)) {
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                 } else {
-                    if (statuses.get(ComponentStatus.HorizontalMove)) {
-                        if (statuses.get(ComponentStatus.GunPicked)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RunGun), collideBox.getPosition());
+                    if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
+                        if (statuses.get(ComponentStatus.GUN_PICKED)) {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RUN_GUN), collideBox.getPosition());
                         } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Run), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RUN), collideBox.getPosition());
                         }
                     } else {
-                        if (statuses.get(ComponentStatus.GunPicked)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IdleGun), collideBox.getPosition());
+                        if (statuses.get(ComponentStatus.GUN_PICKED)) {
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE_GUN), collideBox.getPosition());
                         } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
                         }
                     }
                 }
             } else if (jumpsCounter == 1) { // simple jump
-                if (statuses.get(ComponentStatus.GunPicked)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JumpGun), collideBox.getPosition());
+                if (statuses.get(ComponentStatus.GUN_PICKED)) {
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JUMP_GUN), collideBox.getPosition());
                 } else {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Jump), collideBox.getPosition());
+                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JUMP), collideBox.getPosition());
                 }
             } else if (jumpsCounter == 2) { // double jump
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DoubleJump), collideBox.getPosition());
+                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DOUBLE_JUMP), collideBox.getPosition());
             }
         }
     }
@@ -223,32 +223,32 @@ public class Player extends DynamicComponent {
     public void update() {
         super.update();
         // horizontal movement
-        statuses.put(ComponentStatus.HorizontalMove, false);
+        statuses.put(ComponentStatus.HORIZONTAL_MOVE, false);
         if (keyboardInput.getKeyD()) {
             if (!animationHandler.getAnimation().getDirection()) {
-                scene.notify(new Message(MessageType.PLayerDirectionRight, ComponentType.Player, getId()));
+                scene.notify(new Message(MessageType.PLAYER_DIRECTION_RIGHT, ComponentType.PLAYER, getId()));
             }
             direction = true;
-            statuses.put(ComponentStatus.HorizontalMove, true);
+            statuses.put(ComponentStatus.HORIZONTAL_MOVE, true);
         } else if (keyboardInput.getKeyA()) {
             if (animationHandler.getAnimation().getDirection()) {
-                scene.notify(new Message(MessageType.PlayerDirectionLeft, ComponentType.Player, getId()));
+                scene.notify(new Message(MessageType.PLAYER_DIRECTION_LEFT, ComponentType.PLAYER, getId()));
             }
             direction = false;
-            statuses.put(ComponentStatus.HorizontalMove, true);
+            statuses.put(ComponentStatus.HORIZONTAL_MOVE, true);
         }
         animationHandler.getAnimation().setDirection(direction);
         
-        if (!statuses.get(ComponentStatus.OnHelicopter)) {
-            if (statuses.get(ComponentStatus.HorizontalMove)) {
+        if (!statuses.get(ComponentStatus.ON_HELICOPTER)) {
+            if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
                 if (direction) {
-                    collideBox.moveByX(playerVelocity);
+                    collideBox.moveByX(PLAYER_VELOCITY);
                 } else {
-                    collideBox.moveByX(-playerVelocity);
+                    collideBox.moveByX(-PLAYER_VELOCITY);
                 }
             }
         } else {
-            statuses.put(ComponentStatus.HorizontalMove, false);
+            statuses.put(ComponentStatus.HORIZONTAL_MOVE, false);
         }
 
         // max jump will be implemented with a timer
@@ -256,77 +256,81 @@ public class Player extends DynamicComponent {
         boolean jumpingTimer = timersHandler.getTimer(this.getGeneralType().name()).getTimerState();
 
         // jumping logic
-        if (!statuses.get(ComponentStatus.IsOnLadder) && (((statuses.get(ComponentStatus.BottomCollision) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
+        if (!statuses.get(ComponentStatus.IS_ON_LADDER) && (((statuses.get(ComponentStatus.BOTTOM_COLLISION) && !jumpingTimer && keyboardInput.getSpace() && jumpsCounter == 0) ||
                 (jumpsCounter == 1 && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace())))) {
             timersHandler.getTimer(this.getGeneralType().name()).resetTimer();
+            if(jumpsCounter == 1 && statuses.get(ComponentStatus.TOP_COLLISION)){
+                statuses.put(ComponentStatus.TOP_COLLISION , false);
+            }
             jumpsCounter++;
         }
 
         // jumping to detach logic from helicopter
-        if (statuses.get(ComponentStatus.OnHelicopter) && !jumpingTimer && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace()) {
-            statuses.put(ComponentStatus.DetachedFromHelicopter, true);
+        if (statuses.get(ComponentStatus.ON_HELICOPTER) && !jumpingTimer && keyboardInput.getSpace() && !keyboardInput.getPreviousSpace()) {
+            statuses.put(ComponentStatus.DETACHED_FROM_HELICOPTER, true);
             timersHandler.getTimer(this.getGeneralType().name()).resetTimer();
             jumpsCounter++;
         }
-        if (statuses.get(ComponentStatus.DetachedFromHelicopter) && jumpsCounter == 2) {
-            statuses.put(ComponentStatus.DetachedFromHelicopter, false);
+        if (statuses.get(ComponentStatus.DETACHED_FROM_HELICOPTER) && jumpsCounter == 2) {
+            statuses.put(ComponentStatus.DETACHED_FROM_HELICOPTER, false);
         }
 
         // movement on jumping logic
-        if (jumpingTimer && !statuses.get(ComponentStatus.TopCollision)) {
+        if (jumpingTimer && !statuses.get(ComponentStatus.TOP_COLLISION)) {
             if (jumpsCounter == 1) {
                 collideBox.moveByY(-8);
             } else if (jumpsCounter == 2) {
                 collideBox.moveByY(-10);
             }
-        } else if (!statuses.get(ComponentStatus.IsOnLadder) && !statuses.get(ComponentStatus.OnHelicopter) &&
-                (!statuses.get(ComponentStatus.BottomCollision) || statuses.get(ComponentStatus.TopCollision))) {
-            collideBox.moveByY(gravitationForce);
+        } else if (!statuses.get(ComponentStatus.IS_ON_LADDER) && !statuses.get(ComponentStatus.ON_HELICOPTER) &&
+                (!statuses.get(ComponentStatus.BOTTOM_COLLISION) || statuses.get(ComponentStatus.TOP_COLLISION))) {
+            collideBox.moveByY(GRAVITATION_FORCE);
         }
 
         // if the top collision has occurred, then stop timer earlier
-        if (statuses.get(ComponentStatus.IsOnLadder) || (statuses.get(ComponentStatus.TopCollision) && jumpsCounter == 2)) {
+        if (statuses.get(ComponentStatus.IS_ON_LADDER) || (statuses.get(ComponentStatus.TOP_COLLISION) && jumpsCounter == 2)) {
+
             timersHandler.getTimer(this.getGeneralType().name()).finishEarlier();
         }
 
         // attack event logic
         boolean shootingTimerStatus = timersHandler.getTimer(getGeneralType().name() + getId()).getTimerState();
-        if (!statuses.get(ComponentStatus.IsOnLadder) && MouseInput.get().isLeftMousePressed()) {
-            if (statuses.get(ComponentStatus.GunPicked)) {
+        if (!statuses.get(ComponentStatus.IS_ON_LADDER) && MouseInput.get().isLeftMousePressed()) {
+            if (statuses.get(ComponentStatus.GUN_PICKED)) {
                 if (!shootingTimerStatus) {
                     timersHandler.getTimer(getGeneralType().name() + getId()).resetTimer();
-                    scene.notify(new Message(MessageType.Shoot, ComponentType.Player, getId()));
+                    scene.notify(new Message(MessageType.SHOOT, ComponentType.PLAYER, getId()));
                 }
             } else {
-                statuses.put(ComponentStatus.Attack, true);
+                statuses.put(ComponentStatus.ATTACK, true);
             }
         }
 
         // open chest logic
         if (MouseInput.get().isRightMousePressed()) {
-            statuses.put(ComponentStatus.TryingToOpenOrPickSomething, true);
+            statuses.put(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING, true);
         } else {
-            statuses.put(ComponentStatus.TryingToOpenOrPickSomething, false);
+            statuses.put(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING, false);
         }
 
         // climb on ladder logic
-        if (statuses.get(ComponentStatus.IsOnLadder)) {
+        if (statuses.get(ComponentStatus.IS_ON_LADDER)) {
             if (keyboardInput.getPreviousKeyW()) {
                 collideBox.moveByY(-2);
-                statuses.put(ComponentStatus.IsMovingOnLadder, true);
+                statuses.put(ComponentStatus.IS_MOVING_ON_LADDER, true);
             } else if (keyboardInput.getKeyS()) {
                 collideBox.moveByY(2);
-                statuses.put(ComponentStatus.IsMovingOnLadder, true);
+                statuses.put(ComponentStatus.IS_MOVING_ON_LADDER, true);
             } else {
-                statuses.put(ComponentStatus.IsMovingOnLadder, false);
+                statuses.put(ComponentStatus.IS_MOVING_ON_LADDER, false);
             }
         }
 
         // combo attack animation logic
-        if (statuses.get(ComponentStatus.Attack) && animationHandler.getAnimation().animationIsOver()) {
-            statuses.put(ComponentStatus.Attack, false);
-            statuses.put(ComponentStatus.FirstHit, false);
-            animationsType.put(GeneralAnimationTypes.Attack, attackCombo.get(attackComboIndex));
+        if (statuses.get(ComponentStatus.ATTACK) && animationHandler.getAnimation().animationIsOver()) {
+            statuses.put(ComponentStatus.ATTACK, false);
+            statuses.put(ComponentStatus.FIRST_HIT, false);
+            animationsType.put(GeneralAnimationTypes.ATTACK, attackCombo.get(attackComboIndex));
             attackComboIndex++;
             if (attackComboIndex > attackCombo.size() - 1) {
                 attackComboIndex = 0;
@@ -335,18 +339,18 @@ public class Player extends DynamicComponent {
         }
 
         // hide gun logic
-        if (statuses.get(ComponentStatus.GunPicked)) {
-            if (animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.Climb) ||
-                    animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.DoubleJump)) {
-                scene.notify(new Message(MessageType.HideGun, ComponentType.Player, getId()));
+        if (statuses.get(ComponentStatus.GUN_PICKED)) {
+            if (animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.CLIMB) ||
+                    animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.DOUBLE_JUMP)) {
+                scene.notify(new Message(MessageType.HIDE_GUN, ComponentType.PLAYER, getId()));
             } else {
-                scene.notify(new Message(MessageType.ShowGun, ComponentType.Player, getId()));
+                scene.notify(new Message(MessageType.SHOW_GUN, ComponentType.PLAYER, getId()));
             }
         }
 
         handleAnimations();
         animationHandler.update();
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Player, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.PLAYER, getId()));
         healthText.update();
     }
 
@@ -364,7 +368,7 @@ public class Player extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Player;
+        return ComponentType.PLAYER;
     }
 
     @Override
@@ -380,7 +384,7 @@ public class Player extends DynamicComponent {
 
         // restoring the animation handler
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.Idle), collideBox.getPosition());
+        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
         animationHandler.getAnimation().setDirection(direction);
         collideBox = animationHandler.getAnimation().getRectangle();
 

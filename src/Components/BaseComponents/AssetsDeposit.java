@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static Utils.Constants.mapScale;
+import static Utils.Constants.MAP_SCALE;
 
 /**
  * This class has predefined maps, animations and so on.
@@ -79,8 +79,8 @@ public class AssetsDeposit {
 
 
             // -----------------------load game maps
-            gameMaps.put(ComponentType.GreenCity , new GameMap(null,ComponentType.GreenCity));
-            gameMaps.put(ComponentType.IndustrialCity , new GameMap(null,ComponentType.IndustrialCity));
+            gameMaps.put(ComponentType.GREEN_CITY, new GameMap(null,ComponentType.GREEN_CITY));
+            gameMaps.put(ComponentType.INDUSTRIAL_CITY, new GameMap(null,ComponentType.INDUSTRIAL_CITY));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -100,7 +100,7 @@ public class AssetsDeposit {
 
                 String source = imageElement.getAttribute("source").replace("..", "Resources");
                 source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
-                String id = element.getAttribute("class");
+                String id = element.getAttribute("type");
                 int spriteSheetWidth = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));
                 int width = Integer.parseInt(property.getAttribute("value"));
@@ -108,8 +108,8 @@ public class AssetsDeposit {
                 Element box = (Element) element.getElementsByTagName("objectgroup").item(0).getFirstChild().getNextSibling();
                 int x = (int) Float.parseFloat(box.getAttributeNode("x").getValue());
                 int y = (int) Float.parseFloat(box.getAttributeNode("y").getValue());
-                int boxHeight = (int) (Float.parseFloat(box.getAttributeNode("height").getValue()) * mapScale);
-                int boxWidth = (int) (Float.parseFloat(box.getAttributeNode("width").getValue()) * mapScale);
+                int boxHeight = (int) (Float.parseFloat(box.getAttributeNode("height").getValue()) * MAP_SCALE);
+                int boxWidth = (int) (Float.parseFloat(box.getAttributeNode("width").getValue()) * MAP_SCALE);
                 Rectangle boxBounding = new Rectangle(new Coordinate<>(x, y), boxWidth, boxHeight);
                 animations.put(AnimationType.valueOf(id), new Animation(source, spriteSheetWidth, width, height, boxBounding, AnimationType.valueOf(id)));
             }
@@ -118,16 +118,16 @@ public class AssetsDeposit {
             // first of all let's make a mapping that describes
             // the bullet-gun relationship
 
-            gunsBulletsRelation.put(ComponentType.Gun1, ComponentType.Bullet1);
-            gunsBulletsRelation.put(ComponentType.Gun2, ComponentType.Bullet2);
-            gunsBulletsRelation.put(ComponentType.Gun3, ComponentType.Bullet3);
-            gunsBulletsRelation.put(ComponentType.Gun4, ComponentType.Bullet4);
-            gunsBulletsRelation.put(ComponentType.Gun5, ComponentType.Bullet5);
-            gunsBulletsRelation.put(ComponentType.Gun6, ComponentType.Bullet6);
-            gunsBulletsRelation.put(ComponentType.Gun7, ComponentType.Bullet7);
-            gunsBulletsRelation.put(ComponentType.Gun8, ComponentType.Bullet8);
-            gunsBulletsRelation.put(ComponentType.Gun9, ComponentType.Bullet9);
-            gunsBulletsRelation.put(ComponentType.Gun10, ComponentType.Bullet10);
+            gunsBulletsRelation.put(ComponentType.GUN_1, ComponentType.BULLET_1);
+            gunsBulletsRelation.put(ComponentType.GUN_2, ComponentType.BULLET_2);
+            gunsBulletsRelation.put(ComponentType.GUN_3, ComponentType.BULLET_3);
+            gunsBulletsRelation.put(ComponentType.GUN_4, ComponentType.BULLET_4);
+            gunsBulletsRelation.put(ComponentType.GUN_5, ComponentType.BULLET_5);
+            gunsBulletsRelation.put(ComponentType.GUN_6, ComponentType.BULLET_6);
+            gunsBulletsRelation.put(ComponentType.GUN_7, ComponentType.BULLET_7);
+            gunsBulletsRelation.put(ComponentType.GUN_8, ComponentType.BULLET_8);
+            gunsBulletsRelation.put(ComponentType.GUN_9, ComponentType.BULLET_9);
+            gunsBulletsRelation.put(ComponentType.GUN_10, ComponentType.BULLET_10);
 
 
             source1 = "Resources/in_game_assets/weapons&buletts.tsx";
@@ -143,11 +143,11 @@ public class AssetsDeposit {
 
                 String source = imageElement.getAttribute("source").replace("..", "Resources");
                 source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
-                String id = element.getAttribute("class");
+                String id = element.getAttribute("type");
                 int width = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));
 
-                if (id.contains("Gun")) {
+                if (id.contains("GUN")) {
                     Rectangle boxBounding = new Rectangle(new Coordinate<>(0, 0), (int) (width), (int) (height));
                     guns.put(ComponentType.valueOf(id), new Gun(ImageIO.read(new File(source)), boxBounding));
                 } else {

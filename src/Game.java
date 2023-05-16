@@ -1,6 +1,5 @@
 import Components.MenuComponents.Text;
 import Enums.ColorType;
-import Input.MouseInput;
 import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Constants;
@@ -51,8 +50,8 @@ public class Game implements Runnable {
             SceneHandler sceneHandler = SceneHandler.getInstance();
             TimersHandler timersHandler = TimersHandler.get();
 
-            Text framerate = new Text(" " , new Coordinate<>(Constants.windowWidth - 150,50) , 56);
-            framerate.setTextColor(ColorType.BlackColor);
+            Text framerate = new Text(" " , new Coordinate<>(Constants.WINDOW_WIDTH - 150,50) , 56);
+            framerate.setTextColor(ColorType.BLACK_COLOR);
             timersHandler.addTimer(new Timer(0.5f) , "FRAMERATE_REFRESH");
 
             while (runState) {

@@ -6,7 +6,6 @@ import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
-import Window.GameWindow;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -25,8 +24,8 @@ public class Chest extends DynamicComponent {
 
         // chest statuses
         statuses = new HashMap<>();
-        statuses.put(ComponentStatus.IsOpened, false);
-        statuses.put(ComponentStatus.HasDroppedWeapon, false);
+        statuses.put(ComponentStatus.IS_OPENED, false);
+        statuses.put(ComponentStatus.HAS_DROPPED_WEAPON, false);
 
         // chest animation
         animationHandler = new AnimationHandler();
@@ -39,9 +38,9 @@ public class Chest extends DynamicComponent {
 
     @Override
     public void notify(Message message) {
-        if (message.source() == ComponentType.Player) {
-            if (message.type() == MessageType.ReadyToBeOpened && !statuses.get(ComponentStatus.IsOpened)) {
-                statuses.put(ComponentStatus.IsOpened, true);
+        if (message.source() == ComponentType.PLAYER) {
+            if (message.type() == MessageType.READY_TO_BE_OPENED && !statuses.get(ComponentStatus.IS_OPENED)) {
+                statuses.put(ComponentStatus.IS_OPENED, true);
                 animationHandler.getAnimation().unlock();
             }
         }
@@ -53,15 +52,15 @@ public class Chest extends DynamicComponent {
     @Override
     public void update() {
         super.update();
-        if (statuses.get(ComponentStatus.IsOpened) &&
+        if (statuses.get(ComponentStatus.IS_OPENED) &&
                 animationHandler.getAnimation().animationIsOver() &&
-                !statuses.get(ComponentStatus.HasDroppedWeapon)) {
+                !statuses.get(ComponentStatus.HAS_DROPPED_WEAPON)) {
             animationHandler.getAnimation().lockAtLastFrame();
-            statuses.put(ComponentStatus.HasDroppedWeapon, true);
-            scene.notify(new Message(MessageType.SpawnGun, ComponentType.Chest, getId()));
+            statuses.put(ComponentStatus.HAS_DROPPED_WEAPON, true);
+            scene.notify(new Message(MessageType.SPAWN_GUN, ComponentType.CHEST, getId()));
         }
         animationHandler.update();
-        scene.notify(new Message(MessageType.HandleCollision, ComponentType.Chest, getId()));
+        scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.CHEST, getId()));
     }
 
     @Override
@@ -77,7 +76,7 @@ public class Chest extends DynamicComponent {
 
     @Override
     public ComponentType getGeneralType() {
-        return ComponentType.Chest;
+        return ComponentType.CHEST;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class Chest extends DynamicComponent {
         animationHandler.changeAnimation(AnimationType.Chest1, collideBox.getPosition());
 
         // restore the animation status
-        if(statuses.get(ComponentStatus.IsOpened)){
+        if(statuses.get(ComponentStatus.IS_OPENED)){
             animationHandler.getAnimation().lockAtLastFrame();
         }else {
             animationHandler.getAnimation().lockAtFistFrame();

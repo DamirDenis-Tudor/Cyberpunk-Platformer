@@ -5,13 +5,19 @@ package Enums;
  */
 public enum MessageType {
     // Components messages
-    HandleCollision, HasCollision, Destroy, ActivateTopCollision, ActivateBottomCollision, DeactivateBottomCollision, IsOnLadder, IsNoLongerOnLadder, LeftCollision, RightCollision, LeftCollisionWithOther, RightCollisionWithOther, Attack, PlayerDeath, ReadyToBeOpened, SpawnGun, IsPickedUp, LaunchBullet, PLayerDirectionRight, PlayerDirectionLeft, BulletLaunchRight, BulletLaunchLeft, HideGun, ShowGun, Shoot, OnPlatform, OnHelicopter, DetachedFromHelicopter, SceneHasBeenActivated, ButtonClicked,
+    HANDLE_COLLISION, HAS_COLLISION, DESTROY, ACTIVATE_TOP_COLLISION,
+    ACTIVATE_BOTTOM_COLLISION, DEACTIVATE_BOTTOM_COLLISION, IS_ON_LADDER,
+    IS_NO_LONGER_ON_LADDER, LEFT_COLLISION, RIGHT_COLLISION, LEFT_COLLISION_WITH_OTHER,
+    RIGHT_COLLISION_WITH_OTHER, ATTACK, PLAYER_DEATH, READY_TO_BE_OPENED, SPAWN_GUN,
+    IS_PICKED_UP, LAUNCH_BULLET, PLAYER_DIRECTION_RIGHT, PLAYER_DIRECTION_LEFT, BULLET_LAUNCH_RIGHT,
+    BULLET_LAUNCH_LEFT, HIDE_GUN, SHOW_GUN, SHOOT, ON_PLATFORM, ON_HELICOPTER, DETACHED_FROM_HELICOPTER,
+    SCENE_HAS_BEEN_ACTIVATED, BUTTON_CLICKED,
 
     // Scenes Messages
-    NewGame,SaveGame,LoadGame,
+    NEW_GAME, SAVE_GAME, LOAD_GAME,
 
-    SaveHasBeenAdded , GunNeedsRecalibration,
+    SAVE_HAS_BEEN_ADDED, GUN_NEEDS_RECALIBRATION,
 
-    CyborgSelected, BikerSelected , PunkSelected,
-    GreenMapSelected , IndustrialMapSelected
+    CYBORG_SELECTED, BIKER_SELECTED, PUNK_SELECTED,
+    GREEN_MAP_SELECTED, INDUSTRIAL_MAP_SELECTED
 }

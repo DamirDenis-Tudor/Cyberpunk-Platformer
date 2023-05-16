@@ -17,26 +17,26 @@ final public class LevelPauseScene extends Scene {
     public LevelPauseScene(SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
         components.add(AssetsDeposit.get().getMenuWallpaper());
-        components.add(new Button(this, ComponentType.Continue, "CONTINUE",
+        components.add(new Button(this, ComponentType.CONTINUE, "CONTINUE",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150),56));
-        components.add(new Button(this, ComponentType.SaveButton, "SAVE",
+        components.add(new Button(this, ComponentType.SAVE_BUTTON, "SAVE",
                 new Rectangle(new Coordinate<>(350, 500), 400, 150),56));
-        components.add(new Button(this, ComponentType.BackToMenu, "BACK TO MENU",
+        components.add(new Button(this, ComponentType.BACK_TO_MENU, "BACK TO MENU",
                 new Rectangle(new Coordinate<>(350, 700), 400, 150),56));
     }
 
     @Override
     public void notify(Message message) {
         switch (message.type()) {
-            case SceneHasBeenActivated -> {
+            case SCENE_HAS_BEEN_ACTIVATED -> {
                 Camera.get().disableCameraOffset();
                 MouseInput.get().reset();
             }
-            case ButtonClicked -> {
+            case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case Continue -> sceneHandler.handleSceneChangeRequest(SceneType.PlayScene);
-                    case SaveButton -> sceneHandler.notify(new Message(MessageType.SaveGame, ComponentType.Scene, -1));
-                    case BackToMenu -> sceneHandler.handleSceneChangeRequest(SceneType.MainMenuScene);
+                    case CONTINUE -> sceneHandler.handleSceneChangeRequest(SceneType.PLAY_SCENE);
+                    case SAVE_BUTTON -> sceneHandler.notify(new Message(MessageType.SAVE_GAME, ComponentType.SCENE, -1));
+                    case BACK_TO_MENU -> sceneHandler.handleSceneChangeRequest(SceneType.MAIN_MENU_SCENE);
                 }
             }
         }

@@ -5,5 +5,5 @@ package Enums;
  * It provides flexibility when creating objects that have similar behavior but different animations.
  */
 public enum GeneralAnimationTypes {
-    Idle, Attack, Hurt, Death, Walk, Run,RunGun ,JumpGun , IdleGun, Climb, Jump, DoubleJump,Falling
+    IDLE, ATTACK, HURT, DEATH, WALK, RUN, RUN_GUN, JUMP_GUN, IDLE_GUN, CLIMB, JUMP, DOUBLE_JUMP, FALLING
 }

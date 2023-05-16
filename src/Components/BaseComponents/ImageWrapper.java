@@ -1,7 +1,6 @@
 package Components.BaseComponents;
 
 import Components.StaticComponent;
-import Utils.Constants;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -10,7 +9,7 @@ import Window.GameWindow;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static Utils.Constants.mapScale;
+import static Utils.Constants.MAP_SCALE;
 
 /**
  * This class wraps BufferedImage objects and provides the flexibility required for drawing images in code positioning calibration.
@@ -31,9 +30,9 @@ public class ImageWrapper implements StaticComponent {
 
     public void draw(Graphics2D graphics2D ,Rectangle box , int offsetX , int offsetY , boolean direction){
         if (direction) { // right
-            graphics2D.drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (box.getWidth()*mapScale*0.75), (int) (box.getHeight()*mapScale*0.75), null);
+            graphics2D.drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (box.getWidth()* MAP_SCALE *0.75), (int) (box.getHeight()* MAP_SCALE *0.75), null);
         }else {
-            graphics2D.drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (-box.getWidth()*mapScale*0.75), (int) (box.getHeight()*mapScale*0.75), null);
+            graphics2D.drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (-box.getWidth()* MAP_SCALE *0.75), (int) (box.getHeight()* MAP_SCALE *0.75), null);
         }
     }
 

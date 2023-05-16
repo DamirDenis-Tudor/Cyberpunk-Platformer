@@ -27,18 +27,18 @@ public class SceneHandler implements Notifiable, Serializable {
 
     private SceneHandler() throws Exception {
         scenes = new HashMap<>();
-        scenes.put(LogoStartScene, new LogoStartScene(this));
-        scenes.put(MainMenuScene, new MainMenuScene(this));
-        scenes.put(ChoosePlayerScene, new ChoosePlayerScene(this));
-        scenes.put(ChooseLevelScene, new ChooseLevelScene(this));
-        scenes.put(SettingsScene, new SettingsScene(this));
-        scenes.put(PlayScene, new PlayScene(this));
-        scenes.put(LoadScene, new LoadScene(this));
-        scenes.put(LevelPausedScene, new LevelPauseScene(this));
-        scenes.put(LevelFailedScene, new LevelFailedScene(this));
-        scenes.put(LevelCompletedScene, new LevelCompletedScene(this));
+        scenes.put(LOGO_START_SCENE, new LogoStartScene(this));
+        scenes.put(MAIN_MENU_SCENE, new MainMenuScene(this));
+        scenes.put(CHOOSE_PLAYER_SCENE, new ChoosePlayerScene(this));
+        scenes.put(CHOOSE_LEVEL_SCENE, new ChooseLevelScene(this));
+        scenes.put(SETTINGS_SCENE, new SettingsScene(this));
+        scenes.put(PLAY_SCENE, new PlayScene(this));
+        scenes.put(LOAD_SCENE, new LoadScene(this));
+        scenes.put(LEVEL_PAUSED_SCENE, new LevelPauseScene(this));
+        scenes.put(LEVEL_FAILED_SCENE, new LevelFailedScene(this));
+        scenes.put(LEVEL_COMPLETED_SCENE, new LevelCompletedScene(this));
 
-        handleSceneChangeRequest(MainMenuScene);
+        handleSceneChangeRequest(MAIN_MENU_SCENE);
     }
 
     public static SceneHandler getInstance() throws Exception {
@@ -66,7 +66,7 @@ public class SceneHandler implements Notifiable, Serializable {
     public void handleSceneChangeRequest(SceneType newScene) {
         if (scenes.containsKey(newScene)) {
             activeScene = scenes.get(newScene);
-            activeScene.notify(new Message(MessageType.SceneHasBeenActivated, ComponentType.SceneHandler, -1));
+            activeScene.notify(new Message(MessageType.SCENE_HAS_BEEN_ACTIVATED, ComponentType.SCENE_HANDLER, -1));
         } else {
             activeScene = null;
         }
@@ -74,10 +74,10 @@ public class SceneHandler implements Notifiable, Serializable {
 
     @Override
     public void notify(Message message) {
-        if (message.source() == ComponentType.Scene) {
-            scenes.get(PlayScene).notify(message);
-            if (message.type() == MessageType.SaveGame) {
-                scenes.get(LoadScene).notify(message);
+        if (message.source() == ComponentType.SCENE) {
+            scenes.get(PLAY_SCENE).notify(message);
+            if (message.type() == MessageType.SAVE_GAME) {
+                scenes.get(LOAD_SCENE).notify(message);
             }
         }
     }
