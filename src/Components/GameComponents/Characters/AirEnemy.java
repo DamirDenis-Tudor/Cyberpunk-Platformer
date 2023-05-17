@@ -1,6 +1,7 @@
 package Components.GameComponents.Characters;
 
 import Components.BaseComponents.AnimationHandler;
+import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;
@@ -220,7 +221,6 @@ public class AirEnemy extends DynamicComponent {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
                     }
                 }
-                System.out.println(statuses.get(ComponentStatus.HAS_DETECTED_PLAYER));
             }
         }
         animationHandler.update();

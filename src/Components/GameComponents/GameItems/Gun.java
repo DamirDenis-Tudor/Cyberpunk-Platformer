@@ -2,6 +2,7 @@ package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
+import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -37,18 +38,18 @@ public class Gun extends DynamicComponent {
         this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
         this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
         this.collideBox.setPosition(new Coordinate<>(position));
-        statuses = new HashMap<>();
-        statuses.put(ComponentStatus.IS_PICKED_UP, false);
-        statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, false);
-        statuses.put(ComponentStatus.HIDE, false);
-        statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
+        statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GUN);
+
     }
 
     @Override
     public void notify(Message message) {
         if (message.source() == ComponentType.PLAYER) {
             switch (message.type()) {
-                case IS_PICKED_UP -> statuses.put(ComponentStatus.IS_PICKED_UP, true);
+                case IS_PICKED_UP -> {
+                    statuses.put(ComponentStatus.IS_PICKED_UP, true);
+                    scene.notify(new Message(MessageType.IS_PICKED_UP , ComponentType.GUN , getId()));
+                }
                 case LAUNCH_BULLET -> statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, true);
                 case PLAYER_DIRECTION_LEFT -> {
                     if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
@@ -114,6 +115,10 @@ public class Gun extends DynamicComponent {
     @Override
     public ComponentType getGeneralType() {
         return ComponentType.GUN;
+    }
+
+    public ImageWrapper getImageWrapper(){
+        return imageWrapper;
     }
 
     @Override

@@ -78,7 +78,7 @@ public class ChoosePlayerScene extends Scene {
                 switch (message.source()) {
                     case CYBORG, PUNK, BIKER -> {
                         changeableComponents.clear();
-                        Text text = new Text("Press ENTER to start ..." , new Coordinate<>(1250 , 350) , 55);
+                        Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 820) , 55);
                         AnimationType animationType = null ;
                         switch (message.source()){
                             case BIKER -> {
@@ -95,7 +95,7 @@ public class ChoosePlayerScene extends Scene {
                             }
                         }
                         Animation animation = new Animation(AssetsDeposit.get().getAnimation(animationType));
-                        animation.setPosition(new Coordinate<>(1300, 400));
+                        animation.setPosition(new Coordinate<>(1300, 300));
                         animation.setAnimationScale(5);
                         changeableComponents.add(animation);
                         changeableComponents.add(text);

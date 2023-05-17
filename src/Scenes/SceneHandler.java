@@ -74,11 +74,17 @@ public class SceneHandler implements Notifiable, Serializable {
 
     @Override
     public void notify(Message message) {
-        if (message.source() == ComponentType.SCENE) {
-            scenes.get(PLAY_SCENE).notify(message);
-            if (message.type() == MessageType.SAVE_GAME) {
+        switch (message.type()){
+            case NEW_GAME,LOAD_GAME, GREEN_MAP_SELECTED,INDUSTRIAL_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
+            case BIKER_SELECTED, PUNK_SELECTED, CYBORG_SELECTED -> {
+                scenes.get(PLAY_SCENE).notify(message);
+                scenes.get(LEVEL_PAUSED_SCENE).notify(message);
+            }
+            case SAVE_GAME -> {
+                scenes.get(PLAY_SCENE).notify(message);
                 scenes.get(LOAD_SCENE).notify(message);
             }
+            case IS_PICKED_UP -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
         }
     }
 }

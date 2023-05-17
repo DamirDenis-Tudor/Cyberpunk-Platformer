@@ -71,18 +71,18 @@ final public class ChooseLevelScene extends Scene {
                 switch (message.source()) {
                     case GREEN_CITY, INDUSTRIAL_CITY -> {
                         changeableComponents.clear();
-                        Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 350) , 55);
+                        Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 820) , 55);
                         ImageWrapper imageWrapper = null;
                         switch (message.source()){
                             case GREEN_CITY -> {
                                 selectedMap = MessageType.GREEN_MAP_SELECTED;
                                 imageWrapper = AssetsDeposit.get().getGreenMapPreview();
-                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,400) , 650,450));
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
                             }
                             case INDUSTRIAL_CITY -> {
                                 selectedMap = MessageType.INDUSTRIAL_MAP_SELECTED;
                                 imageWrapper = AssetsDeposit.get().getIndustrialMapPreview();
-                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,400) , 650,450));
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
                             }
                         }
                         changeableComponents.add(imageWrapper);

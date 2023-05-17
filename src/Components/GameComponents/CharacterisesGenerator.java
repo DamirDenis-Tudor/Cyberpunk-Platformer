@@ -1,4 +1,4 @@
-package Components.GameComponents.Characters;
+package Components.GameComponents;
 
 import Enums.AnimationType;
 import Enums.ComponentStatus;
@@ -203,6 +203,13 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.HURT , false);
                 statuses.put(ComponentStatus.DEATH , false);
                 statuses.put(ComponentStatus.HAS_DETECTED_PLAYER , false);
+            }
+            case GUN -> {
+                statuses.put(ComponentStatus.IS_PICKED_UP, false);
+                statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, false);
+                statuses.put(ComponentStatus.HIDE, false);
+                statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
+                statuses.put(ComponentStatus.GUN_ENABLED , false);
             }
         }
         return statuses;

@@ -1,6 +1,7 @@
 package Components.GameComponents.Characters;
 
 import Components.BaseComponents.AnimationHandler;
+import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
 import Enums.*;
 import Scenes.Messages.Message;

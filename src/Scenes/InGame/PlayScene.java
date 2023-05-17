@@ -2,7 +2,7 @@ package Scenes.InGame;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.GameComponents.Characters.AirEnemy;
-import Components.GameComponents.Characters.CharacterisesGenerator;
+import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.Characters.GroundEnemy;
 import Components.GameComponents.Characters.Player;
 import Components.GameComponents.DynamicComponent;
@@ -48,7 +48,7 @@ final public class PlayScene extends Scene {
     private final List<StaticComponent> toBeAdded = new ArrayList<>();
     private ComponentType currentPlayer;
     private ComponentType currentMap;
-    private final Random rand = new Random(17);
+    private final Random rand = new Random(1);
 
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
@@ -344,6 +344,9 @@ final public class PlayScene extends Scene {
                 switch (message.type()) {
                     case HANDLE_COLLISION ->
                             findComponentWithName(PLAYER).interactionWith(findComponentWithId(message.componentId()));
+                    case IS_PICKED_UP -> {
+                        sceneHandler.notify( new Message(MessageType.IS_PICKED_UP , findComponentWithId(message.componentId()).getCurrentType() , message.componentId())    );
+                    }
                     case BULLET_LAUNCH_RIGHT, BULLET_LAUNCH_LEFT -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
                         DynamicComponent bullet = new Bullet(this, component.getCurrentType(),

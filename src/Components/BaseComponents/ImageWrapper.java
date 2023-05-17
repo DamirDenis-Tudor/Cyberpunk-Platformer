@@ -15,14 +15,11 @@ import static Utils.Constants.MAP_SCALE;
  * This class wraps BufferedImage objects and provides the flexibility required for drawing images in code positioning calibration.
  */
 public class ImageWrapper implements StaticComponent {
-    private final GameWindow gameWindow ;
     private final Camera camera;
     private final BufferedImage image;
-
     private Rectangle rectangle;
 
     public ImageWrapper(BufferedImage image){
-        gameWindow = GameWindow.get();
         camera = Camera.get();
         this.image = image;
         rectangle = new Rectangle(new Coordinate<>(0,0) , image.getWidth() , image.getHeight());
@@ -44,8 +41,22 @@ public class ImageWrapper implements StaticComponent {
         graphics2D.drawImage(image , rectangle.getMinX(), rectangle.getMinY(),rectangle.getWidth(), rectangle.getHeight(), null);
     }
 
+    public Rectangle getRectangle(){
+        return rectangle;
+    }
     public void setRectangle(Rectangle rectangle){
         this.rectangle = rectangle;
+    }
+
+    public ImageWrapper setPosition(Coordinate<Integer> position){
+        rectangle.setPosition(position);
+        return this;
+    }
+
+    public ImageWrapper setScale(Integer scale){
+        rectangle.setHeight(rectangle.getHeight()*scale);
+        rectangle.setWidth(rectangle.getWidth()*scale);
+        return this;
     }
 
 }
