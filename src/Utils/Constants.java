@@ -25,8 +25,9 @@ public record Constants() {
     public static final int AIRPLANE_MAX_RANGE =  10 * MAP_DIM;
     public static final int AIRPLANE_DROP_BOMB_RANGE =  10 * MAP_DIM;
     public static final int DRONE_MAX_RANGE =  8 * MAP_DIM;
+    public static final int MAX_ITEMS_NUMBER = 5;
 
-
+    public static final int FIRST_ITEM = 1;
 
 }
 

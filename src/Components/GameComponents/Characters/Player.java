@@ -19,11 +19,12 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+import static Enums.ComponentType.PLAYER;
 import static Utils.Constants.GRAVITATION_FORCE;
 import static Utils.Constants.PLAYER_VELOCITY;
 
 /**
- * This class implements the player behaviour.The code might be complicated, but it is not.
+ * This class implements the player behavior.The code might be complicated, but it is not.
  * It is nothing more than a state machine that describes the interactions with other components.
  */
 public class Player extends DynamicComponent {
@@ -37,13 +38,14 @@ public class Player extends DynamicComponent {
     private int jumpsCounter = 0;
     private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
-
     private boolean direction = false;
+
+    private int currentEnemyId ;
 
     public Player(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
-
+        subtype = type;
         healthText = new Text("HEALTH : " + health, new Coordinate<>(200, 50), 60);
         healthText.setTextColor(ColorType.RED_COLOR);
         timersHandler.addTimer(new Timer(0.30f), getGeneralType().name());
@@ -125,8 +127,19 @@ public class Player extends DynamicComponent {
                 if (collideBox.intersects(component.getCollideBox()) &&
                         statuses.get(ComponentStatus.ATTACK) &&
                         !statuses.get(ComponentStatus.FIRST_HIT)) {
-                    component.notify(new Message(MessageType.ATTACK, ComponentType.PLAYER, getId()));
+                    currentEnemyId = component.getId();
+                    statuses.put(ComponentStatus.HAS_ENEMY_COLLISION , true);
+                    statuses.put(ComponentStatus.GUN_PICKED , false);
                     statuses.put(ComponentStatus.FIRST_HIT, true);
+                    component.notify(new Message(MessageType.ATTACK, ComponentType.PLAYER, getId()));
+                    scene.notify(new Message(MessageType.HIDE_GUN , PLAYER , getId()));
+                } else if (statuses.get(ComponentStatus.HAS_GUN)) {
+                    if(!collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.HAS_ENEMY_COLLISION) &&
+                            (currentEnemyId == component.getId() || !scene.stillExistsWithId(currentEnemyId)))  {
+                        statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
+                        statuses.put(ComponentStatus.GUN_PICKED, true);
+                        scene.notify(new Message(MessageType.SHOW_GUN , PLAYER , getId()));
+                    }
                 }
             }
             case CHEST -> {
@@ -135,26 +148,21 @@ public class Player extends DynamicComponent {
                 }
             }
             case GUN -> {
-                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING) && !statuses.get(ComponentStatus.GUN_PICKED)) {
-                    component.notify(new Message(MessageType.IS_PICKED_UP, ComponentType.PLAYER, getId()));
+                if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING)) {
+                    //component.notify(new Message(MessageType.IS_PICKED_UP, ComponentType.PLAYER, getId()));
                     if (animationHandler.getAnimation().getDirection()) {
                         component.notify(new Message(MessageType.PLAYER_DIRECTION_RIGHT, ComponentType.PLAYER, getId()));
                     } else {
                         component.notify(new Message(MessageType.PLAYER_DIRECTION_LEFT, ComponentType.PLAYER, getId()));
                     }
                     component.interactionWith(this);
+                    //component.notify(new Message(MessageType.DISABLE_GUN , PLAYER , getId()));
+                    statuses.put(ComponentStatus.HAS_GUN, true);
                     statuses.put(ComponentStatus.GUN_PICKED, true);
                 }
             }
             case HELICOPTER -> {
-                Rectangle hookCollideBox = new Rectangle(
-                        new Coordinate<>(
-                                component.getCollideBox().getMinX() + 37,
-                                component.getCollideBox().getMaxY() - 47
-                        )
-                        , 55, 47
-                );
-
+                Rectangle hookCollideBox = new Rectangle(new Coordinate<>(component.getCollideBox().getMinX() + 37, component.getCollideBox().getMaxY() - 47), 55, 47);
                 if (collideBox.intersects(hookCollideBox) &&
                         !statuses.get(ComponentStatus.ON_HELICOPTER) &&
                         !statuses.get(ComponentStatus.DETACHED_FROM_HELICOPTER)) {
@@ -191,7 +199,7 @@ public class Player extends DynamicComponent {
                     animationHandler.getAnimation().lockAtLastFrame();
                 }
             } else if (jumpsCounter == 0) {
-                if (statuses.get(ComponentStatus.ATTACK)) {
+                if (statuses.get(ComponentStatus.ATTACK)&&!(statuses.get(ComponentStatus.HAS_GUN) && !statuses.get(ComponentStatus.HAS_ENEMY_COLLISION))) {
                     animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                 } else {
                     if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
@@ -296,19 +304,18 @@ public class Player extends DynamicComponent {
 
         // attack event logic
         boolean shootingTimerStatus = timersHandler.getTimer(getGeneralType().name() + getId()).getTimerState();
-        if (!statuses.get(ComponentStatus.IS_ON_LADDER) && MouseInput.get().isLeftMousePressed()) {
+        if (!statuses.get(ComponentStatus.IS_ON_LADDER) && KeyboardInput.get().getKeyEnter()) {
+            statuses.put(ComponentStatus.ATTACK, true);
             if (statuses.get(ComponentStatus.GUN_PICKED)) {
                 if (!shootingTimerStatus) {
                     timersHandler.getTimer(getGeneralType().name() + getId()).resetTimer();
-                    scene.notify(new Message(MessageType.SHOOT, ComponentType.PLAYER, getId()));
+                    if(!statuses.get(ComponentStatus.HAS_ENEMY_COLLISION)) scene.notify(new Message(MessageType.SHOOT, ComponentType.PLAYER, getId()));
                 }
-            } else {
-                statuses.put(ComponentStatus.ATTACK, true);
             }
         }
 
         // open chest logic
-        if (MouseInput.get().isRightMousePressed()) {
+        if (KeyboardInput.get().getKeyShift()) {
             statuses.put(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING, true);
         } else {
             statuses.put(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING, false);
@@ -348,7 +355,6 @@ public class Player extends DynamicComponent {
                 scene.notify(new Message(MessageType.SHOW_GUN, ComponentType.PLAYER, getId()));
             }
         }
-
         handleAnimations();
         animationHandler.update();
         scene.notify(new Message(MessageType.HANDLE_COLLISION, ComponentType.PLAYER, getId()));
@@ -364,7 +370,7 @@ public class Player extends DynamicComponent {
 
     @Override
     public ComponentType getCurrentType() {
-        return null;
+        return subtype;
     }
 
     @Override
@@ -389,8 +395,14 @@ public class Player extends DynamicComponent {
         animationHandler.getAnimation().setDirection(direction);
         collideBox = animationHandler.getAnimation().getRectangle();
 
-
         // refocus camera on player position
         Camera.get().setFocusComponentPosition(collideBox.getPosition());
+
+        MessageType messageType = MessageType.BIKER_SELECTED ;
+        switch (subtype){
+            case CYBORG -> messageType = MessageType.CYBORG_SELECTED;
+            case PUNK -> messageType = MessageType.PUNK_SELECTED;
+        }
+        scene.getSceneHandler().notify(new Message(messageType, ComponentType.SCENE, -1));
     }
 }

@@ -10,6 +10,7 @@ import Timing.Timer;
 import Timing.TimersHandler;
 import Utils.Coordinate;
 
+import javax.print.DocFlavor;
 import java.awt.*;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class GroundEnemy extends DynamicComponent {
                         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
                         statuses.put(ComponentStatus.HURT, true);
-                        health -= 25;
+                        health -= 15;
                         if (health <= 0) {
                             statuses.put(ComponentStatus.DEATH, true);
                             collideBox.getPosition().setX(-1);

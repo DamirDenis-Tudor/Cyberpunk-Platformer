@@ -48,7 +48,7 @@ final public class PlayScene extends Scene {
     private final List<StaticComponent> toBeAdded = new ArrayList<>();
     private ComponentType currentPlayer;
     private ComponentType currentMap;
-    private final Random rand = new Random(1);
+    private final Random rand = new Random(2);
 
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
@@ -187,8 +187,8 @@ final public class PlayScene extends Scene {
                     }
                     case GUN -> {
                         DynamicComponent component = (Gun) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case CHEST -> {
                         DynamicComponent component = (Chest) objectStream.readObject();
@@ -340,13 +340,11 @@ final public class PlayScene extends Scene {
                     }
                 }
             }
-            case GUN -> {
+            case GUN,GUN_1,GUN_2,GUN_3,GUN_4,GUN_5,GUN_6,GUN_7,GUN_8,GUN_9,GUN_10 -> {
                 switch (message.type()) {
                     case HANDLE_COLLISION ->
                             findComponentWithName(PLAYER).interactionWith(findComponentWithId(message.componentId()));
-                    case IS_PICKED_UP -> {
-                        sceneHandler.notify( new Message(MessageType.IS_PICKED_UP , findComponentWithId(message.componentId()).getCurrentType() , message.componentId())    );
-                    }
+                    case IS_PICKED_UP -> sceneHandler.notify(message);
                     case BULLET_LAUNCH_RIGHT, BULLET_LAUNCH_LEFT -> {
                         DynamicComponent component = findComponentWithId(message.componentId());
                         DynamicComponent bullet = new Bullet(this, component.getCurrentType(),
@@ -360,6 +358,8 @@ final public class PlayScene extends Scene {
 
                         findComponentWithName(PLAYER).notify(new Message(MessageType.GUN_NEEDS_RECALIBRATION, SCENE, -1));
                     }
+                    case WEAPON_IS_SELECTED -> findComponentWithId(message.componentId()).
+                            notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
                 }
             }
             case BULLET -> {

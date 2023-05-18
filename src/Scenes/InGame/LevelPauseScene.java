@@ -22,12 +22,11 @@ import Window.Camera;
 import static Enums.ComponentType.*;
 
 final public class LevelPauseScene extends Scene {
-    private ComponentType currentPlayer;
 
     public LevelPauseScene(SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
         components.add(AssetsDeposit.get().getMenuWallpaper());
-        components.add(new Inventory());
+        components.add(new Inventory(this));
         components.add(new Button(this, ComponentType.CONTINUE, "CONTINUE",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150),56));
         components.add(new Button(this, ComponentType.SAVE_BUTTON, "SAVE",
@@ -38,26 +37,33 @@ final public class LevelPauseScene extends Scene {
 
     @Override
     public void notify(Message message) {
+        ComponentType currentPlayer;
         switch (message.type()) {
             case BIKER_SELECTED -> {
                 currentPlayer = BIKER;
+                ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
                 Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdle));
                 animation.setPosition(new Coordinate<>(1400, 300));
                 animation.setAnimationScale(5);
+                if(components.size()-1 == 5) components.remove(components.size()-1);
                 components.add(animation);
             }
             case PUNK_SELECTED -> {
                 currentPlayer = PUNK;
+                ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
                 Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdle));
                 animation.setPosition(new Coordinate<>(1400, 300));
                 animation.setAnimationScale(5);
+                if(components.size()-1 == 5) components.remove(components.size()-1);
                 components.add(animation);
             }
             case CYBORG_SELECTED -> {
                 currentPlayer = CYBORG;
+                ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
                 Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdle));
                 animation.setPosition(new Coordinate<>(1400, 300));
                 animation.setAnimationScale(5);
+                if(components.size()-1 == 5) components.remove(components.size()-1);
                 components.add(animation);
             }
             case SCENE_HAS_BEEN_ACTIVATED -> {
@@ -73,6 +79,9 @@ final public class LevelPauseScene extends Scene {
             }
             case IS_PICKED_UP -> {
                 ((Notifiable) components.get(1)).notify(message);
+            }
+            case WEAPON_IS_SELECTED -> {
+                sceneHandler.notify(message);
             }
         }
     }

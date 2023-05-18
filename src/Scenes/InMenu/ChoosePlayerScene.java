@@ -82,7 +82,7 @@ public class ChoosePlayerScene extends Scene {
                         AnimationType animationType = null ;
                         switch (message.source()){
                             case BIKER -> {
-                                animationType = AnimationType.Bomb4;
+                                animationType = AnimationType.BikerIdle;
                                 selectedPlayer = MessageType.BIKER_SELECTED;
                             }
                             case CYBORG -> {

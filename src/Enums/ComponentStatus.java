@@ -23,6 +23,7 @@ public enum ComponentStatus {
     IDLE,
     TRYING_TO_OPEN_OR_PICK_SOMETHING,
     GUN_PICKED,
+    HAS_GUN,
     IS_OPENED,
     HAS_DROPPED_WEAPON,
     IS_PICKED_UP,
@@ -34,4 +35,5 @@ public enum ComponentStatus {
     HAS_DETECTED_PLAYER,
     NEEDS_RECALIBRATION,
     GUN_ENABLED,
+    HAS_PLAYER_COLLISION
 }

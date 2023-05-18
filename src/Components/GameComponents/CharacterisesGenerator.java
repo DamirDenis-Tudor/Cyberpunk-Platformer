@@ -173,6 +173,8 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.IS_MOVING_ON_LADDER, false);
                 statuses.put(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING, false);
                 statuses.put(ComponentStatus.GUN_PICKED, false);
+                statuses.put(ComponentStatus.HAS_GUN, false);
+                statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
                 statuses.put(ComponentStatus.ON_HELICOPTER, false);
                 statuses.put(ComponentStatus.DETACHED_FROM_HELICOPTER, false);
             }
@@ -190,6 +192,7 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
                 statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, false);
                 statuses.put(ComponentStatus.IDLE, false);
+                statuses.put(ComponentStatus.HAS_PLAYER_COLLISION , false);
             }
             case AIRPLANE -> {
                 statuses.put(ComponentStatus.ATTACK, false);

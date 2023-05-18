@@ -75,7 +75,7 @@ public class SceneHandler implements Notifiable, Serializable {
     @Override
     public void notify(Message message) {
         switch (message.type()){
-            case NEW_GAME,LOAD_GAME, GREEN_MAP_SELECTED,INDUSTRIAL_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
+            case NEW_GAME,LOAD_GAME, GREEN_MAP_SELECTED,INDUSTRIAL_MAP_SELECTED,WEAPON_IS_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
             case BIKER_SELECTED, PUNK_SELECTED, CYBORG_SELECTED -> {
                 scenes.get(PLAY_SCENE).notify(message);
                 scenes.get(LEVEL_PAUSED_SCENE).notify(message);

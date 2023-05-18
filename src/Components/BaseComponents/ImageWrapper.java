@@ -25,6 +25,12 @@ public class ImageWrapper implements StaticComponent {
         rectangle = new Rectangle(new Coordinate<>(0,0) , image.getWidth() , image.getHeight());
     }
 
+    public ImageWrapper(ImageWrapper image){
+        camera = Camera.get();
+        this.rectangle = new Rectangle(image.rectangle);
+        this.image = image.image;
+    }
+
     public void draw(Graphics2D graphics2D ,Rectangle box , int offsetX , int offsetY , boolean direction){
         if (direction) { // right
             graphics2D.drawImage(image , box.getMinX() + camera.getCurrentHorizontalOffset() + offsetX, box.getMinY()+offsetY + Camera.get().getCurrentVerticalOffset(), (int) (box.getWidth()* MAP_SCALE *0.75), (int) (box.getHeight()* MAP_SCALE *0.75), null);

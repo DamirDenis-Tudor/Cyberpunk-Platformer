@@ -35,6 +35,10 @@ public abstract class Scene implements Notifiable {
         }
     }
 
+    public SceneHandler getSceneHandler() {
+        return sceneHandler;
+    }
+
     /**
      * @param component to be added
      */
@@ -55,6 +59,22 @@ public abstract class Scene implements Notifiable {
      */
     public boolean stillExists(DynamicComponent component) {
         return components.contains(component);
+    }
+
+    public boolean stillExistsWithId(int id){
+        try {
+            for (StaticComponent component : components) {
+                if (!(component instanceof DynamicComponent dynamicComponent)) {
+                    throw new ClassCastException("Component " + component.getClass() + " cannot be casted to DynamicComponent.");
+                }
+                if (id == dynamicComponent.getId()) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Error searching for dynamic component : " + e.getMessage(), e);
+        }
     }
 
     /**
