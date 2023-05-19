@@ -89,7 +89,8 @@ public class Game implements Runnable {
                 }
             }
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            System.out.println(exception.getMessage() + " " );
             System.exit(-1);
         }
     }

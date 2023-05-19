@@ -4,6 +4,7 @@ import Components.BaseComponents.AnimationHandler;
 import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.AnimationType;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -140,7 +141,7 @@ public class Bullet extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         // restore the image

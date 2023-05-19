@@ -2,6 +2,7 @@ package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -80,7 +81,7 @@ public class Chest extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         // chest animation

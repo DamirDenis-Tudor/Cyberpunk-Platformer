@@ -2,6 +2,7 @@ package Scenes.InGame;
 
 import Components.BaseComponents.Animation;
 import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Inventory;
 import Components.MenuComponents.Text;
@@ -19,10 +20,17 @@ import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
+
 import static Enums.ComponentType.*;
 
 final public class LevelPauseScene extends Scene {
+    private Animation playerPreview;
+    private ImageWrapper selectedGun;
 
+    private ComponentType selectedPlayer;
     public LevelPauseScene(SceneHandler sceneHandler) throws Exception {
         super(sceneHandler);
         components.add(AssetsDeposit.get().getMenuWallpaper());
@@ -37,34 +45,27 @@ final public class LevelPauseScene extends Scene {
 
     @Override
     public void notify(Message message) {
-        ComponentType currentPlayer;
         switch (message.type()) {
             case BIKER_SELECTED -> {
-                currentPlayer = BIKER;
+                selectedPlayer = BIKER;
                 ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
-                Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdle));
-                animation.setPosition(new Coordinate<>(1400, 300));
-                animation.setAnimationScale(5);
-                if(components.size()-1 == 5) components.remove(components.size()-1);
-                components.add(animation);
+                playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdle));
+                playerPreview.setPosition(new Coordinate<>(1400, 300));
+                playerPreview.setAnimationScale(5);
             }
             case PUNK_SELECTED -> {
-                currentPlayer = PUNK;
+                selectedPlayer = PUNK;
                 ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
-                Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdle));
-                animation.setPosition(new Coordinate<>(1400, 300));
-                animation.setAnimationScale(5);
-                if(components.size()-1 == 5) components.remove(components.size()-1);
-                components.add(animation);
+                playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdle));
+                playerPreview.setPosition(new Coordinate<>(1400, 300));
+                playerPreview.setAnimationScale(5);
             }
             case CYBORG_SELECTED -> {
-                currentPlayer = CYBORG;
+                selectedPlayer = CYBORG;
                 ((Notifiable)components.get(1)).notify(new Message(MessageType.CLEAR_INVENTORY , SCENE , -1));
-                Animation animation = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdle));
-                animation.setPosition(new Coordinate<>(1400, 300));
-                animation.setAnimationScale(5);
-                if(components.size()-1 == 5) components.remove(components.size()-1);
-                components.add(animation);
+                playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdle));
+                playerPreview.setPosition(new Coordinate<>(1400, 300));
+                playerPreview.setAnimationScale(5);
             }
             case SCENE_HAS_BEEN_ACTIVATED -> {
                 Camera.get().disableCameraOffset();
@@ -80,9 +81,33 @@ final public class LevelPauseScene extends Scene {
             case IS_PICKED_UP -> {
                 ((Notifiable) components.get(1)).notify(message);
             }
-            case WEAPON_IS_SELECTED -> {
-                sceneHandler.notify(message);
+            case WEAPON_IS_SELECTED-> {
+                sceneHandler.notify(new Message(message.type() , INVENTORY , message.componentId()));
+                selectedGun = new ImageWrapper(AssetsDeposit.get().getGun(message.source()).getImageWrapper());
+                selectedGun.getRectangle().setPosition(new Coordinate<>(1350,440));
+                selectedGun.setScale(4);
+                switch (selectedPlayer){
+                    case BIKER -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdleGun));
+                    case CYBORG -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdleGun));
+                    case PUNK -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdleGun));
+                }
+                playerPreview.setPosition(new Coordinate<>(1400, 300));
+                playerPreview.setAnimationScale(5);
             }
+            case DISABLE_GUN -> sceneHandler.notify(message);
         }
+    }
+
+    @Override
+    public void update() throws Exception {
+        super.update();
+        Objects.requireNonNull(playerPreview).update();
+    }
+
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        super.draw(graphics2D);
+        if (playerPreview!=null)playerPreview.draw(graphics2D);
+        if (selectedGun!=null)selectedGun.draw(graphics2D,selectedGun.getRectangle(),0,0,false);
     }
 }

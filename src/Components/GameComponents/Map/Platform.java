@@ -2,6 +2,7 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -21,7 +22,6 @@ import static Utils.Constants.PLATFORM_VELOCITY;
 public class Platform extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
     protected final Map<ComponentStatus, Boolean> statuses;
-
     private AnimationType animationType;
 
     public Platform(Scene scene, Coordinate<Integer> position , AnimationType animationType) {
@@ -112,7 +112,8 @@ public class Platform extends DynamicComponent {
         return ComponentType.PLATFORM;
     }
 
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    @Override
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         // restore animation handler

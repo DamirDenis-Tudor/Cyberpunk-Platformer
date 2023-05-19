@@ -23,7 +23,7 @@ final public class MainMenuScene extends Scene {
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
-        components.add(new Text("v.1.3", new Coordinate<>(100, 50), 50));
+        components.add(new Text("v.1.4", new Coordinate<>(100, 50), 50));
         components.add(new Text("CI CD", new Coordinate<>(1250, 450), 150));
         components.add(new Text("2060", new Coordinate<>(1250, 650), 200));
         components.add(new Button(this, ComponentType.NEW_GAME_BUTTON, "START",

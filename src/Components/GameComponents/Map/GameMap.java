@@ -2,9 +2,11 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AssetsDeposit;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Database.Database;
 import Enums.ComponentType;
 import Enums.MessageType;
+import Scenes.InGame.PlayScene;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Utils.Coordinate;
@@ -301,7 +303,7 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
         this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
         this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
@@ -336,7 +338,7 @@ public class GameMap extends DynamicComponent {
                                 /*
                         the explanation is quite funny
                      */
-            for (DynamicComponent platform : scene.getAllComponentsWithName(ComponentType.PLATFORM)) {
+            for (DynamicComponent platform : ((PlayScene)scene).getAllComponentsWithName(ComponentType.PLATFORM)) {
                 if (rectangle1.intersects(platform.getCollideBox())) {
                     if (rectangle1.getDy() < 0) {
                         component.notify(new Message(MessageType.ACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));

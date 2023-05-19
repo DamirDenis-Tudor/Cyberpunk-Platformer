@@ -1,5 +1,6 @@
 package Components.MenuComponents;
 
+import Components.Notifiable;
 import Components.StaticComponent;
 import Database.Database;
 import Enums.ColorType;
@@ -12,11 +13,16 @@ import Utils.Rectangle;
 import java.awt.*;
 
 public class BoxItem implements StaticComponent {
+    private static int boxCounter = 0;
+    private int boxId ;
+    private final Notifiable inventory;
     private final Rectangle collideBox;
-
     private boolean previousClicked = false;
+    private boolean isSelected = false;
     private ColorType backgroundColor = ColorType.DEFAULT_BACKGROUND;
-    public BoxItem(Rectangle collideBox){
+    public BoxItem(Notifiable inventory , Rectangle collideBox){
+        boxId = boxCounter++;
+        this.inventory = inventory;
         this.collideBox = collideBox;
     }
     @Override
@@ -26,6 +32,7 @@ public class BoxItem implements StaticComponent {
             if (MouseInput.get().isLeftMousePressed()) {
                 if (!previousClicked) {
                     previousClicked = true;
+                    inventory.notify(new Message(MessageType.BUTTON_CLICKED, ComponentType.BOX_INFO, boxId));
                 }
             } else {
                 previousClicked = false;
@@ -43,5 +50,9 @@ public class BoxItem implements StaticComponent {
 
     public Rectangle getRectangle(){
         return collideBox;
+    }
+
+    public void setColor(ColorType colorType) {
+        backgroundColor = colorType;
     }
 }

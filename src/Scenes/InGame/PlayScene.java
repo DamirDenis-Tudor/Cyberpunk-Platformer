@@ -48,7 +48,7 @@ final public class PlayScene extends Scene {
     private final List<StaticComponent> toBeAdded = new ArrayList<>();
     private ComponentType currentPlayer;
     private ComponentType currentMap;
-    private final Random rand = new Random(2);
+    private final Random rand = new Random(10);
 
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
@@ -133,7 +133,6 @@ final public class PlayScene extends Scene {
             Database database = Database.get();
             database.createSavesTable();
             database.createSaveTable();
-
             for (StaticComponent component : components) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 ObjectOutputStream objectOut = new ObjectOutputStream(bytes);
@@ -167,23 +166,23 @@ final public class PlayScene extends Scene {
                 switch (serializedObject.type()) {
                     case MAP -> {
                         DynamicComponent component = (GameMap) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case PLAYER -> {
                         DynamicComponent component = (Player) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case GROUND_ENEMY -> {
                         DynamicComponent component = (GroundEnemy) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case BULLET -> {
                         DynamicComponent component = (Bullet) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case GUN -> {
                         DynamicComponent component = (Gun) objectStream.readObject();
@@ -192,23 +191,23 @@ final public class PlayScene extends Scene {
                     }
                     case CHEST -> {
                         DynamicComponent component = (Chest) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case HELICOPTER -> {
                         DynamicComponent component = (Helicopter) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case PLATFORM -> {
                         DynamicComponent component = (Platform) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                     case AIR_ENEMY -> {
                         DynamicComponent component = (AirEnemy) objectStream.readObject();
-                        component.addMissingPartsAfterDeserialization(this);
                         components.add(component);
+                        component.addMissingPartsAfterDeserialization(this);
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -290,6 +289,9 @@ final public class PlayScene extends Scene {
                             component.notify(new Message(message.type(), PLAYER, message.componentId()));
                         }
                     }
+                    case BIKER_SELECTED,PUNK_SELECTED,CYBORG_SELECTED ->{
+                        sceneHandler.notify(new Message(message.type() , SCENE , message.componentId()));
+                    }
                 }
             }
             case GROUND_ENEMY -> {
@@ -358,8 +360,13 @@ final public class PlayScene extends Scene {
 
                         findComponentWithName(PLAYER).notify(new Message(MessageType.GUN_NEEDS_RECALIBRATION, SCENE, -1));
                     }
-                    case WEAPON_IS_SELECTED -> findComponentWithId(message.componentId()).
-                            notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
+                    case WEAPON_IS_SELECTED -> findComponentWithId(message.componentId()).notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
+                }
+            }
+            case INVENTORY -> {
+                switch (message.type()){
+                    case WEAPON_IS_SELECTED -> findComponentWithId(message.componentId()).notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
+                    case DISABLE_GUN -> findComponentWithId(message.componentId()).notify(new Message(MessageType.DISABLE_GUN , SCENE , -1));
                 }
             }
             case BULLET -> {
@@ -426,6 +433,96 @@ final public class PlayScene extends Scene {
                 findComponentWithName(MAP).interactionWith(component);
                 component.interactionWith(findComponentWithName(PLAYER));
             }
+        }
+    }
+    /**
+     * @param component to be checked
+     * @return return the existence status
+     */
+    public boolean stillExists(DynamicComponent component) {
+        return components.contains(component);
+    }
+
+    public boolean stillExistsWithId(int id){
+        try {
+            for (StaticComponent component : components) {
+                if (!(component instanceof DynamicComponent dynamicComponent)) {
+                    throw new ClassCastException("Component " + component.getClass() + " cannot be casted to DynamicComponent.");
+                }
+                if (id == dynamicComponent.getId()) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Error searching for dynamic component : " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * this method search for a specific component
+     *
+     * @param name to be found
+     * @return founded component
+     */
+    public DynamicComponent findComponentWithName(ComponentType name) {
+        try {
+            for (StaticComponent component : components) {
+                if (!(component instanceof DynamicComponent dynamicComponent)) {
+                    throw new ClassCastException("Component " + component.getClass() + " cannot be casted to DynamicComponent.");
+                }
+                if (name == dynamicComponent.getGeneralType()) {
+                    return dynamicComponent;
+                }
+            }
+            throw new ClassNotFoundException("Dynamic component not found");
+        } catch (ClassCastException | ClassNotFoundException e) {
+            throw new RuntimeException("Error searching for dynamic component " + name.name() + " : " + e.getMessage(), e);
+        }
+    }
+
+
+    /**
+     * @param id specific identifier of the component
+     * @return null or founded component
+     */
+    public DynamicComponent findComponentWithId(int id) {
+        try {
+            for (StaticComponent component : components) {
+                if (!(component instanceof DynamicComponent dynamicComponent)) {
+                    throw new ClassCastException("Component " + component.getClass()+ " cannot be casted to DynamicComponent.");
+                }
+                if (id == dynamicComponent.getId()) {
+                    return dynamicComponent;
+                }
+            }
+            throw new ClassNotFoundException("Dynamic component not found");
+        } catch (ClassCastException | ClassNotFoundException e) {
+            System.out.println("Error searching for dynamic component " + id + " : " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * this method selects all the components with the given name
+     *
+     * @param name given name
+     * @return list of components
+     */
+    public List<DynamicComponent> getAllComponentsWithName(ComponentType name) {
+        try {
+            List<DynamicComponent> searchedComponents = new ArrayList<>();
+            for (StaticComponent component : components) {
+                if (!(component instanceof DynamicComponent dynamicComponent)) {
+                    throw new ClassCastException("Component "+component.getClass()+ " cannot be casted to DynamicComponent.");
+                }
+                if (name == dynamicComponent.getGeneralType()) {
+                    searchedComponents.add(dynamicComponent);
+                }
+            }
+            return searchedComponents;
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Error searching for dynamic component: " + e.getMessage(), e);
         }
     }
 }

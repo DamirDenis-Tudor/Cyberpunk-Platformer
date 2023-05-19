@@ -4,9 +4,11 @@ import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
 import Components.MenuComponents.Text;
+import Components.Notifiable;
 import Enums.*;
 import Input.KeyboardInput;
 import Input.MouseInput;
+import Scenes.InGame.PlayScene;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
@@ -39,9 +41,7 @@ public class Player extends DynamicComponent {
     private final List<AnimationType> attackCombo;
     private int attackComboIndex = 0;
     private boolean direction = false;
-
-    private int currentEnemyId ;
-
+    private Integer currentEnemyId ;
     public Player(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
@@ -135,7 +135,7 @@ public class Player extends DynamicComponent {
                     scene.notify(new Message(MessageType.HIDE_GUN , PLAYER , getId()));
                 } else if (statuses.get(ComponentStatus.HAS_GUN)) {
                     if(!collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.HAS_ENEMY_COLLISION) &&
-                            (currentEnemyId == component.getId() || !scene.stillExistsWithId(currentEnemyId)))  {
+                            (currentEnemyId == component.getId() || !((PlayScene)scene).stillExistsWithId(currentEnemyId)))  {
                         statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
                         statuses.put(ComponentStatus.GUN_PICKED, true);
                         scene.notify(new Message(MessageType.SHOW_GUN , PLAYER , getId()));
@@ -149,14 +149,13 @@ public class Player extends DynamicComponent {
             }
             case GUN -> {
                 if (collideBox.intersects(component.getCollideBox()) && statuses.get(ComponentStatus.TRYING_TO_OPEN_OR_PICK_SOMETHING)) {
-                    //component.notify(new Message(MessageType.IS_PICKED_UP, ComponentType.PLAYER, getId()));
                     if (animationHandler.getAnimation().getDirection()) {
                         component.notify(new Message(MessageType.PLAYER_DIRECTION_RIGHT, ComponentType.PLAYER, getId()));
                     } else {
                         component.notify(new Message(MessageType.PLAYER_DIRECTION_LEFT, ComponentType.PLAYER, getId()));
                     }
                     component.interactionWith(this);
-                    //component.notify(new Message(MessageType.DISABLE_GUN , PLAYER , getId()));
+                    component.notify(new Message(MessageType.DISABLE_GUN , PLAYER , getId()));
                     statuses.put(ComponentStatus.HAS_GUN, true);
                     statuses.put(ComponentStatus.GUN_PICKED, true);
                 }
@@ -379,7 +378,7 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         timersHandler = TimersHandler.get();
@@ -403,6 +402,6 @@ public class Player extends DynamicComponent {
             case CYBORG -> messageType = MessageType.CYBORG_SELECTED;
             case PUNK -> messageType = MessageType.PUNK_SELECTED;
         }
-        scene.getSceneHandler().notify(new Message(messageType, ComponentType.SCENE, -1));
+        scene.notify(new Message(messageType, PLAYER, -1));
     }
 }

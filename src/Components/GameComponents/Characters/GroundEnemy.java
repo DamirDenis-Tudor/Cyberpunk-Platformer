@@ -3,6 +3,7 @@ package Components.GameComponents.Characters;
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
@@ -268,7 +269,7 @@ public class GroundEnemy extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         timersHandler = TimersHandler.get();

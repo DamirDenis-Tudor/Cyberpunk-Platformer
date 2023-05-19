@@ -2,6 +2,7 @@ package Components.GameComponents.Map;
 
 import Components.BaseComponents.AnimationHandler;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.AnimationType;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
@@ -108,7 +109,7 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Helicopter, collideBox.getPosition());

@@ -4,6 +4,7 @@ import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
+import Components.Notifiable;
 import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -149,7 +150,7 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public void addMissingPartsAfterDeserialization(Scene scene) {
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         // restore the image
@@ -161,7 +162,10 @@ public class Gun extends DynamicComponent {
             statuses.put(ComponentStatus.NEEDS_RECALIBRATION, true);
         }
 
+        statuses.put(ComponentStatus.GUN_ENABLED, false);
+        statuses.put(ComponentStatus.HIDE, true);
         if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
+            System.out.println("PICKED UP UP AFTER DESERIALIZATION");
             scene.notify(new Message(MessageType.IS_PICKED_UP, subType, getId()));
         }
     }

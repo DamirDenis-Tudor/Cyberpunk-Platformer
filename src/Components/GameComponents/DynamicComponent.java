@@ -23,7 +23,8 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
     private int id=0;
     private boolean active = true;
 
-    transient protected Scene scene = null;
+    transient protected Notifiable scene = null;
+
     protected Rectangle collideBox;
     protected ComponentType subtype;
     public DynamicComponent(){
@@ -50,7 +51,6 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
     public static void setIdCounter(int idCounter) {
         DynamicComponent.idCounter = idCounter;
     }
-
     public Rectangle getCollideBox() {
         return collideBox;
     }
@@ -67,7 +67,7 @@ public abstract class DynamicComponent implements StaticComponent, Interactive ,
 
         active = collideBox.intersects(window);
     }
-    public void addMissingPartsAfterDeserialization(Scene scene){
+    public void addMissingPartsAfterDeserialization(Notifiable scene){
         this.scene = scene;
 
         // restore the exact counter id as that from the saved state
