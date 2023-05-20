@@ -13,7 +13,6 @@ import java.awt.event.MouseMotionListener;
 public class MouseInput implements MouseListener, MouseMotionListener {
     private static MouseInput instance;
     private final Coordinate<Integer> position;
-
     private boolean isLeftMousePreviousPressed;
     private boolean isRightMousePreviousPressed;
     private boolean isLeftMousePressed;

@@ -3,7 +3,7 @@ package Components.BaseComponents;
 import Components.StaticComponent;
 import Enums.AnimationType;
 import Timing.Timer;
-import Timing.TimersHandler;
+import Timing.TimerHandler;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -24,7 +24,7 @@ import static Utils.Constants.MAP_SCALE;
 public class Animation implements StaticComponent {
     private static int idCounter = 1000; // at each frame this counter increments
     private String timerId; // changing image timer
-    private final TimersHandler timersHandler = TimersHandler.get();
+    private final TimerHandler timerHandler = TimerHandler.get();
     private GameWindow gameWindow = GameWindow.get();
     private List<BufferedImage> images;
     private int width;
@@ -75,8 +75,8 @@ public class Animation implements StaticComponent {
         idCounter++;
 
         timerId = "animation" + idCounter;
-        timersHandler.addTimer(new Timer(0.05F),timerId);
-        timersHandler.getTimer(timerId).resetTimer();
+        timerHandler.addTimer(new Timer(0.05F),timerId);
+        timerHandler.getTimer(timerId).resetTimer();
 
         // images will be shared
         this.images = animation.images;
@@ -95,8 +95,8 @@ public class Animation implements StaticComponent {
 
     @Override
     public void update(){
-        if (!timersHandler.getTimer(timerId).getTimerState() && (!lock || currentCount != repeats)) {
-            timersHandler.getTimer(timerId).resetTimer();
+        if (!timerHandler.getTimer(timerId).getTimerState() && (!lock || currentCount != repeats)) {
+            timerHandler.getTimer(timerId).resetTimer();
             if (activeImageIndex < images.size() - 1) {
                 activeImageIndex++;
             } else {

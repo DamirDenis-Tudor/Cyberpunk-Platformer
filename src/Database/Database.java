@@ -20,12 +20,24 @@ import java.util.Objects;
  * Normally, this class should implement an interface of CRUD instructions.
  */
 public class Database {
-    private static Database instance = null;
-    private Connection connection = null;
+    /**Shared instance.*/
+    private static Database instance ;
+
+    /**Connection to a database.*/
+    private Connection connection ;
+
+    /**Name of the oldest save.*/
     private String oldestSave = "";
-    private int currentNumberOfDisplayedSaves = 0;
+
+    /**Name of the load save.*/
     private String saveToBeLoaded = "";
 
+    /**Number of displayed saves.*/
+    private int currentNumberOfDisplayedSaves = 0;
+
+    /**
+     * This constructor initializes the database.
+     */
     private Database() {
         try {
 
@@ -39,6 +51,10 @@ public class Database {
         System.out.println("Opened database successfully");
     }
 
+    /**
+     * Getter for shared instance.
+     * @return shared instance
+     */
     public static Database get() {
         if (instance == null) {
             instance = new Database();
@@ -46,6 +62,9 @@ public class Database {
         return instance;
     }
 
+    /**
+     * This method creates, if not exists, a table for storing saves.
+     */
     public void createSavesTable() {
         try {
             Statement statement = connection.createStatement();
@@ -60,6 +79,9 @@ public class Database {
         }
     }
 
+    /**
+     * Create a save, and then it dynamically registers into table of saves.
+     */
     public void createSaveTable() {
         try {
             oldestSave = "SAVE_" + RandomIdGenerator.generate();
@@ -86,6 +108,7 @@ public class Database {
         }
     }
 
+    /**Insert information into a current created save.*/
     public void insertDataIntoSave(ComponentType componentType, byte[] data) {
         try {
             int maxNumberOfDisplayedSaves = 7;
@@ -105,6 +128,9 @@ public class Database {
         }
     }
 
+    /**
+     * @return all the fields of the current selected save.
+     */
     public List<String> getAllSavesInfo() {
         List<String> saves = new ArrayList<>();
         try {
@@ -126,6 +152,9 @@ public class Database {
         return saves;
     }
 
+    /**
+     * @return serialized fields of current selected save.
+     */
     public List<SerializedObject> getSerializedObjects() {
         List<SerializedObject> objects = new ArrayList<>();
         try {

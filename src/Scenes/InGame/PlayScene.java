@@ -30,7 +30,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import static Enums.ComponentType.*;
@@ -38,25 +37,33 @@ import static Enums.ComponentType.*;
 // TODO : Narrator(DynamicComponent) -> for tutorial
 
 /**
- * This class encapsulates the relation between in game components like player, enemies,
- * bullets, guns, chests, platforms, etc. It can also be notified about changes in other scenes.
+ * This class encapsulates the relation between in game components like player, enemies, bullets, platforms, etc.
+ * @see Scene
  */
 final public class PlayScene extends Scene {
 
+    /**List that stores components ids that will be deleted next frame.*/
     private final List<Integer> toBeDeleted = new ArrayList<>();
 
+    /**List that stores components that will be added next frame.*/
     private final List<StaticComponent> toBeAdded = new ArrayList<>();
-    private ComponentType currentPlayer;
-    private ComponentType currentMap;
-    private final Random rand = new Random(10);
 
+    /**Variables that store the current map and player type.*/
+    private ComponentType currentPlayer, currentMap;
+
+    /**Random generator*/
+    private final Random rand = new Random(100);
+
+    /**
+     * This constructor initializes the scene.
+     * @param sceneHandler reference to its handler.
+     */
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
     }
 
     /**
-     * This method deletes all the previous components if exists
-     * and then loads a new instance of the game.
+     * This method deletes all the previous components if exists and then loads a new instance of the game.
      */
     private void newGame() {
         if (!components.isEmpty()) {
@@ -223,12 +230,12 @@ final public class PlayScene extends Scene {
         if (KeyboardInput.get().isEsc()) {
             sceneHandler.handleSceneChangeRequest(SceneType.LEVEL_PAUSED_SCENE);
         }
+        components.addAll(toBeAdded);
+        toBeAdded.clear();
         for (Integer id : toBeDeleted){
             removeComponent(findComponentWithId(id));
         }
         toBeDeleted.clear();
-        components.addAll(toBeAdded);
-        toBeAdded.clear();
     }
 
     @Override
@@ -291,6 +298,11 @@ final public class PlayScene extends Scene {
                     }
                     case BIKER_SELECTED,PUNK_SELECTED,CYBORG_SELECTED ->{
                         sceneHandler.notify(new Message(message.type() , SCENE , message.componentId()));
+                    }
+                    case WEAPON_IS_SELECTED -> sceneHandler.notify(message);
+                    case WEAPON_IS_DROPPED -> {
+                        findComponentWithId(message.componentId()).notify(new Message(MessageType.WEAPON_IS_DROPPED, SCENE , -1));
+                        sceneHandler.notify(new Message(MessageType.WEAPON_IS_DROPPED, SCENE , message.componentId()));
                     }
                 }
             }
@@ -365,12 +377,17 @@ final public class PlayScene extends Scene {
             }
             case INVENTORY -> {
                 switch (message.type()){
-                    case WEAPON_IS_SELECTED -> findComponentWithId(message.componentId()).notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
+                    case WEAPON_IS_SELECTED -> {
+                        findComponentWithId(message.componentId()).notify(new Message(MessageType.ENABLE_GUN , SCENE , -1));
+                        findComponentWithName(PLAYER).notify(new Message(message.type() , SCENE , message.componentId()));
+                    }
                     case DISABLE_GUN -> findComponentWithId(message.componentId()).notify(new Message(MessageType.DISABLE_GUN , SCENE , -1));
+                    case WEAPON_IS_DROPPED -> findComponentWithId(message.componentId()).notify(new Message(MessageType.WEAPON_IS_DROPPED, SCENE , -1));
+                    case HAS_NO_WEAPON -> findComponentWithName(PLAYER).notify(message);
                 }
             }
             case BULLET -> {
-                if (Objects.requireNonNull(message.type()) == MessageType.HANDLE_COLLISION) {
+                if (message.type() == MessageType.HANDLE_COLLISION) {
                     DynamicComponent bullet = findComponentWithId(message.componentId());
                     findComponentWithName(MAP).interactionWith(bullet);
                     if (stillExists(bullet) && bullet.getCurrentType() != findComponentWithName(PLAYER).getGeneralType()) {
@@ -391,7 +408,10 @@ final public class PlayScene extends Scene {
             case PLATFORM -> {
                 if (message.type() == MessageType.HANDLE_COLLISION) {
                     DynamicComponent component = findComponentWithId(message.componentId());
+
+                    // interaction with a map
                     findComponentWithName(MAP).interactionWith(component);
+
                     // interaction with other enemies
                     for (DynamicComponent otherComponent : getAllComponentsWithName(PLATFORM)) {
                         if (component != otherComponent) {
@@ -436,6 +456,7 @@ final public class PlayScene extends Scene {
         }
     }
     /**
+     * This method if a component exists.
      * @param component to be checked
      * @return return the existence status
      */
@@ -443,6 +464,11 @@ final public class PlayScene extends Scene {
         return components.contains(component);
     }
 
+    /**
+     * This method verifies if a component with a given id still exists.
+     * @param id identifier of a component
+     * @return status
+     */
     public boolean stillExistsWithId(int id){
         try {
             for (StaticComponent component : components) {
@@ -460,8 +486,7 @@ final public class PlayScene extends Scene {
     }
 
     /**
-     * this method search for a specific component
-     *
+     * This method search for a specific component that matches a given name.
      * @param name to be found
      * @return founded component
      */
@@ -483,6 +508,7 @@ final public class PlayScene extends Scene {
 
 
     /**
+     * This method search for a component with a given id.
      * @param id specific identifier of the component
      * @return null or founded component
      */
@@ -498,14 +524,12 @@ final public class PlayScene extends Scene {
             }
             throw new ClassNotFoundException("Dynamic component not found");
         } catch (ClassCastException | ClassNotFoundException e) {
-            System.out.println("Error searching for dynamic component " + id + " : " + e.getMessage());
+            throw new RuntimeException("Error searching for dynamic component: " + e.getMessage(), e);
         }
-        return null;
     }
 
     /**
-     * this method selects all the components with the given name
-     *
+     * This method selects all the components with the given name
      * @param name given name
      * @return list of components
      */

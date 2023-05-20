@@ -16,16 +16,19 @@ import Utils.Rectangle;
 import Window.Camera;
 
 
+/**
+ * This class encapsulates the first scene of the menu.
+ */
 final public class MainMenuScene extends Scene {
 
-    public MainMenuScene(SceneHandler sceneHandler) throws Exception {
+    public MainMenuScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
         components.add(new Text("v.1.4", new Coordinate<>(100, 50), 50));
-        components.add(new Text("CI CD", new Coordinate<>(1250, 450), 150));
-        components.add(new Text("2060", new Coordinate<>(1250, 650), 200));
+        components.add(new Text("CYBERPUNK", new Coordinate<>(1250, 450), 150));
+        components.add(new Text("2030", new Coordinate<>(1250, 650), 200));
         components.add(new Button(this, ComponentType.NEW_GAME_BUTTON, "START",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
         components.add(new Button(this, ComponentType.LOAD_BUTTON, "LOAD",
@@ -45,7 +48,6 @@ final public class MainMenuScene extends Scene {
                 switch (message.source()) {
                     case NEW_GAME_BUTTON -> sceneHandler.handleSceneChangeRequest(SceneType.CHOOSE_LEVEL_SCENE);
                     case LOAD_BUTTON -> sceneHandler.handleSceneChangeRequest(SceneType.LOAD_SCENE);
-                    case SETTINGS_BUTTON -> sceneHandler.handleSceneChangeRequest(SceneType.SETTINGS_SCENE);
                     case EXIT_BUTTON -> sceneHandler.handleSceneChangeRequest(SceneType.NO_SCENE);
                 }
             }

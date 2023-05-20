@@ -8,7 +8,7 @@ import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
-import Timing.TimersHandler;
+import Timing.TimerHandler;
 import Utils.Coordinate;
 
 import java.awt.*;
@@ -20,7 +20,7 @@ import static Utils.Constants.*;
 
 public class AirEnemy extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
-    transient protected TimersHandler timersHandler;
+    transient protected TimerHandler timerHandler;
     protected Map<ComponentStatus, Boolean> statuses;
     protected final Map<GeneralAnimationTypes, AnimationType> animationsType;
     protected int health = 100;
@@ -41,8 +41,8 @@ public class AirEnemy extends DynamicComponent {
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
 
-        timersHandler = TimersHandler.get();
-        timersHandler.addTimer(new Timer(0.2f), type.name() + getId());
+        timerHandler = TimerHandler.get();
+        timerHandler.addTimer(new Timer(0.2f), type.name() + getId());
 
         if (type != ComponentType.AIRPLANE) return;
         animationHandler.getAnimation().lockAtFistFrame();
@@ -55,12 +55,12 @@ public class AirEnemy extends DynamicComponent {
             case PLAYER -> {
                 switch (subtype) {
                     case AIRPLANE -> {
-                        if (!timersHandler.getTimer(subtype.name() + getId()).getTimerState() &&
+                        if (!timerHandler.getTimer(subtype.name() + getId()).getTimerState() &&
                                 component.getCollideBox().getCenterX() > collideBox.getMinX() &&
                                 component.getCollideBox().getCenterX() < collideBox.getMaxX() &&
                                 component.getCollideBox().getMinY() > collideBox.getMaxY() &&
                                 component.getCollideBox().getMaxY() - collideBox.getMaxY() < AIRPLANE_DROP_BOMB_RANGE) {
-                            timersHandler.getTimer(subtype.name() + getId()).resetTimer();
+                            timerHandler.getTimer(subtype.name() + getId()).resetTimer();
                             statuses.put(ComponentStatus.ATTACK, true);
                             animationHandler.getAnimation().unlock();
                             if (animationHandler.getAnimation().getDirection()) {
@@ -73,8 +73,8 @@ public class AirEnemy extends DynamicComponent {
                         }
                     }
                     case DRONE_ENEMY -> {
-                        if (!timersHandler.getTimer(subtype.name() + getId()).getTimerState()) {
-                            timersHandler.getTimer(subtype.name() + getId()).resetTimer();
+                        if (!timerHandler.getTimer(subtype.name() + getId()).getTimerState()) {
+                            timerHandler.getTimer(subtype.name() + getId()).resetTimer();
                             if (component.getCollideBox().getCenterX() > collideBox.getMinX() - 50 &&
                                     component.getCollideBox().getCenterX() < collideBox.getMaxX() + 50 &&
                                     component.getCollideBox().getMinY() > collideBox.getMaxY()) {
@@ -246,10 +246,10 @@ public class AirEnemy extends DynamicComponent {
     @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
-        timersHandler = TimersHandler.get();
+        timerHandler = TimerHandler.get();
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
-        timersHandler.addTimer(new Timer(0.2f), subtype.name() + getId());
+        timerHandler.addTimer(new Timer(0.2f), subtype.name() + getId());
         if (subtype == ComponentType.AIRPLANE) {
             if (statuses.get(ComponentStatus.LEFT_COLLISION)) {
                 animationHandler.getAnimation().setDirection(true);

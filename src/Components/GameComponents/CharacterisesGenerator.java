@@ -5,15 +5,13 @@ import Enums.ComponentStatus;
 import Enums.ComponentType;
 import Enums.GeneralAnimationTypes;
 import Timing.Timer;
-import Timing.TimersHandler;
+import Timing.TimerHandler;
 import Utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static Enums.ComponentType.DRONE;
 
 /**
  * This class loads predefined characteristics of a component.
@@ -130,7 +128,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.DEATH, AnimationType.Enemy3Death);
             }
             case GUNNER_ENEMY -> {
-                TimersHandler.get().addTimer(new Timer(0.5f) , type.name()+id);
+                TimerHandler.get().addTimer(new Timer(0.5f) , type.name()+id);
                 animationsType.put(GeneralAnimationTypes.IDLE, AnimationType.Enemy2Idle);
                 animationsType.put(GeneralAnimationTypes.WALK, AnimationType.Enemy2Walk);
                 animationsType.put(GeneralAnimationTypes.ATTACK, AnimationType.Enemy2Attack);
@@ -138,7 +136,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.DEATH, AnimationType.Enemy2Death);
             }
             case MACHINE_GUN_ENEMY -> {
-                TimersHandler.get().addTimer(new Timer(0.4f) , type.name()+id);
+                TimerHandler.get().addTimer(new Timer(0.4f) , type.name()+id);
                 animationsType.put(GeneralAnimationTypes.IDLE, AnimationType.Enemy6Idle);
                 animationsType.put(GeneralAnimationTypes.WALK, AnimationType.Enemy6Walk);
                 animationsType.put(GeneralAnimationTypes.ATTACK, AnimationType.Enemy6Attack);
@@ -213,6 +211,7 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.HIDE, false);
                 statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
                 statuses.put(ComponentStatus.GUN_ENABLED , false);
+                statuses.put(ComponentStatus.DROPPED, false);
             }
         }
         return statuses;

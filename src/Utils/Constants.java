@@ -2,8 +2,13 @@ package Utils;
 
 import java.awt.*;
 
+/**
+ * This class contains a series of predefined values.
+ */
 public record Constants() {
+
     public static final int WINDOW_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+
     public static final int WINDOW_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
     public static final float MAP_SCALE = 2f;
     public static final float IMAGE_SCALE = 1.48148f;
@@ -26,8 +31,8 @@ public record Constants() {
     public static final int AIRPLANE_DROP_BOMB_RANGE =  10 * MAP_DIM;
     public static final int DRONE_MAX_RANGE =  8 * MAP_DIM;
     public static final int MAX_ITEMS_NUMBER = 5;
-
     public static final int FIRST_ITEM = 1;
+    public static final int INVALID_ID = -1;
 
 }
 

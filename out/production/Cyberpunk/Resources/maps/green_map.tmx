@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="25" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="407">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="25" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="417">
  <tileset firstgid="1" source="../tilesets/green_tileset.tsx"/>
  <tileset firstgid="193" source="../backgrounds/green_background.tsx"/>
  <tileset firstgid="203" source="../objects/greenzone_objects.tsx"/>
@@ -102,7 +102,7 @@
   <object id="376" x="905" y="582" width="4" height="81"/>
  </objectgroup>
  <objectgroup id="4" name="player">
-  <object id="245" name="Player" x="43.67" y="554.282" width="33" height="37"/>
+  <object id="245" name="Player" x="52.67" y="465.282" width="33" height="37"/>
  </objectgroup>
  <objectgroup id="14" name="airplanes">
   <object id="388" name="Airplane" x="1726" y="97" width="85" height="50"/>
@@ -121,6 +121,9 @@
   <object id="404" name="Drone" x="937" y="686" width="36" height="34"/>
   <object id="405" name="Drone" x="1948" y="537" width="36" height="34"/>
   <object id="406" name="Drone" x="1357" y="550" width="36" height="34"/>
+  <object id="414" name="Drone" x="1125" y="579" width="36" height="34"/>
+  <object id="415" name="Drone" x="1165" y="574" width="36" height="34"/>
+  <object id="416" name="Drone" x="1218" y="574" width="36" height="34"/>
  </objectgroup>
  <objectgroup id="9" name="platforms" opacity="0.97">
   <object id="256" name="Platform" x="1679.33" y="270.333" width="70" height="40"/>
@@ -197,10 +200,14 @@
   <object id="380" name="Chest" x="1984.5" y="392" width="31" height="26"/>
   <object id="381" name="Chest" x="2432.5" y="264" width="31" height="26"/>
   <object id="382" name="Chest" x="445.5" y="201" width="31" height="26"/>
-  <object id="383" name="Chest" x="103.167" y="583.333" width="31" height="26"/>
   <object id="384" name="Chest" x="1056.5" y="40" width="31" height="26"/>
   <object id="385" name="Chest" x="2019.5" y="72" width="31" height="26"/>
   <object id="386" name="Chest" x="2043.5" y="391" width="31" height="26"/>
-  <object id="401" name="Chest" x="160.5" y="581.667" width="31" height="26"/>
+  <object id="401" name="Chest" x="162.5" y="581.667" width="31" height="26"/>
+  <object id="407" name="Chest" x="123.5" y="582" width="31" height="26"/>
+  <object id="410" name="Chest" x="84.5" y="582" width="31" height="26"/>
+  <object id="411" name="Chest" x="43.5" y="582" width="31" height="26"/>
+  <object id="412" name="Chest" x="4.5" y="581" width="31" height="26"/>
+  <object id="413" name="Chest" x="201.5" y="581" width="31" height="26"/>
  </objectgroup>
 </map>

@@ -5,9 +5,7 @@ import Components.BaseComponents.AssetsDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Inventory;
-import Components.MenuComponents.Text;
 import Components.Notifiable;
-import Components.StaticComponent;
 import Enums.AnimationType;
 import Enums.ComponentType;
 import Enums.MessageType;
@@ -21,17 +19,29 @@ import Utils.Rectangle;
 import Window.Camera;
 
 import java.awt.*;
-import java.util.List;
 import java.util.Objects;
 
 import static Enums.ComponentType.*;
 
+/**
+ * This class encapsulates the pause scene.
+ */
 final public class LevelPauseScene extends Scene {
+
+    /**Animation of the current player.*/
     private Animation playerPreview;
+
+    /**Animation of the current gun.*/
     private ImageWrapper selectedGun;
 
+    /**Type of the current player.*/
     private ComponentType selectedPlayer;
-    public LevelPauseScene(SceneHandler sceneHandler) throws Exception {
+
+    /**
+     * This constructor initializes the scene.
+     * @param sceneHandler reference to its handler.
+     */
+    public LevelPauseScene(SceneHandler sceneHandler){
         super(sceneHandler);
         components.add(AssetsDeposit.get().getMenuWallpaper());
         components.add(new Inventory(this));
@@ -43,6 +53,18 @@ final public class LevelPauseScene extends Scene {
                 new Rectangle(new Coordinate<>(350, 700), 400, 150),56));
     }
 
+    @Override
+    public void update() throws Exception {
+        super.update();
+        Objects.requireNonNull(playerPreview).update();
+    }
+
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        super.draw(graphics2D);
+        if (playerPreview!=null)playerPreview.draw(graphics2D);
+        if (selectedGun!=null)selectedGun.draw(graphics2D,selectedGun.getRectangle(),0,0,false);
+    }
     @Override
     public void notify(Message message) {
         switch (message.type()) {
@@ -82,10 +104,14 @@ final public class LevelPauseScene extends Scene {
                 ((Notifiable) components.get(1)).notify(message);
             }
             case WEAPON_IS_SELECTED-> {
+                if(message.source() == PLAYER){
+                    ((Notifiable) components.get(1)).notify(message);
+                    break;
+                }
                 sceneHandler.notify(new Message(message.type() , INVENTORY , message.componentId()));
                 selectedGun = new ImageWrapper(AssetsDeposit.get().getGun(message.source()).getImageWrapper());
-                selectedGun.getRectangle().setPosition(new Coordinate<>(1350,440));
-                selectedGun.setScale(4);
+                selectedGun.getRectangle().setPosition(new Coordinate<>(1330,440));
+                selectedGun.setScale(5);
                 switch (selectedPlayer){
                     case BIKER -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdleGun));
                     case CYBORG -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdleGun));
@@ -94,20 +120,26 @@ final public class LevelPauseScene extends Scene {
                 playerPreview.setPosition(new Coordinate<>(1400, 300));
                 playerPreview.setAnimationScale(5);
             }
-            case DISABLE_GUN -> sceneHandler.notify(message);
+            case DISABLE_GUN-> sceneHandler.notify(message);
+            case HAS_NO_WEAPON->{
+                sceneHandler.notify(message);
+                selectedGun = null;
+                switch (selectedPlayer){
+                    case CYBORG -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdle));
+                    case BIKER -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdle));
+                    case PUNK -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdle));
+                }
+                playerPreview.setPosition(new Coordinate<>(1400, 300));
+                playerPreview.setAnimationScale(5);
+            }
+                case WEAPON_IS_DROPPED -> {
+                if(message.source() == SCENE){
+                    ((Notifiable) components.get(1)).notify(message);
+                }else {
+                    sceneHandler.notify(message);
+                }
+            }
+            case CLEAR_INVENTORY -> selectedGun = null;
         }
-    }
-
-    @Override
-    public void update() throws Exception {
-        super.update();
-        Objects.requireNonNull(playerPreview).update();
-    }
-
-    @Override
-    public void draw(Graphics2D graphics2D) {
-        super.draw(graphics2D);
-        if (playerPreview!=null)playerPreview.draw(graphics2D);
-        if (selectedGun!=null)selectedGun.draw(graphics2D,selectedGun.getRectangle(),0,0,false);
     }
 }

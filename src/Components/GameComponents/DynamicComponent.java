@@ -17,6 +17,10 @@ import java.io.Serializable;
  * to the associated scene, and to handle interactions with other objects in a specific manner.
  * Additionally, it provides the capability for the object to be recognized by an identifier.
  * As a result, access to the physical object is not necessary as the object can be identified solely by its identifier.
+ * @see StaticComponent
+ * @see Interactive
+ * @see Notifiable
+ * @see Serializable
  */
 public abstract class DynamicComponent implements StaticComponent, Interactive , Notifiable, Serializable {
     private static int idCounter = 0;

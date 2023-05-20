@@ -15,12 +15,24 @@ import static java.awt.Font.TRUETYPE_FONT;
 
 /**
  * This class encapsulates the text drawing behavior.
+ * @see StaticComponent
+ * @see Serializable
  */
 public class Text implements StaticComponent, Serializable {
+
+    /**This variable stores the text position*/
     private final Coordinate<Integer> position;
+
+    /**This variable stores the color of the text*/
     private ColorType textColor = ColorType.DEFAULT_TEXT;
+
+    /**This variable stores the content*/
     private String text;
+
+    /**This variable stores the size.*/
     private float size;
+
+    /**This variable stores the font.*/
     private static Font font;
 
     static {
@@ -34,6 +46,10 @@ public class Text implements StaticComponent, Serializable {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * This constructor creates a text component.
+     */
     public Text(String text, Coordinate<Integer> position , float size){
         this.text = text;
         this.position = position;

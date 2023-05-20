@@ -23,10 +23,21 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * THis class encapsulates the scene of choosing player.
+ */
 public class ChoosePlayerScene extends Scene {
+
+    /**Variable that stores the selected player.*/
     private MessageType selectedPlayer;
+
+    /**List that stores components that could be temporary.*/
     private final List<StaticComponent> changeableComponents = new ArrayList<>();
 
+    /**
+     * This constructor initializes the scene.
+     * @param sceneHandler reference to its handler.
+     */
     public ChoosePlayerScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();

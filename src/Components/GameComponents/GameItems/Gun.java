@@ -10,6 +10,8 @@ import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.Messages.Message;
 import Scenes.Scene;
+import Timing.Timer;
+import Timing.TimerHandler;
 import Utils.Coordinate;
 import Utils.Rectangle;
 
@@ -19,8 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Enums.ComponentType.SCENE;
-
 public class Gun extends DynamicComponent {
     transient private ImageWrapper imageWrapper;
     private boolean direction = true; // right - true,left - false
@@ -28,6 +28,7 @@ public class Gun extends DynamicComponent {
     private int xOffset = 10;
     private int yOffset = 0;
     private final Map<ComponentStatus, Boolean> statuses;
+    private Coordinate<Integer> initialPosition;
 
     public Gun(BufferedImage image, Rectangle collideBox) throws IOException {
         this.collideBox = collideBox;
@@ -42,6 +43,7 @@ public class Gun extends DynamicComponent {
         this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
         this.collideBox.setPosition(new Coordinate<>(position));
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GUN);
+        TimerHandler.get().addTimer(new Timer(0.3f),"GUN"+getId());
 
     }
 
@@ -86,18 +88,27 @@ public class Gun extends DynamicComponent {
             case SCENE -> {
                 switch (message.type()) {
                     case DISABLE_GUN -> {
-                        System.out.println("DISABLE GUN");
                         if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
                             statuses.put(ComponentStatus.GUN_ENABLED, false);
                             statuses.put(ComponentStatus.HIDE, true);
                         }
                     }
                     case ENABLE_GUN -> {
-                        System.out.println("ENABLE GUN");
                         if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
                             statuses.put(ComponentStatus.GUN_ENABLED, true);
                             statuses.put(ComponentStatus.HIDE, false);
                         }
+                    }
+                    case WEAPON_IS_DROPPED -> {
+                        statuses.put(ComponentStatus.IS_PICKED_UP , false);
+                        statuses.put(ComponentStatus.HIDE , false);
+                        statuses.put(ComponentStatus.GUN_ENABLED, false);
+                        statuses.put(ComponentStatus.DROPPED, true);
+                        collideBox.setPosition(new Coordinate<>(initialPosition));
+                        yOffset = 0;
+                        xOffset = 10;
+                        direction = true;
+                        TimerHandler.get().getTimer("GUN"+getId()).resetTimer();
                     }
                 }
             }
@@ -108,13 +119,14 @@ public class Gun extends DynamicComponent {
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
         if (component.getGeneralType() == ComponentType.PLAYER) {
-            if (!statuses.get(ComponentStatus.IS_PICKED_UP)) {
+            if (!statuses.get(ComponentStatus.IS_PICKED_UP) && !statuses.get(ComponentStatus.DROPPED)) {
+                initialPosition = new Coordinate<>(collideBox.getPosition());
+                collideBox.setPosition(component.getCollideBox().getPosition());
+                yOffset = component.getCollideBox().getHeight() / 2 - 8;
                 statuses.put(ComponentStatus.GUN_ENABLED , false);
                 statuses.put(ComponentStatus.HIDE , true);
                 statuses.put(ComponentStatus.IS_PICKED_UP, true);
                 scene.notify(new Message(MessageType.IS_PICKED_UP, subType, getId()));
-                collideBox.setPosition(component.getCollideBox().getPosition());
-                yOffset = component.getCollideBox().getHeight() / 2 - 8;
             }
         }
     }
@@ -122,6 +134,9 @@ public class Gun extends DynamicComponent {
     @Override
     public void update() {
         super.update();
+        if (!TimerHandler.get().getTimer("GUN"+getId()).getTimerState()){
+            statuses.put(ComponentStatus.DROPPED, false);
+        }
         if (statuses.get(ComponentStatus.NEEDS_RECALIBRATION)) {
             statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
             scene.notify(new Message(MessageType.GUN_NEEDS_RECALIBRATION, getGeneralType(), getId()));
@@ -156,16 +171,14 @@ public class Gun extends DynamicComponent {
         // restore the image
         this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
 
+        TimerHandler.get().addTimer(new Timer(0.3f),"GUN"+getId());
         // if in the previous save was in the hands of player,
         // the gun needs recalibration -> his position will be a reference of the player
-        if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
-            statuses.put(ComponentStatus.NEEDS_RECALIBRATION, true);
-        }
-
         statuses.put(ComponentStatus.GUN_ENABLED, false);
-        statuses.put(ComponentStatus.HIDE, true);
         if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
             System.out.println("PICKED UP UP AFTER DESERIALIZATION");
+            statuses.put(ComponentStatus.NEEDS_RECALIBRATION, true);
+            statuses.put(ComponentStatus.HIDE, true);
             scene.notify(new Message(MessageType.IS_PICKED_UP, subType, getId()));
         }
     }

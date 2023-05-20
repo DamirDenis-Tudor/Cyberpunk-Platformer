@@ -7,28 +7,33 @@ import java.util.Map;
  * This class implements the Singleton design pattern and
  * handles all the timers in the game by saving them into a HashMap.
  */
-public class TimersHandler {
-    private final Map<String, Timer> timers; // timers HashMap
-    private static TimersHandler instance = null; // first and last instance
+public class TimerHandler {
+    /**Shared instance.*/
+    private static TimerHandler instance = null;
+
+    /**Map of active timers.*/
+    private final Map<String, Timer> timers;
 
     /**
-     * This constructor initialize the HashMap.
+     * This constructor initializes the HashMap.
      */
-    private TimersHandler() {
+    private TimerHandler() {
         timers = new HashMap<>();
     }
 
     /**
-     * @return : shared instance of class
+     * Getter for shared instance.
+     * @return shared instance of class.
      */
-    public static TimersHandler get() {
+    public static TimerHandler get() {
         if (instance == null) {
-            instance = new TimersHandler();
+            instance = new TimerHandler();
         }
         return instance;
     }
 
     /**
+     * This method adds a timer that needs to be managed.
      * @param timer timer to be added
      * @param ID    identifier of the timer
      */
@@ -46,6 +51,7 @@ public class TimersHandler {
     }
 
     /**
+     * Getter for a specific timer.
      * @param ID timer identifier
      * @return timer
      */

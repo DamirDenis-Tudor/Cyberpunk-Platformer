@@ -21,10 +21,21 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class encapsulates the scene of choosing a level.
+ */
 final public class ChooseLevelScene extends Scene {
+
+    /**Variable that stores the selected map.*/
     private MessageType selectedMap;
+
+    /**List that stores components that could be temporary.*/
     private final List <StaticComponent> changeableComponents = new ArrayList<>();
 
+    /**
+     * This constructor initializes the scene.
+     * @param sceneHandler reference to its handler.
+     */
     public ChooseLevelScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();

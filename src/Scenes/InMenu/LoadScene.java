@@ -17,9 +17,18 @@ import Utils.Rectangle;
 
 import java.util.Objects;
 
+/**
+ * This class encapsulates the load scene.
+ */
 public class LoadScene extends Scene {
+    /**Stores the starting position of loads related components.*/
     private int savesStartingPosition = 0;
 
+
+    /**
+     * This constructor initializes the scene.
+     * @param sceneHandler reference to its handler.
+     */
     public LoadScene(SceneHandler sceneHandler) {
         super(sceneHandler);
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
@@ -37,6 +46,9 @@ public class LoadScene extends Scene {
         loadSaves();
     }
 
+    /**
+     * This method loads from a database the saves.
+     */
     private void loadSaves() {
         // delete the previous saves if exists
         if (components.size() > savesStartingPosition) {

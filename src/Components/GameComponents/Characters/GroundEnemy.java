@@ -8,10 +8,9 @@ import Enums.*;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
-import Timing.TimersHandler;
+import Timing.TimerHandler;
 import Utils.Coordinate;
 
-import javax.print.DocFlavor;
 import java.awt.*;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import static Utils.Constants.GRAVITATION_FORCE;
  */
 public class GroundEnemy extends DynamicComponent {
     transient protected AnimationHandler animationHandler;
-    transient protected TimersHandler timersHandler;
+    transient protected TimerHandler timerHandler;
     protected Map<ComponentStatus, Boolean> statuses;
     protected final Map<GeneralAnimationTypes, AnimationType> animationsType;
     protected int health = 100;
@@ -35,8 +34,8 @@ public class GroundEnemy extends DynamicComponent {
         this.scene = scene;
         animationHandler = new AnimationHandler();
 
-        timersHandler = TimersHandler.get();
-        timersHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
+        timerHandler = TimerHandler.get();
+        timerHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
 
         subtype = type;
         velocity = CharacterisesGenerator.getVelocityFor(type);
@@ -109,7 +108,7 @@ public class GroundEnemy extends DynamicComponent {
             case PLAYER -> {
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.HURT)) {
                     statuses.put(ComponentStatus.ATTACK, true);
-                    if (!timersHandler.getTimer(TimerType.LOCK_TARGET.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FIRST_HIT)) {
+                    if (!timerHandler.getTimer(TimerType.LOCK_TARGET.toString() + getId()).getTimerState() && !statuses.get(ComponentStatus.FIRST_HIT)) {
                         statuses.put(ComponentStatus.FIRST_HIT, true);
                         component.notify(new Message(MessageType.ATTACK, ComponentType.GROUND_ENEMY, getId()));
                     }
@@ -192,8 +191,8 @@ public class GroundEnemy extends DynamicComponent {
                 }
             } else if (statuses.get(ComponentStatus.ATTACK)) {
                 if (subtype == ComponentType.GUNNER_ENEMY || subtype == ComponentType.MACHINE_GUN_ENEMY) {
-                    if (!timersHandler.getTimer(subtype.toString() + getId()).getTimerState()) {
-                        timersHandler.getTimer(subtype.toString() + getId()).resetTimer();
+                    if (!timerHandler.getTimer(subtype.toString() + getId()).getTimerState()) {
+                        timerHandler.getTimer(subtype.toString() + getId()).resetTimer();
                         if (animationHandler.getAnimation().getDirection()) {
                             scene.notify(new Message(MessageType.BULLET_LAUNCH_RIGHT, ComponentType.GROUND_ENEMY, getId()));
                         } else {
@@ -272,8 +271,8 @@ public class GroundEnemy extends DynamicComponent {
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
-        timersHandler = TimersHandler.get();
-        timersHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
+        timerHandler = TimerHandler.get();
+        timerHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
 
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
@@ -286,8 +285,8 @@ public class GroundEnemy extends DynamicComponent {
         }
 
         switch (subtype){
-            case GUNNER_ENEMY -> TimersHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
-            case MACHINE_GUN_ENEMY -> TimersHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
+            case GUNNER_ENEMY -> TimerHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
+            case MACHINE_GUN_ENEMY -> TimerHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
         }
     }
 }

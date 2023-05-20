@@ -1,7 +1,7 @@
 import Components.MenuComponents.Text;
 import Enums.ColorType;
 import Timing.Timer;
-import Timing.TimersHandler;
+import Timing.TimerHandler;
 import Utils.Constants;
 import Utils.Coordinate;
 import Window.Camera;
@@ -10,59 +10,66 @@ import Input.KeyboardInput;
 import Scenes.SceneHandler;
 
 /**
- *
+ * This class is a facade that gives the possibility of
+ * starting a game without knowing the underlying structure.
+ * @Implemets Runnable
  */
 public class Game implements Runnable {
+    /** This variable stops the game*/
     private boolean runState;
 
     /**
-     *
+     *  This constructor instantiates the game
      */
     public Game() {
         runState = false;
     }
 
     /**
-     *
+     *  This method creates a thread that runs the game as its task
      */
     public synchronized void startGame() {
         if (!runState) {
             runState = true;
 
             Thread gameThread = new Thread(this);
-
             gameThread.start();
         }
     }
 
+    /**
+     * This method implements the game loop.Moreover, this method threats
+     * drawing and updating exceptions separately.
+     */
     @Override
     public void run() {
-        long oldTime = System.nanoTime();
-        long curentTime;
-
         final int framesPerSecond = 60;
         final double timeFrame = 1000000000.f / framesPerSecond;
+
+        long oldTime = System.nanoTime();
+        long currentTime;
 
         try {
             GameWindow window = GameWindow.get();
             KeyboardInput keyboardInput = KeyboardInput.get();
             Camera camera = Camera.get();
             SceneHandler sceneHandler = SceneHandler.getInstance();
-            TimersHandler timersHandler = TimersHandler.get();
+            TimerHandler timerHandler = TimerHandler.get();
 
+            // framerate text
             Text framerate = new Text(" " , new Coordinate<>(Constants.WINDOW_WIDTH - 150,50) , 56);
             framerate.setTextColor(ColorType.BLACK_COLOR);
-            timersHandler.addTimer(new Timer(0.5f) , "FRAMERATE_REFRESH");
+            timerHandler.addTimer(new Timer(0.5f) , "FRAMERATE_REFRESH");
 
             while (runState) {
-                curentTime = System.nanoTime();
+                currentTime = System.nanoTime();
 
-                if ((curentTime - oldTime) > timeFrame) {
-                    Timer.deltaTime = (curentTime-oldTime)/1000000000.f;
+                if ((currentTime - oldTime) > timeFrame) {
+                    Timer.deltaTime = (currentTime-oldTime)/1000000000.f;
 
-                    if(!timersHandler.getTimer("FRAMERATE_REFRESH").getTimerState()) {
+                    if(!timerHandler.getTimer("FRAMERATE_REFRESH").getTimerState()) {
                         framerate.setText("FPS : " + Integer.valueOf((int) (1 / Timer.deltaTime + 1)).toString());
-                        timersHandler.getTimer("FRAMERATE_REFRESH").resetTimer();
+                        timerHandler.getTimer("FRAMERATE_REFRESH").resetTimer();
                     }
 
                     keyboardInput.updateInputKey();
@@ -85,7 +92,7 @@ public class Game implements Runnable {
 
                     window.dispose();
 
-                    oldTime = curentTime;
+                    oldTime = currentTime;
                 }
             }
         } catch (Exception exception) {
@@ -94,6 +101,5 @@ public class Game implements Runnable {
             System.exit(-1);
         }
     }
-
 }
 

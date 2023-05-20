@@ -9,21 +9,17 @@ import java.awt.event.KeyListener;
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;
     private final boolean[] keyCodes;
-
     private boolean esc;
-    private boolean previousEsc;
     private boolean keyW;
     private boolean keyA;
     private boolean keyS;
     private boolean keyD;
     private boolean keyEnter;
     private boolean keyShift;
+    private boolean keyDelete;
+    private boolean previousKeyDelete;
     private boolean space;
     private boolean previousKeyW;
-    private boolean previousKeyA;
-    private boolean previousKeyS;
-    private boolean previousKeyD;
-    private boolean previousKeyE;
     private boolean previousSpace;
 
 
@@ -34,11 +30,12 @@ public class KeyboardInput implements KeyListener {
         keyS = false;
         keyD = false;
         esc = false;
-        previousEsc = false;
         keyEnter = false;
         keyShift = false;
         space = false;
         previousSpace = false;
+        keyDelete = false;
+        previousKeyDelete = false;
     }
 
     /**
@@ -53,12 +50,8 @@ public class KeyboardInput implements KeyListener {
 
     public void updateInputKey() {
         previousSpace = space;
-        previousKeyA = keyA;
         previousKeyW = keyW;
-        previousKeyS = keyS;
-        previousKeyD = keyD;
-        previousKeyE = keyEnter;
-        previousEsc = esc;
+        previousKeyDelete = keyDelete;
         keyW = keyCodes[KeyEvent.VK_W];
         keyA = keyCodes[KeyEvent.VK_A];
         keyS = keyCodes[KeyEvent.VK_S];
@@ -67,6 +60,7 @@ public class KeyboardInput implements KeyListener {
         keyShift = keyCodes[KeyEvent.VK_SHIFT];
         space = keyCodes[KeyEvent.VK_SPACE];
         esc = keyCodes[KeyEvent.VK_ESCAPE];
+        keyDelete = keyCodes[KeyEvent.VK_DELETE];
     }
 
     @Override
@@ -83,10 +77,6 @@ public class KeyboardInput implements KeyListener {
     public void keyTyped(KeyEvent e) {
 
     }
-    public boolean getKeyW() {
-        return keyW;
-    }
-
     public boolean getKeyA() {
         return keyA;
     }
@@ -107,21 +97,13 @@ public class KeyboardInput implements KeyListener {
         return keyEnter;
     }
 
+    public boolean getKeyDelete() {return keyDelete;}
+    public boolean getPreviousKeyDelete() {
+        return previousKeyDelete;
+    }
 
     public boolean getSpace() {
         return space;
-    }
-
-    public boolean getPreviousKeyA() {
-        return previousKeyA;
-    }
-
-    public boolean getPreviousKeyD() {
-        return previousKeyD;
-    }
-
-    public boolean getPreviousKeyS() {
-        return previousKeyS;
     }
 
     public boolean getPreviousKeyW() {
@@ -132,26 +114,14 @@ public class KeyboardInput implements KeyListener {
         return previousSpace;
     }
 
-    public boolean isPreviousKeyE() {
-        return previousKeyE;
-    }
-
     public boolean isEsc() {
         return esc;
     }
 
-    public boolean isPreviousEsc() {
-        return previousEsc;
-    }
 
-    public void reset(){
+    public void reset() {
         previousSpace = false;
-        previousKeyA = false;
         previousKeyW = false;
-        previousKeyS = false;
-        previousKeyD = false;
-        previousKeyE = false;
-        previousEsc = false;
         keyW = false;
         keyA = false;
         keyS = false;
@@ -160,5 +130,7 @@ public class KeyboardInput implements KeyListener {
         keyShift = false;
         space = false;
         esc = false;
+        keyDelete = false;
+        previousKeyDelete = false;
     }
 }

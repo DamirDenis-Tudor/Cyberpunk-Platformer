@@ -8,12 +8,14 @@ package Timing;
  *  If you want it to be active in the current frame after instantiating the class, call void resetTimer().
  */
 public class Timer {
-    public static float deltaTime; // default value for frame period
-    private float startTime;
-    private float endTime;
-    private float duration; // variable for saving the timer duration
+    /**Frame duration.*/
+    public static float deltaTime;
+
+    /**Boundaries of the timer.*/
+    private float startTime , endTime, duration;
 
     /**
+     * Constructor os a timer.
      * @param duration specific to a timer
      */
     public Timer(float duration) {
@@ -23,7 +25,8 @@ public class Timer {
     }
 
     /**
-     * @return true/false if timer hasn't/has reached to the target
+     * Getter for timer status.
+     * @return true - working , false - stopped
      */
     public boolean getTimerState() {
         if (this.startTime >= this.endTime) {
@@ -37,7 +40,7 @@ public class Timer {
     }
 
     /**
-     *  this method allows finishing a timer earlier
+     *  This method allows finishing a timer earlier.
      */
     public void finishEarlier(){
         this.startTime = 0f;
@@ -45,32 +48,11 @@ public class Timer {
     }
 
     /**
-     * reset the startTime and endTime
-     * @note if this method isn't called, the timer functionality will stop.
+     * This method resets the startTime and endTime.
+     * @note if this method isn't called, the timer functionality will not restart.
      */
     public void resetTimer() {
         this.startTime = 0.0F;
         this.endTime = this.duration;
-    }
-
-    /**
-     * @param newDuration the new timer target
-     */
-    public void changeDuration(float newDuration) {
-        this.duration = newDuration;
-    }
-
-    /**
-     * @return current timer situation
-     */
-    public float getRemainingTime() {
-        return this.startTime;
-    }
-
-    /**
-     * @return timer stopping duration
-     */
-    public float getDuration() {
-        return duration;
     }
 }
