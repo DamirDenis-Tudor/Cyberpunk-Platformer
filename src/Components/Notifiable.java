@@ -1,5 +1,6 @@
 package Components;
 
+import Exceptions.ComponentNotFoundException;
 import Scenes.Messages.Message;
 
 /**

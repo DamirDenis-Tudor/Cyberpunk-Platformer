@@ -54,7 +54,7 @@ public class ChoosePlayerScene extends Scene {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         super.update();
         for (StaticComponent changeableComponent:changeableComponents){
             changeableComponent.update();

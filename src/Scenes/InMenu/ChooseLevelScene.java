@@ -41,16 +41,18 @@ final public class ChooseLevelScene extends Scene {
         ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
-        components.add(new Button(this, ComponentType.GREEN_CITY, "GreenCity",
-                new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));
-        components.add(new Button(this, ComponentType.INDUSTRIAL_CITY, "Industrial",
-                new Rectangle(new Coordinate<>(350, 500), 400, 150), 56));
+        components.add(new Button(this, ComponentType.INDUSTRIAL_CITY, "INDUSTRIAL CITY",
+                new Rectangle(new Coordinate<>(350, 300), 400, 100), 45));
+        components.add(new Button(this, ComponentType.GREEN_CITY, "GREEN CITY",
+                new Rectangle(new Coordinate<>(350, 425), 400, 100), 45));
+        components.add(new Button(this, ComponentType.POWER_STATION, "POWER STATION",
+                new Rectangle(new Coordinate<>(350, 550), 400, 100), 45));
         components.add(new Button(this, ComponentType.BACK, "BACK",
-                new Rectangle(new Coordinate<>(350, 700), 400, 150), 56));
+                new Rectangle(new Coordinate<>(350, 700), 400, 150), 45));
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         super.update();
         for (StaticComponent changeableComponent:changeableComponents){
             changeableComponent.update();
@@ -80,7 +82,7 @@ final public class ChooseLevelScene extends Scene {
             }
             case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case GREEN_CITY, INDUSTRIAL_CITY -> {
+                    case GREEN_CITY, INDUSTRIAL_CITY,POWER_STATION -> {
                         changeableComponents.clear();
                         Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 820) , 55);
                         ImageWrapper imageWrapper = null;
@@ -93,6 +95,11 @@ final public class ChooseLevelScene extends Scene {
                             case INDUSTRIAL_CITY -> {
                                 selectedMap = MessageType.INDUSTRIAL_MAP_SELECTED;
                                 imageWrapper = AssetsDeposit.get().getIndustrialMapPreview();
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
+                            }
+                            case POWER_STATION -> {
+                                selectedMap = MessageType.POWER_MAP_SELECTED;
+                                imageWrapper = AssetsDeposit.get().getPowerMapPreview();
                                 imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
                             }
                         }

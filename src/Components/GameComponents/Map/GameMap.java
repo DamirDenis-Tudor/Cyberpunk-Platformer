@@ -52,6 +52,8 @@ public class GameMap extends DynamicComponent {
                     path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/green_map.tmx")).getPath();
             case INDUSTRIAL_CITY ->
                     path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/industrial_map.tmx")).getPath();
+            case POWER_STATION ->
+                    path = Objects.requireNonNull(Database.class.getClassLoader().getResource("Resources/maps/power_map.tmx")).getPath();
         }
         try {
             //   first initialize the document element
@@ -218,7 +220,7 @@ public class GameMap extends DynamicComponent {
                     int y = (int) (Float.parseFloat(objectElement.getAttributeNode("y").getValue()) * MAP_SCALE);
                     int w = (int) (Float.parseFloat(objectElement.getAttributeNode("width").getValue()) * MAP_SCALE);
                     int h = (int) (Float.parseFloat(objectElement.getAttributeNode("height").getValue()) * MAP_SCALE);
-                    list.add(new Rectangle(new Coordinate<Integer>(x, y), w, h));
+                    list.add(new Rectangle(new Coordinate<>(x, y), w, h));
 
                     entitiesCoordinates.put(objectgroupName, list);
                 }
@@ -327,29 +329,31 @@ public class GameMap extends DynamicComponent {
         // if the message is from player
         if (component.getGeneralType() == ComponentType.PLAYER) {
             // => check if is on a ladder
-            for (Rectangle ladder : entitiesCoordinates.get("ladders")) {
-                if (rectangle.intersects(ladder)) {
-                    component.notify(new Message(MessageType.IS_ON_LADDER, ComponentType.MAP, getId()));
-                    return;
+            try {
+                for (Rectangle ladder : entitiesCoordinates.get("ladders")) {
+                    if (rectangle.intersects(ladder)) {
+                        component.notify(new Message(MessageType.IS_ON_LADDER, ComponentType.MAP, getId()));
+                        return;
+                    }
                 }
-            }
-            component.notify(new Message(MessageType.IS_NO_LONGER_ON_LADDER, ComponentType.MAP, getId()));
-            // => check if is on a platform
+                component.notify(new Message(MessageType.IS_NO_LONGER_ON_LADDER, ComponentType.MAP, getId()));
+                // => check if is on a platform
                                 /*
                         the explanation is quite funny
                      */
-            for (DynamicComponent platform : ((PlayScene)scene).getAllComponentsWithName(ComponentType.PLATFORM)) {
-                if (rectangle1.intersects(platform.getCollideBox())) {
-                    if (rectangle1.getDy() < 0) {
-                        component.notify(new Message(MessageType.ACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));
-                        platform.interactionWith(component);
-                    } else if (rectangle.getDy() > 0) {
-                        component.notify(new Message(MessageType.ACTIVATE_TOP_COLLISION, ComponentType.MAP, getId()));
+                for (DynamicComponent platform : ((PlayScene) scene).getAllComponentsWithName(ComponentType.PLATFORM)) {
+                    if (rectangle1.intersects(platform.getCollideBox())) {
+                        if (rectangle1.getDy() < 0) {
+                            component.notify(new Message(MessageType.ACTIVATE_BOTTOM_COLLISION, ComponentType.MAP, getId()));
+                            platform.interactionWith(component);
+                        } else if (rectangle.getDy() > 0) {
+                            component.notify(new Message(MessageType.ACTIVATE_TOP_COLLISION, ComponentType.MAP, getId()));
+                        }
+                        rectangle.solveCollision(platform.getCollideBox());
+                        return;
                     }
-                    rectangle.solveCollision(platform.getCollideBox());
-                    return;
                 }
-            }
+            }catch (NullPointerException ignored){}
         }
 
         // if the message is from bullet => check if it has a collision
@@ -468,8 +472,12 @@ public class GameMap extends DynamicComponent {
             case DRONE_ENEMY -> componentName = "drones";
         }
         List<Coordinate<Integer>> coordinates = new ArrayList<>();
-        for (Rectangle rectangle : entitiesCoordinates.get(componentName)) {
-            coordinates.add(rectangle.getPosition());
+        try {
+            for (Rectangle rectangle : entitiesCoordinates.get(componentName)) {
+                coordinates.add(rectangle.getPosition());
+            }
+        }catch (NullPointerException e){
+            System.out.println("Entity : " + componentName + " not found");
         }
         return coordinates;
     }

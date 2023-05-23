@@ -54,7 +54,7 @@ final public class LevelPauseScene extends Scene {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         super.update();
         Objects.requireNonNull(playerPreview).update();
     }
@@ -139,7 +139,19 @@ final public class LevelPauseScene extends Scene {
                     sceneHandler.notify(message);
                 }
             }
-            case CLEAR_INVENTORY -> selectedGun = null;
+            case CLEAR_INVENTORY -> {
+                selectedGun = null;
+                if(message.source() == SCENE){
+                    ((Notifiable)components.get(1)).notify(message);
+                    switch (selectedPlayer){
+                        case CYBORG -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.CyborgIdle));
+                        case BIKER -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.BikerIdle));
+                        case PUNK -> playerPreview = new Animation(AssetsDeposit.get().getAnimation(AnimationType.PunkIdle));
+                    }
+                    playerPreview.setPosition(new Coordinate<>(1400, 300));
+                    playerPreview.setAnimationScale(5);
+                }
+            }
         }
     }
 }

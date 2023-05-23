@@ -95,8 +95,9 @@ public class SceneHandler implements Notifiable {
                         scenes.get(PLAY_SCENE).notify(message);
                         scenes.get(LEVEL_PAUSED_SCENE).notify(message);
                     }
-                    case NEW_GAME, LOAD_GAME,GREEN_MAP_SELECTED,INDUSTRIAL_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
-                    case WEAPON_IS_DROPPED -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
+                    case NEW_GAME, LOAD_GAME, GREEN_MAP_SELECTED,
+                            INDUSTRIAL_MAP_SELECTED,POWER_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
+                    case WEAPON_IS_DROPPED,CLEAR_INVENTORY -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
                 }
             }
 

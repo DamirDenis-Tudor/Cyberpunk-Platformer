@@ -7,8 +7,8 @@ public enum ColorType {
     HOVER_BACKGROUND(new Color(204, 204, 255, 128)),
     DEFAULT_TEXT(new Color(224, 204, 255, 255)),
     HOVER_TEXT(new Color(224, 204, 255)),
-    RED_COLOR(new Color(255, 0, 0, 128)),
-    BLACK_COLOR(new Color(0, 0, 0));
+    RED_COLOR(new Color(255, 0, 0)),
+    BLACK_COLOR(new Color(89, 183, 255));
     private final Color color;
 
     ColorType(Color color) {

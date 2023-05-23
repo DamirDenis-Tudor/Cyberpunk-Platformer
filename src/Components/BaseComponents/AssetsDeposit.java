@@ -39,6 +39,7 @@ public class AssetsDeposit {
 
     private ImageWrapper greenMapPreview ;
     private ImageWrapper industrialMapPreview ;
+    private ImageWrapper powerMapPreview ;
     private ImageWrapper gameOverlay = null;
     private List<ImageWrapper> overlayEffects;
     /**
@@ -65,6 +66,10 @@ public class AssetsDeposit {
             source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
             industrialMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
 
+            source1 = "Resources/wallpapers/Power-Station-Free-Tileset-Pixel-Art-768x512.jpg";
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
+            powerMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
+
             // -------------------------load the overlay effects and set the transparency
             //TODO
             source1 = "Resources/resources/cyber-effects/Overlay/2.png";
@@ -81,6 +86,7 @@ public class AssetsDeposit {
             // -----------------------load game maps
             gameMaps.put(ComponentType.GREEN_CITY, new GameMap(null,ComponentType.GREEN_CITY));
             gameMaps.put(ComponentType.INDUSTRIAL_CITY, new GameMap(null,ComponentType.INDUSTRIAL_CITY));
+            gameMaps.put(ComponentType.POWER_STATION, new GameMap(null,ComponentType.POWER_STATION));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -201,7 +207,6 @@ public class AssetsDeposit {
     public ImageWrapper getGreenMapPreview() {
         return greenMapPreview;
     }
-    public ImageWrapper getIndustrialMapPreview() {
-        return industrialMapPreview;
-    }
+    public ImageWrapper getIndustrialMapPreview() {return industrialMapPreview;}
+    public ImageWrapper getPowerMapPreview() {return powerMapPreview;}
 }

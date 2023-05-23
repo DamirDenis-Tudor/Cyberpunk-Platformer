@@ -26,6 +26,7 @@ import static Utils.Constants.*;
 /**
  * This class implements the player behavior.The code might be complicated, but it is not.
  * It is nothing more than a state machine that describes the interactions with other components.
+ * @see DynamicComponent
  */
 public class Player extends DynamicComponent {
     transient private TimerHandler timerHandler = TimerHandler.get();
