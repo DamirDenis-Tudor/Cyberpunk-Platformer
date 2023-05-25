@@ -9,6 +9,7 @@
 ![Screenshot from 2023-04-21 12-01-03](https://user-images.githubusercontent.com/101417927/233596076-cb079189-a214-4561-a40b-efca02e63e28.png)
 
 # 1. Game Docker Container<a name="release"></a>
+##TODO : OPTIMIZE THE CONTAINER BUILD
 ## Description
 This Docker container provides a Debian-based environment with the latest version of the game sourced from GitHub. It comes with all the necessary libraries and dependencies preinstalled. The container is configured to have access to the X11 TCP protocol, enabling the game window to be displayed on your machine.
 
