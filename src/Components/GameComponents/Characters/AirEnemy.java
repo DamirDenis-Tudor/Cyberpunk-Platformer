@@ -19,15 +19,48 @@ import static Enums.MessageType.HAS_COLLISION;
 import static Utils.Constants.*;
 
 public class AirEnemy extends DynamicComponent {
-    transient protected AnimationHandler animationHandler;
-    transient protected TimerHandler timerHandler;
-    protected Map<ComponentStatus, Boolean> statuses;
-    protected final Map<GeneralAnimationTypes, AnimationType> animationsType;
+    /**
+     * Reference to shared timer handler.
+     */
+    transient private TimerHandler timerHandler;
+
+    /**
+     * Variable that wraps the animation behaviors.
+     */
+    transient private AnimationHandler animationHandler;
+
+    /**
+     * Collection that stores supported statuses.
+     */
+    private final Map<ComponentStatus, Boolean> statuses;
+
+    /**
+     * Collection that stores supported animations.
+     */
+    private final Map<GeneralAnimationTypes, AnimationType> animationType;
+
+    /**
+     * Variable that stores the component heath level.
+     */
     protected int health = 100;
+
+    /**
+     * Variable that stores the component velocity.
+     */
     protected int velocity;
 
+    /**
+     * Variable that counts the elapsed distance to see if the component overcomes the maximum distance.
+     */
     int elapsedDistance = 0;
 
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene    reference to the component that must be notified.
+     * @param position component start position.
+     * @param type     component-specific type.
+     */
     public AirEnemy(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
@@ -36,9 +69,9 @@ public class AirEnemy extends DynamicComponent {
         subtype = type;
         velocity = CharacterisesGenerator.getVelocityFor(type);
         statuses = CharacterisesGenerator.generateStatusesFor(type);
-        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
+        animationType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), new Coordinate<>(position));
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.WALK), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
 
         timerHandler = TimerHandler.get();
@@ -149,7 +182,7 @@ public class AirEnemy extends DynamicComponent {
             case PLAYER, BULLET -> {
                 if (subtype == ComponentType.DRONE_ENEMY) {
                     if (message.type() == ATTACK || message.type() == HAS_COLLISION) {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
+                        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
                         statuses.put(ComponentStatus.HURT, true);
                         health -= 30;
@@ -215,11 +248,11 @@ public class AirEnemy extends DynamicComponent {
                 }
 
                 if (statuses.get(ComponentStatus.ATTACK)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
+                    animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                     animationHandler.getAnimation().setRepeats(4);
                 } else if (!statuses.get(ComponentStatus.ATTACK)) {
                     if (animationHandler.getAnimation().repeatsAreOver()) {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
+                        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
                     }
                 }
             }
@@ -234,21 +267,11 @@ public class AirEnemy extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getCurrentType() {
-        return subtype;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.AIR_ENEMY;
-    }
-
-    @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
         timerHandler = TimerHandler.get();
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
         timerHandler.addTimer(new Timer(0.2f), subtype.name() + getId());
         if (subtype == ComponentType.AIRPLANE) {
             if (statuses.get(ComponentStatus.LEFT_COLLISION)) {
@@ -259,4 +282,14 @@ public class AirEnemy extends DynamicComponent {
         }
         collideBox = animationHandler.getAnimation().getRectangle();
     }
+    @Override
+    public ComponentType getCurrentType() {
+        return subtype;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.AIR_ENEMY;
+    }
+
 }

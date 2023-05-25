@@ -13,70 +13,130 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static Utils.Constants.MAP_SCALE;
 
 /**
- * This class encapsulates the animation behavior.It has a default constructor, an initialization constructor and a copy one.
+ * This class encapsulates the animation behavior.
+ *
+ * @see StaticComponent
  */
 public class Animation implements StaticComponent {
-    private static int idCounter = 1000; // at each frame this counter increments
-    private String timerId; // changing image timer
+    /**
+     * Variable for shared timer handler.
+     */
     private final TimerHandler timerHandler = TimerHandler.get();
-    private GameWindow gameWindow = GameWindow.get();
+
+    /**
+     * Collection for animation images.
+     */
     private List<BufferedImage> images;
-    private int width;
-    private int height;
-    private int activeImageIndex;
-    private boolean direction = false;
+
+    /**
+     * Variable for animation bounding box.
+     */
     private Rectangle rectangle;
+
+    /**
+     * Variable that stores the current animation type.
+     */
     private AnimationType type;
+
+    /**
+     * Variable that generates an id for animation instances.
+     */
+    private static int idCounter = 1000;
+
+    /**
+     * Variable that stores the instances' identifiers.
+     */
+    private int timerId;
+
+    /**
+     * Variable that stores in-game dimensions.
+     */
+    private int width, height;
+
+    /**
+     * Variable that stores index of the current image displayed on.
+     */
+    private int activeImageIndex;
+
+    /**
+     * Variable that stores the current direction of the animation.
+     * False -> right to left
+     * True -> left to right
+     */
+    private boolean direction = false;
+
+    /**
+     * Variable that locks the animation at a specific moment of time.
+     */
     private boolean lock = false;
+
+    /**
+     * Variable that stores that loops of animation that must be made.
+     */
     private int repeats = 0;
+
+    /**
+     * Variable that stores the current repeats counter.
+     */
     private int currentCount = 0;
+
+    /**
+     * Variable that scales the animation.
+     */
     private int scale = 1;
 
-    public Animation(){
-        rectangle = new Rectangle(new Coordinate<>(0,0) , 0, 0);
+    /**
+     * This constructor creates a blank instance of the animation.
+     */
+
+    public Animation() {
+        rectangle = new Rectangle(new Coordinate<>(0, 0), 0, 0);
     }
 
     /**
+     * This constructor loads an animation from memory.
      *
-     * @param path where the animation sprite sheet is found
+     * @param path             where the animation sprite sheet is found
      * @param spriteSheetWidth width of the sprite-sheet
-     * @param width width of the image
-     * @param height height of the image
-     * @param box colliding box
-     * @param type type of the animation
-     * @throws Exception when fail to load image
+     * @param width            in-game width of the image
+     * @param height           in-game height of the image
+     * @param box              colliding boundary
+     * @param type             animation related type
+     * @throws IOException when fail to load image
      */
-    public Animation(String path, int spriteSheetWidth, int width, int height , Rectangle box, AnimationType type ) throws Exception {
+    public Animation(String path, int spriteSheetWidth, int width, int height, Rectangle box, AnimationType type) throws IOException {
         this.type = type;
         activeImageIndex = 0;
-        this.width = (int)(width* MAP_SCALE);
-        this.height = (int)((height-box.getMinY()-1)* MAP_SCALE);
+        this.width = (int) (width * MAP_SCALE);
+        this.height = (int) ((height - box.getMinY() - 1) * MAP_SCALE);
         images = new ArrayList<>();
 
         BufferedImage spriteSheet = ImageIO.read(new File(path));
         for (int index = 0; index < spriteSheetWidth / width; index++) {
-            images.add(spriteSheet.getSubimage(index * width, box.getMinY(), width, height-box.getMinY()-1));
+            images.add(spriteSheet.getSubimage(index * width, box.getMinY(), width, height - box.getMinY() - 1));
         }
 
         this.rectangle = box;
     }
 
     /**
+     * This is a copy constructor to a specific animation.
      *
      * @param animation to be copied
      */
     public Animation(Animation animation) {
         idCounter++;
 
-        timerId = "animation" + idCounter;
-        timerHandler.addTimer(new Timer(0.05F),timerId);
-        timerHandler.getTimer(timerId).resetTimer();
+        timerId = idCounter;
+        timerHandler.addTimer(new Timer(0.05F), "animation" + timerId);
+        timerHandler.getTimer("animation" + timerId).resetTimer();
 
         // images will be shared
         this.images = animation.images;
@@ -87,22 +147,25 @@ public class Animation implements StaticComponent {
         this.height = animation.height;
         this.width = animation.width;
 
-        this.gameWindow = animation.gameWindow;
         this.activeImageIndex = animation.activeImageIndex;
         this.direction = animation.direction;
         this.type = animation.type;
+        this.scale = animation.scale;
+        this.lock = animation.lock;
+        this.repeats = animation.repeats;
+        this.currentCount = animation.currentCount;
     }
 
     @Override
-    public void update(){
-        if (!timerHandler.getTimer(timerId).getTimerState() && (!lock || currentCount != repeats)) {
-            timerHandler.getTimer(timerId).resetTimer();
+    public void update() {
+        if (!timerHandler.getTimer("animation" + timerId).getTimerState() && (!lock || currentCount != repeats)) {
+            timerHandler.getTimer("animation" + timerId).resetTimer();
             if (activeImageIndex < images.size() - 1) {
                 activeImageIndex++;
             } else {
                 activeImageIndex = 0;
-                if(repeats != 0){
-                    currentCount ++;
+                if (repeats != 0) {
+                    currentCount++;
                 }
             }
         }
@@ -113,63 +176,121 @@ public class Animation implements StaticComponent {
         if (!direction) {
             int posX = rectangle.getPosition().getPosX() + rectangle.getWidth() + Camera.get().getCurrentHorizontalOffset();
             int posY = rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
-            graphics2D.drawImage(images.get(activeImageIndex), posX , posY, -width*scale, height*scale, null);
+            graphics2D.drawImage(images.get(activeImageIndex), posX, posY, -width * scale, height * scale, null);
             //graphics2D.drawRect(posX - (rectangle.getWidth() ) ,posY,rectangle.getWidth(),rectangle.getHeight());
         } else {
             int posX = rectangle.getPosition().getPosX() + Camera.get().getCurrentHorizontalOffset();
-            int posY =  rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
-            graphics2D.drawImage(images.get(activeImageIndex), posX, posY, width*scale, height*scale, null);
+            int posY = rectangle.getPosition().getPosY() + Camera.get().getCurrentVerticalOffset();
+            graphics2D.drawImage(images.get(activeImageIndex), posX, posY, width * scale, height * scale, null);
             //graphics2D.drawRect(posX,posY,rectangle.getWidth(),rectangle.getHeight());
         }
     }
+
+    /**
+     * @param position reference to a new position.
+     */
     public void setPosition(Coordinate<Integer> position) {
         this.rectangle.setPosition(position);
     }
-    public void setRectangle(Rectangle rectangle){
+
+    /**
+     * @param rectangle reference to a new rectangle
+     */
+    public void setRectangle(Rectangle rectangle) {
         this.rectangle = rectangle;
     }
-    public void setDirection(boolean value) {
-        direction = value;
-    }
-    public boolean getDirection(){
-        return direction;
-    }
+
+    /**
+     * @return animation intersection box
+     */
     public Rectangle getRectangle() {
         return rectangle;
     }
+
+    /**
+     * @param value new direction of the animation
+     */
+
+    public void setDirection(boolean value) {
+        direction = value;
+    }
+
+    /**
+     * @return current direction of the animation
+     */
+    public boolean getDirection() {return direction;}
+
+    /**
+     * Setter for the scale
+     *
+     * @param scale value to that animation will be scaled to
+     */
+    public void setAnimationScale(int scale) {
+        this.scale = scale;
+    }
+
+    /**
+     * Getter for the animation type.
+     *
+     * @return specific animation type.
+     */
     public AnimationType getType() {
         return type;
     }
-    public boolean animationIsOver(){
-        if(images !=null) {
-            return activeImageIndex == images.size()-1;
-        }
-        return true;
-    }
 
-    public void lockAtFistFrame(){
+    /**
+     * This method locks the animation at the first frame.
+     */
+    public void lockAtFistFrame() {
         lock = true;
         activeImageIndex = 0;
     }
-    public void lockAtLastFrame(){
+
+    /**
+     * This method locks the animation at the last frame.
+     */
+    public void lockAtLastFrame() {
         lock = true;
-        activeImageIndex = images.size()-1;
+        activeImageIndex = images.size() - 1;
     }
 
-    public void unlock() {lock = false;}
+    /**
+     * This method unlocks the animation loop.
+     */
+    public void unlock() {
+        lock = false;
+    }
 
-    public void setRepeats(int number){
-        if(currentCount == repeats) {
+    /**
+     * Setter for the number of repeats that must be made by the animation.
+     *
+     * @param number repeats of the animation.
+     */
+    public void setRepeats(int number) {
+        if (currentCount == repeats) {
             repeats = number;
             currentCount = 0;
         }
     }
 
-    public boolean repeatsAreOver(){
+    /**
+     * This method verifies if the animation repeats are over.
+     *
+     * @return status of the repeats.
+     */
+    public boolean repeatsAreOver() {
         return currentCount == repeats;
     }
 
-    public void setAnimationScale(int scale){
-        this.scale = scale;
+    /**
+     * This method verifies at a specific moment of time if the animation is at the end.
+     *
+     * @return status of the finished animation
+     */
+    public boolean animationIsOver() {
+        if (images != null) {
+            return activeImageIndex == images.size() - 1;
+        }
+        return true;
     }
 }

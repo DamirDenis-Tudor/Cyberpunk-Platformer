@@ -14,40 +14,52 @@ import java.awt.image.BufferedImage;
  * is drawn on canvas.This approach is less resource-consuming.
  */
 public class GameWindow {
-    /**Shared instance.*/
+    /**
+     * Shared instance.
+     */
     static GameWindow instance;
 
-    /**Frame of a window*/
-    private JFrame windowFrame;
-
-    /**The place where the "snapshot" of the current frame is drawn*/
+    /**
+     * The place where the "snapshot" of the current frame is drawn
+     */
     private Canvas canvas;
 
-    /**The snapshot of the current frame game.*/
+    /**
+     * The snapshot of the current frame game.
+     */
     private final BufferedImage bufferedImage;
 
-    /**Graphics of buffered image*/
+    /**
+     * Graphics of buffered image
+     */
     private final Graphics2D graphics2D;
 
-    /**Basic window title*/
+    /**
+     * Basic window title
+     */
     private final String windowTitle;
 
-    /**Final window width*/
+    /**
+     * Final window width
+     */
     private final int windowWidth;
 
-    /**Final height width*/
+    /**
+     * Final height width
+     */
     private final int windowHeight;
 
     /**
      * This constructor initializes the properties of the game window.
-     * @param title  window title
+     *
+     * @param title window title
      */
     private GameWindow(String title) {
         windowTitle = title;
         windowWidth = Constants.WINDOW_WIDTH;
         windowHeight = Constants.WINDOW_HEIGHT;
 
-        bufferedImage = new BufferedImage(windowWidth,windowHeight,BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_ARGB);
         graphics2D = (Graphics2D) bufferedImage.getGraphics();
 
         buildGameWindow();
@@ -58,7 +70,7 @@ public class GameWindow {
      */
     private void buildGameWindow() {
         // Window frame
-        windowFrame = new JFrame(windowTitle);
+        JFrame windowFrame = new JFrame(windowTitle);
         windowFrame.setSize(windowWidth, windowHeight);
         windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         windowFrame.setState(Frame.NORMAL);
@@ -88,6 +100,7 @@ public class GameWindow {
 
     /**
      * Getter for shared instance.
+     *
      * @return class instance
      */
     public static GameWindow get() {
@@ -99,6 +112,7 @@ public class GameWindow {
 
     /**
      * Getter for graphics context.
+     *
      * @return graphics of the buffered image.
      */
     public Graphics2D getGraphics() {
@@ -118,7 +132,7 @@ public class GameWindow {
      * After drawing multiple stuffs on a window this method must be called.
      */
     public void show() {
-        canvas.getBufferStrategy().getDrawGraphics().drawImage(bufferedImage , 0,0,null);
+        canvas.getBufferStrategy().getDrawGraphics().drawImage(bufferedImage, 0, 0, null);
         canvas.getBufferStrategy().show();
     }
 

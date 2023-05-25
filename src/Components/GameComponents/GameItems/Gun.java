@@ -1,6 +1,6 @@
 package Components.GameComponents.GameItems;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
@@ -21,29 +21,70 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class describes the gun behaviors.
+ *
+ * @see DynamicComponent
+ */
 public class Gun extends DynamicComponent {
+    /**
+     * Variable for buffered image wrapper specific to a gun bullet.
+     */
     transient private ImageWrapper imageWrapper;
-    private boolean direction = true; // right - true,left - false
-    private ComponentType subType = null;
-    private int xOffset = 10;
-    private int yOffset = 0;
+
+    /**
+     * Collection that stores supported statuses.
+     */
     private final Map<ComponentStatus, Boolean> statuses;
+
+    /**
+     * Variable that stores the initial position.
+     * When the gun will be dropped, it will be placed automatically at the spawn position.
+     */
     private Coordinate<Integer> initialPosition;
 
+    /**
+     * Variable that stores the current gun type.
+     */
+    private ComponentType gunType = null;
+
+    /**
+     * Variable that stores the bullet direction.
+     */
+    private boolean direction = true;
+
+    /**
+     * Variables for the drawing on screen offset.
+     */
+    private int xOffset = 10, yOffset = 0;
+
+    /**
+     * This is a constructor a specific gun instance.
+     *
+     * @param image      its related image
+     * @param collideBox its related intersection box
+     */
     public Gun(BufferedImage image, Rectangle collideBox) throws IOException {
         this.collideBox = collideBox;
         this.imageWrapper = new ImageWrapper(image);
         statuses = new HashMap<>();
     }
 
-    public Gun(Scene scene, Coordinate<Integer> position, ComponentType subType) {
+    /**
+     * This is a copy constructor of an existing gun.
+     *
+     * @param scene    component that needs to be notified.
+     * @param gunType  gun related type.
+     * @param position gun starting position.
+     */
+    public Gun(Scene scene, Coordinate<Integer> position, ComponentType gunType) {
         this.scene = scene;
-        this.subType = subType;
-        this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
-        this.collideBox = new Rectangle(AssetsDeposit.get().getGun(subType).collideBox);
+        this.gunType = gunType;
+        this.imageWrapper = AssetDeposit.get().getGun(gunType).imageWrapper;
+        this.collideBox = new Rectangle(AssetDeposit.get().getGun(gunType).collideBox);
         this.collideBox.setPosition(new Coordinate<>(position));
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GUN);
-        TimerHandler.get().addTimer(new Timer(0.3f),"GUN"+getId());
+        TimerHandler.get().addTimer(new Timer(0.3f), "GUN" + getId());
 
     }
 
@@ -53,7 +94,8 @@ public class Gun extends DynamicComponent {
             case PLAYER -> {
                 switch (message.type()) {
                     case LAUNCH_BULLET -> {
-                        if (statuses.get(ComponentStatus.GUN_ENABLED)) statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, true);
+                        if (statuses.get(ComponentStatus.GUN_ENABLED))
+                            statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, true);
                     }
                     case PLAYER_DIRECTION_LEFT -> {
                         if (statuses.get(ComponentStatus.IS_PICKED_UP)) {
@@ -68,7 +110,8 @@ public class Gun extends DynamicComponent {
                         }
                     }
                     case HIDE_GUN -> {
-                        if (statuses.get(ComponentStatus.IS_PICKED_UP)&& statuses.get(ComponentStatus.GUN_ENABLED)) statuses.put(ComponentStatus.HIDE, true);
+                        if (statuses.get(ComponentStatus.IS_PICKED_UP) && statuses.get(ComponentStatus.GUN_ENABLED))
+                            statuses.put(ComponentStatus.HIDE, true);
                     }
                     case SHOW_GUN -> {
                         if (statuses.get(ComponentStatus.IS_PICKED_UP) && statuses.get(ComponentStatus.GUN_ENABLED))
@@ -100,15 +143,15 @@ public class Gun extends DynamicComponent {
                         }
                     }
                     case WEAPON_IS_DROPPED -> {
-                        statuses.put(ComponentStatus.IS_PICKED_UP , false);
-                        statuses.put(ComponentStatus.HIDE , false);
+                        statuses.put(ComponentStatus.IS_PICKED_UP, false);
+                        statuses.put(ComponentStatus.HIDE, false);
                         statuses.put(ComponentStatus.GUN_ENABLED, false);
                         statuses.put(ComponentStatus.DROPPED, true);
                         collideBox.setPosition(new Coordinate<>(initialPosition));
                         yOffset = 0;
                         xOffset = 10;
                         direction = true;
-                        TimerHandler.get().getTimer("GUN"+getId()).resetTimer();
+                        TimerHandler.get().getTimer("GUN" + getId()).resetTimer();
                     }
                 }
             }
@@ -123,10 +166,10 @@ public class Gun extends DynamicComponent {
                 initialPosition = new Coordinate<>(collideBox.getPosition());
                 collideBox.setPosition(component.getCollideBox().getPosition());
                 yOffset = component.getCollideBox().getHeight() / 2 - 8;
-                statuses.put(ComponentStatus.GUN_ENABLED , false);
-                statuses.put(ComponentStatus.HIDE , true);
+                statuses.put(ComponentStatus.GUN_ENABLED, false);
+                statuses.put(ComponentStatus.HIDE, true);
                 statuses.put(ComponentStatus.IS_PICKED_UP, true);
-                scene.notify(new Message(MessageType.IS_PICKED_UP, subType, getId()));
+                scene.notify(new Message(MessageType.IS_PICKED_UP, gunType, getId()));
             }
         }
     }
@@ -134,7 +177,7 @@ public class Gun extends DynamicComponent {
     @Override
     public void update() {
         super.update();
-        if (!TimerHandler.get().getTimer("GUN"+getId()).getTimerState()){
+        if (!TimerHandler.get().getTimer("GUN" + getId()).getTimerState()) {
             statuses.put(ComponentStatus.DROPPED, false);
         }
         if (statuses.get(ComponentStatus.NEEDS_RECALIBRATION)) {
@@ -151,27 +194,13 @@ public class Gun extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getCurrentType() {
-        return subType;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.GUN;
-    }
-
-    public ImageWrapper getImageWrapper() {
-        return imageWrapper;
-    }
-
-    @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
         // restore the image
-        this.imageWrapper = AssetsDeposit.get().getGun(subType).imageWrapper;
+        this.imageWrapper = AssetDeposit.get().getGun(gunType).imageWrapper;
 
-        TimerHandler.get().addTimer(new Timer(0.3f),"GUN"+getId());
+        TimerHandler.get().addTimer(new Timer(0.3f), "GUN" + getId());
         // if in the previous save was in the hands of player,
         // the gun needs recalibration -> his position will be a reference of the player
         statuses.put(ComponentStatus.GUN_ENABLED, false);
@@ -179,7 +208,26 @@ public class Gun extends DynamicComponent {
             System.out.println("PICKED UP UP AFTER DESERIALIZATION");
             statuses.put(ComponentStatus.NEEDS_RECALIBRATION, true);
             statuses.put(ComponentStatus.HIDE, true);
-            scene.notify(new Message(MessageType.IS_PICKED_UP, subType, getId()));
+            scene.notify(new Message(MessageType.IS_PICKED_UP, gunType, getId()));
         }
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return gunType;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.GUN;
+    }
+
+    /**
+     * Getter for the current image wrapper.
+     *
+     * @return image wrapper
+     */
+    public ImageWrapper getImageWrapper() {
+        return imageWrapper;
     }
 }

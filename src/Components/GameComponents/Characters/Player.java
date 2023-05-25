@@ -9,7 +9,6 @@ import Enums.*;
 import Input.KeyboardInput;
 import Scenes.InGame.PlayScene;
 import Scenes.Messages.Message;
-import Scenes.Scene;
 import Timing.Timer;
 import Timing.TimerHandler;
 import Utils.Coordinate;
@@ -24,28 +23,95 @@ import static Enums.ComponentType.PLAYER;
 import static Utils.Constants.*;
 
 /**
- * This class implements the player behavior.The code might be complicated, but it is not.
+ * This class implements the player behavior.
  * It is nothing more than a state machine that describes the interactions with other components.
+ *
  * @see DynamicComponent
  */
 public class Player extends DynamicComponent {
-    transient private TimerHandler timerHandler = TimerHandler.get();
-    transient private AnimationHandler animationHandler = new AnimationHandler();
-    transient private KeyboardInput keyboardInput = KeyboardInput.get();
+    /**
+     * Reference to shared timer handler.
+     */
+    transient private TimerHandler timerHandler;
+
+    /**
+     * Reference to shared keyboard handler.
+     */
+    transient private KeyboardInput keyboardInput;
+
+    /**
+     * Variable that wraps the animation behaviors.
+     */
+    transient private AnimationHandler animationHandler;
+
+    /**
+     * Collection that stores supported statuses.
+     */
     private final Map<ComponentStatus, Boolean> statuses;
-    private final Map<GeneralAnimationTypes, AnimationType> animationsType;
-    private int health = 100;
-    private final Text healthText;
-    private int jumpsCounter = 0;
+
+    /**
+     * Collection that stores supported animations.
+     */
+    private final Map<GeneralAnimationTypes, AnimationType> animationType;
+
+    /**
+     * Collection that stores supported attack combo.
+     */
     private final List<AnimationType> attackCombo;
-    private int attackComboIndex = 0;
-    private boolean direction = false;
+
+    /**
+     * Variable that stores the current enemy identifier that component is in interaction with.
+     */
     private Integer currentEnemyId = INVALID_ID;
+
+    /**
+     * Variable that stores the current gun identifier that component has in hands.
+     */
     private Integer currentSelectedWeapon = INVALID_ID;
 
-    public Player(Scene scene, Coordinate<Integer> position, ComponentType type) {
+    /**
+     * Variable that wraps the health level of the component and display it.
+     */
+    private final Text healthText;
+
+    /**
+     * Variable that stores the component heath level.
+     */
+    private int health = 100;
+
+    /**
+     * Variable that stores jumping statuses.
+     * 0 -> no jump
+     * 1 -> simple jump
+     * 2 -> double jump
+     */
+    private int jumpsCounter = 0;
+
+    /**
+     * Variable that counts the index of the combo attack animation.
+     */
+    private int attackComboIndex = 0;
+
+    /**
+     * Variable that stores the direction of the component.
+     * False -> left
+     * True -> right
+     */
+    private boolean direction = true;
+
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene    reference to the component that must be notified.
+     * @param position component start position.
+     * @param type     component-specific type.
+     */
+    public Player(Notifiable scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
+        keyboardInput = KeyboardInput.get();
+        timerHandler = TimerHandler.get();
+
         subtype = type;
         healthText = new Text("HEALTH : " + health, new Coordinate<>(200, 50), 60);
         healthText.setTextColor(ColorType.RED_COLOR);
@@ -53,10 +119,11 @@ public class Player extends DynamicComponent {
         timerHandler.addTimer(new Timer(0.15f), getGeneralType().name() + getId());
 
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.PLAYER);
-        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
+        animationType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
         attackCombo = CharacterisesGenerator.generateAttackComboFor(type);
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
+        animationHandler = new AnimationHandler();
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
 
         Camera.get().setFocusComponentPosition(collideBox.getPosition());
@@ -81,9 +148,7 @@ public class Player extends DynamicComponent {
                             jumpsCounter = 1;
                         }
                     }
-                    case ACTIVATE_TOP_COLLISION -> {
-                        statuses.put(ComponentStatus.TOP_COLLISION, true);
-                    }
+                    case ACTIVATE_TOP_COLLISION -> statuses.put(ComponentStatus.TOP_COLLISION, true);
                     case IS_ON_LADDER -> {
                         statuses.put(ComponentStatus.IS_ON_LADDER, true);
                         jumpsCounter = 1;
@@ -94,7 +159,7 @@ public class Player extends DynamicComponent {
             case GROUND_ENEMY, BULLET, AIR_ENEMY -> {
                 if (message.type() == MessageType.ATTACK) {
                     if (!statuses.get(ComponentStatus.ATTACK)) {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
+                        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(2);
                         statuses.put(ComponentStatus.HURT, true);
                     }
@@ -124,7 +189,7 @@ public class Player extends DynamicComponent {
                 }
             }
             case INVENTORY -> {
-                if(message.type() == MessageType.HAS_NO_WEAPON) {
+                if (message.type() == MessageType.HAS_NO_WEAPON) {
                     statuses.put(ComponentStatus.GUN_PICKED, false);
                     statuses.put(ComponentStatus.HAS_GUN, false);
                     currentSelectedWeapon = INVALID_ID;
@@ -194,19 +259,23 @@ public class Player extends DynamicComponent {
         }
     }
 
+    /**
+     * This method takes some complexity from the update method, and its
+     * task is to change to the required animation at a specific moment of time.
+     */
     protected void handleAnimations() {
         if (statuses.get(ComponentStatus.DEATH)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
+            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
         } else {
             if (statuses.get(ComponentStatus.HURT)) {
                 if (animationHandler.getAnimation().repeatsAreOver()) {
                     statuses.put(ComponentStatus.HURT, false);
                 }
             } else if (statuses.get(ComponentStatus.IS_ON_LADDER)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.CLIMB), collideBox.getPosition());
+                animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.CLIMB), collideBox.getPosition());
                 if (statuses.get(ComponentStatus.IS_MOVING_ON_LADDER)) {
                     animationHandler.getAnimation().unlock();
                 } else {
@@ -214,30 +283,30 @@ public class Player extends DynamicComponent {
                 }
             } else if (jumpsCounter == 0) {
                 if (statuses.get(ComponentStatus.ATTACK) && !(statuses.get(ComponentStatus.HAS_GUN) && !statuses.get(ComponentStatus.HAS_ENEMY_COLLISION))) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
+                    animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                 } else {
                     if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
                         if (statuses.get(ComponentStatus.GUN_PICKED)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RUN_GUN), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.RUN_GUN), collideBox.getPosition());
                         } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.RUN), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.RUN), collideBox.getPosition());
                         }
                     } else {
                         if (statuses.get(ComponentStatus.GUN_PICKED)) {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE_GUN), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE_GUN), collideBox.getPosition());
                         } else {
-                            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
+                            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
                         }
                     }
                 }
             } else if (jumpsCounter == 1) { // simple jump
                 if (statuses.get(ComponentStatus.GUN_PICKED)) {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JUMP_GUN), collideBox.getPosition());
+                    animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.JUMP_GUN), collideBox.getPosition());
                 } else {
-                    animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.JUMP), collideBox.getPosition());
+                    animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.JUMP), collideBox.getPosition());
                 }
             } else if (jumpsCounter == 2) { // double jump
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DOUBLE_JUMP), collideBox.getPosition());
+                animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.DOUBLE_JUMP), collideBox.getPosition());
             }
         }
     }
@@ -353,7 +422,7 @@ public class Player extends DynamicComponent {
         if (statuses.get(ComponentStatus.ATTACK) && animationHandler.getAnimation().animationIsOver()) {
             statuses.put(ComponentStatus.ATTACK, false);
             statuses.put(ComponentStatus.FIRST_HIT, false);
-            animationsType.put(GeneralAnimationTypes.ATTACK, attackCombo.get(attackComboIndex));
+            animationType.put(GeneralAnimationTypes.ATTACK, attackCombo.get(attackComboIndex));
             attackComboIndex++;
             if (attackComboIndex > attackCombo.size() - 1) {
                 attackComboIndex = 0;
@@ -363,8 +432,8 @@ public class Player extends DynamicComponent {
 
         // hide gun logic
         if (statuses.get(ComponentStatus.GUN_PICKED)) {
-            if (animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.CLIMB) ||
-                    animationHandler.getAnimation().getType() == animationsType.get(GeneralAnimationTypes.DOUBLE_JUMP)) {
+            if (animationHandler.getAnimation().getType() == animationType.get(GeneralAnimationTypes.CLIMB) ||
+                    animationHandler.getAnimation().getType() == animationType.get(GeneralAnimationTypes.DOUBLE_JUMP)) {
                 scene.notify(new Message(MessageType.HIDE_GUN, ComponentType.PLAYER, getId()));
             } else {
                 scene.notify(new Message(MessageType.SHOW_GUN, ComponentType.PLAYER, getId()));
@@ -389,16 +458,6 @@ public class Player extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getCurrentType() {
-        return subtype;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.PLAYER;
-    }
-
-    @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
@@ -411,7 +470,7 @@ public class Player extends DynamicComponent {
 
         // restoring the animation handler
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
         animationHandler.getAnimation().setDirection(direction);
         collideBox = animationHandler.getAnimation().getRectangle();
 
@@ -427,5 +486,15 @@ public class Player extends DynamicComponent {
 
         if (currentSelectedWeapon != INVALID_ID)
             scene.notify(new Message(MessageType.WEAPON_IS_SELECTED, PLAYER, currentSelectedWeapon));
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return subtype;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.PLAYER;
     }
 }

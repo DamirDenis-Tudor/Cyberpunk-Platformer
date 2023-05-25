@@ -18,14 +18,33 @@ import java.util.Map;
 import static Utils.Constants.HELICOPTER_VELOCITY;
 
 /**
- * This class describes the helicopter behaviour.
- * The code might be complicated, but it is not.
- * It is nothing more than a state machine that describes the interactions with other components.
+ * This class describes the helicopter behavior.
+ *
+ * @see DynamicComponent
  */
 public class Helicopter extends DynamicComponent {
+    /**
+     * Variable for animation wrapper specific to a helicopter.
+     */
     transient protected AnimationHandler animationHandler;
+
+    /**
+     * Collection that stores supported statuses.
+     */
     protected final Map<ComponentStatus, Boolean> statuses;
+
+    /**
+     * Variable that stores the initial position.
+     * It helps to determine when max distance has elapsed.
+     */
     private final Coordinate<Integer> initialPosition;
+
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene    reference to the component that must be notified.
+     * @param position component start position.
+     */
 
     public Helicopter(Scene scene, Coordinate<Integer> position) {
         super();
@@ -42,7 +61,7 @@ public class Helicopter extends DynamicComponent {
     }
 
     @Override
-    public void notify(Message message)  {
+    public void notify(Message message) {
         switch (message.source()) {
             case MAP -> {
                 switch (message.type()) {
@@ -70,7 +89,7 @@ public class Helicopter extends DynamicComponent {
         if (component.getGeneralType() == ComponentType.PLAYER) {
             if (statuses.get(ComponentStatus.HAS_PLAYER)) {
                 component.getCollideBox().getPosition().setX(collideBox.getCenterX() - component.getCollideBox().getWidth() / 2);
-                component.getCollideBox().getPosition().setY(collideBox.getMaxY()-28);
+                component.getCollideBox().getPosition().setY(collideBox.getMaxY() - 28);
             }
         }
     }
@@ -83,7 +102,7 @@ public class Helicopter extends DynamicComponent {
         } else if (!statuses.get(ComponentStatus.BOTTOM_COLLISION)) {
             collideBox.moveByY(HELICOPTER_VELOCITY);
         }
-        if(initialPosition.getPosY() < collideBox.getPosition().getPosY()) {
+        if (initialPosition.getPosY() < collideBox.getPosition().getPosY()) {
             statuses.put(ComponentStatus.TOP_COLLISION, false);
             statuses.put(ComponentStatus.BOTTOM_COLLISION, true);
             animationHandler.getAnimation().setDirection(true);
@@ -94,18 +113,8 @@ public class Helicopter extends DynamicComponent {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        if(!getActiveStatus()) return;
+        if (!getActiveStatus()) return;
         animationHandler.draw(graphics2D);
-    }
-
-    @Override
-    public ComponentType getCurrentType() {
-        return null;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.HELICOPTER;
     }
 
     @Override
@@ -113,6 +122,16 @@ public class Helicopter extends DynamicComponent {
         super.addMissingPartsAfterDeserialization(scene);
         animationHandler = new AnimationHandler();
         animationHandler.changeAnimation(AnimationType.Helicopter, collideBox.getPosition());
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return ComponentType.NONE;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.HELICOPTER;
     }
 }
 

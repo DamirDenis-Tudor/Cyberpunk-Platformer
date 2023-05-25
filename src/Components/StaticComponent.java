@@ -9,5 +9,6 @@ import java.awt.*;
  */
 public interface StaticComponent {
     void update();
+
     void draw(Graphics2D graphics2D);
 }

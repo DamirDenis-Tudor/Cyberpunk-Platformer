@@ -14,9 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class loads predefined characteristics of a component.
+ * This class loads predefined characteristics of a component; behavior is specific to a factory.
  */
 public class CharacterisesGenerator {
+    /**
+     * This method generates composed animation types for attacking status.
+     *
+     * @param type the component for that attack combo is generated for.
+     * @return list of combo animation types.
+     */
     public static List<AnimationType> generateAttackComboFor(ComponentType type) {
         List<AnimationType> attackCombo = new ArrayList<>();
         switch (type) {
@@ -41,7 +47,14 @@ public class CharacterisesGenerator {
         return attackCombo;
     }
 
-    public static Map<GeneralAnimationTypes, AnimationType> generateAnimationTypesFor(ComponentType type ,int id) {
+    /**
+     * This method generates a mapping for specific actions to general ones.
+     *
+     * @param type the component type for that general animations mapping is generated for.
+     * @param id   additionally component identifier
+     * @return map of general animations related to specific ones.
+     */
+    public static Map<GeneralAnimationTypes, AnimationType> generateAnimationTypesFor(ComponentType type, int id) {
         Map<GeneralAnimationTypes, AnimationType> animationsType = new HashMap<>();
         switch (type) {
             case BIKER -> {
@@ -128,7 +141,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.DEATH, AnimationType.Enemy3Death);
             }
             case GUNNER_ENEMY -> {
-                TimerHandler.get().addTimer(new Timer(0.5f) , type.name()+id);
+                TimerHandler.get().addTimer(new Timer(0.5f), type.name() + id);
                 animationsType.put(GeneralAnimationTypes.IDLE, AnimationType.Enemy2Idle);
                 animationsType.put(GeneralAnimationTypes.WALK, AnimationType.Enemy2Walk);
                 animationsType.put(GeneralAnimationTypes.ATTACK, AnimationType.Enemy2Attack);
@@ -136,7 +149,7 @@ public class CharacterisesGenerator {
                 animationsType.put(GeneralAnimationTypes.DEATH, AnimationType.Enemy2Death);
             }
             case MACHINE_GUN_ENEMY -> {
-                TimerHandler.get().addTimer(new Timer(0.4f) , type.name()+id);
+                TimerHandler.get().addTimer(new Timer(0.4f), type.name() + id);
                 animationsType.put(GeneralAnimationTypes.IDLE, AnimationType.Enemy6Idle);
                 animationsType.put(GeneralAnimationTypes.WALK, AnimationType.Enemy6Walk);
                 animationsType.put(GeneralAnimationTypes.ATTACK, AnimationType.Enemy6Attack);
@@ -156,6 +169,12 @@ public class CharacterisesGenerator {
         return animationsType;
     }
 
+    /**
+     * This method adds for a specific component a series of supported statuses.
+     *
+     * @param type the component type for that status map is generated for.
+     * @return map with related statuses
+     */
     public static Map<ComponentStatus, Boolean> generateStatusesFor(ComponentType type) {
         Map<ComponentStatus, Boolean> statuses = new HashMap<>();
         switch (type) {
@@ -190,7 +209,7 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.HAS_ENEMY_COLLISION, false);
                 statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, false);
                 statuses.put(ComponentStatus.IDLE, false);
-                statuses.put(ComponentStatus.HAS_PLAYER_COLLISION , false);
+                statuses.put(ComponentStatus.HAS_PLAYER_COLLISION, false);
             }
             case AIRPLANE -> {
                 statuses.put(ComponentStatus.ATTACK, false);
@@ -201,22 +220,28 @@ public class CharacterisesGenerator {
                 statuses.put(ComponentStatus.ATTACK, false);
                 statuses.put(ComponentStatus.BOTTOM_COLLISION, true);
                 statuses.put(ComponentStatus.TOP_COLLISION, false);
-                statuses.put(ComponentStatus.HURT , false);
-                statuses.put(ComponentStatus.DEATH , false);
-                statuses.put(ComponentStatus.HAS_DETECTED_PLAYER , false);
+                statuses.put(ComponentStatus.HURT, false);
+                statuses.put(ComponentStatus.DEATH, false);
+                statuses.put(ComponentStatus.HAS_DETECTED_PLAYER, false);
             }
             case GUN -> {
                 statuses.put(ComponentStatus.IS_PICKED_UP, false);
                 statuses.put(ComponentStatus.HAS_LAUNCHED_BULLET, false);
                 statuses.put(ComponentStatus.HIDE, false);
                 statuses.put(ComponentStatus.NEEDS_RECALIBRATION, false);
-                statuses.put(ComponentStatus.GUN_ENABLED , false);
+                statuses.put(ComponentStatus.GUN_ENABLED, false);
                 statuses.put(ComponentStatus.DROPPED, false);
             }
         }
         return statuses;
     }
 
+    /**
+     * This method generates velocity for a specific component.
+     *
+     * @param type component type that velocity is generated for.
+     * @return requested velocity of the component
+     */
     public static int getVelocityFor(ComponentType type) {
         int velocity = 0;
         switch (type) {
@@ -233,9 +258,15 @@ public class CharacterisesGenerator {
         return velocity;
     }
 
-    public static ComponentType getGunTypeForEnemy(ComponentType type){
+    /**
+     * This method associate to each enemy a gun type.
+     *
+     * @param type enemy type that gun is generated for.
+     * @return gun type
+     */
+    public static ComponentType getGunTypeForEnemy(ComponentType type) {
         ComponentType type1 = ComponentType.NONE;
-        switch (type){
+        switch (type) {
             case GUNNER_ENEMY -> type1 = ComponentType.GUN_1;
             case MACHINE_GUN_ENEMY -> type1 = ComponentType.GUN_2;
         }

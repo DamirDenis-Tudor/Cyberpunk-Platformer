@@ -3,17 +3,19 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "maps/industrial_map.tmx",
     "expandedProjectPaths": [
         "maps",
         ".",
+        "backgrounds",
         "in_game_assets"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "backgrounds/green_background.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.5
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
         },
         "backgrounds/industrial_background.tsx": {
             "dynamicWrapping": true,
@@ -121,21 +123,21 @@
         "maps/industrial_map.tmx": {
             "expandedObjectLayers": [
                 7,
+                12,
+                13,
                 10,
-                3,
                 4,
+                5,
+                8,
                 9,
                 6,
-                12,
-                8,
-                13,
-                5
+                3
             ],
             "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 2641.5,
-                "y": 292
+                "x": 2867.5,
+                "y": 310
             }
         },
         "maps/industrial_map/industrial_background.tsx": {
@@ -196,12 +198,15 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 25,
     "openFiles": [
+        "maps/industrial_map.tmx",
+        "backgrounds/green_background.tsx"
     ],
     "project": "cyber.tiled-project",
     "recentFiles": [
+        "backgrounds/green_background.tsx",
+        "maps/industrial_map.tmx",
         "backgrounds/industrial_background.tsx",
         "maps/green_map.tmx",
-        "maps/industrial_map.tmx",
         "maps/power_map.tmx",
         "tilesets/powerstation_tileset.tsx",
         "objects/powerstation_objects.tsx",
@@ -209,8 +214,7 @@
         "tilesets/green_tileset.tsx",
         "objects/greenzone_objects.tsx",
         "in_game_assets/animations.tsx",
-        "in_game_assets/Weapons&Buletts.tsx",
-        "maps/proba.tsx"
+        "in_game_assets/Weapons&Buletts.tsx"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

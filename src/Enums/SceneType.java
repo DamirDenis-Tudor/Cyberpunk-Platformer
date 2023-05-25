@@ -1,7 +1,7 @@
 package Enums;
 
 /**
- * THis class has all the scene names.
+ * This class has all the scene names.
  */
 public enum SceneType {
     NO_SCENE, PLAY_SCENE, LEVEL_COMPLETED_SCENE, LEVEL_PAUSED_SCENE, LEVEL_FAILED_SCENE,

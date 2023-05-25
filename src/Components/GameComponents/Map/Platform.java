@@ -16,15 +16,35 @@ import java.util.Random;
 import static Utils.Constants.PLATFORM_VELOCITY;
 
 /**
- * This class describes the platform behavior.The code might be complicated, but it is not.
- * It is nothing more than a state machine that describes the interactions with other components.
+ * This class describes the platform behavior.
+ *
+ * @see DynamicComponent
  */
 public class Platform extends DynamicComponent {
+    /**
+     * Variable for animation wrapper specific to a helicopter.
+     */
     transient protected AnimationHandler animationHandler;
-    protected final Map<ComponentStatus, Boolean> statuses;
-    private AnimationType animationType;
 
-    public Platform(Scene scene, Coordinate<Integer> position , AnimationType animationType) {
+    /**
+     * Collection that stores supported statuses.
+     */
+    protected final Map<ComponentStatus, Boolean> statuses;
+
+    /**
+     * Variable that stores an animation type for a particular platform.
+     */
+    private final AnimationType animationType;
+
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene         reference to the component that must be notified.
+     * @param position      component start position.
+     * @param animationType type related to a specific platform.
+     */
+
+    public Platform(Scene scene, Coordinate<Integer> position, AnimationType animationType) {
         super();
         this.scene = scene;
 
@@ -75,9 +95,9 @@ public class Platform extends DynamicComponent {
                 animationHandler.getAnimation().setDirection(false);
             }
         } else if (component.getGeneralType() == ComponentType.PLAYER) {
-            if(animationHandler.getAnimation().getDirection()){
+            if (animationHandler.getAnimation().getDirection()) {
                 component.getCollideBox().moveByX(PLATFORM_VELOCITY);
-            } else  {
+            } else {
                 component.getCollideBox().moveByX(-PLATFORM_VELOCITY);
             }
 
@@ -98,18 +118,8 @@ public class Platform extends DynamicComponent {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        if(!getActiveStatus()) return;
+        if (!getActiveStatus()) return;
         animationHandler.draw(graphics2D);
-    }
-
-    @Override
-    public ComponentType getCurrentType() {
-        return null;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.PLATFORM;
     }
 
     @Override
@@ -122,10 +132,20 @@ public class Platform extends DynamicComponent {
         collideBox = animationHandler.getAnimation().getRectangle();
 
         // restore animation direction
-        if (statuses.get(ComponentStatus.LEFT_COLLISION)){
+        if (statuses.get(ComponentStatus.LEFT_COLLISION)) {
             animationHandler.getAnimation().setDirection(true);
-        }else if (statuses.get(ComponentStatus.RIGHT_COLLISION)){
+        } else if (statuses.get(ComponentStatus.RIGHT_COLLISION)) {
             animationHandler.getAnimation().setDirection(false);
         }
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return ComponentType.NONE;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.PLATFORM;
     }
 }

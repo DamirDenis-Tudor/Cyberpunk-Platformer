@@ -1,7 +1,7 @@
 package Components.GameComponents.GameItems;
 
 import Components.BaseComponents.AnimationHandler;
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.GameComponents.DynamicComponent;
 import Components.Notifiable;
@@ -15,28 +15,67 @@ import Utils.Rectangle;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import static Utils.Constants.BULLET_VELOCITY;
 
 /**
  * This class describes the bullet behaviors.
+ *
+ * @see DynamicComponent
  */
 public class Bullet extends DynamicComponent {
-    transient private ImageWrapper imageWrapper; // for basic bullet
-    transient private AnimationHandler animationHandler; // for airplane bullet
-    private ComponentType possessor;
-    private ComponentType bulletType;
-    private int elapsedDistance = 0;
-    private boolean direction;
-    private int xOffset = 0;
-    private int yOffset = 0;
+    /**
+     * Variable for buffered image wrapper specific to a gun bullet.
+     */
+    transient private ImageWrapper imageWrapper;
 
-    public Bullet(BufferedImage image, Rectangle collideBox) throws IOException {
+    /**
+     * Variable for animation wrapper specific to a plane bullet.
+     */
+    transient private AnimationHandler animationHandler;
+
+    /**
+     * Variable that stores the possessor of the bullet, usually a gun.
+     */
+    private ComponentType possessor;
+
+    /**
+     * Variable that stores current bullet type.
+     */
+    private ComponentType bulletType;
+
+    /**
+     * Variable that stores the bullet direction.
+     */
+    private boolean direction;
+
+    /**
+     * Variables for the drawing on screen offset.
+     */
+    private int xOffset,yOffset;
+
+    /**
+     * Variable that counts the elapsed distance to see if the component overcomes the maximum distance.
+     */
+    private int elapsedDistance;
+
+    /**
+     * This is a constructor a specific bullet instance.
+     * @param image its related image
+     * @param collideBox its related intersection box
+     */
+    public Bullet(BufferedImage image, Rectangle collideBox) {
         this.collideBox = collideBox;
         this.imageWrapper = new ImageWrapper(image);
     }
 
+    /**
+     * This is a copy constructor of an existing bullet.
+     * @param scene component that needs to be notified.
+     * @param type bullet related type.
+     * @param position bullet starting position.
+     * @param possessor bullet related possessor.
+     */
     public Bullet(Scene scene, ComponentType type, Coordinate<Integer> position, ComponentType possessor) {
         this.scene = scene;
         this.possessor = possessor;
@@ -47,8 +86,8 @@ public class Bullet extends DynamicComponent {
             collideBox = this.animationHandler.getAnimation().getRectangle();
             xOffset = 100;
         } else {
-            this.imageWrapper = AssetsDeposit.get().getBulletByGunName(type).imageWrapper;
-            this.collideBox = new Rectangle(AssetsDeposit.get().getBulletByGunName(type).collideBox);
+            this.imageWrapper = AssetDeposit.get().getBulletByGunName(type).imageWrapper;
+            this.collideBox = new Rectangle(AssetDeposit.get().getBulletByGunName(type).collideBox);
             this.collideBox.setPosition(new Coordinate<>(position.getPosX() + 40, position.getPosY() + 30));
         }
     }
@@ -131,16 +170,6 @@ public class Bullet extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getCurrentType() {
-        return possessor;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.BULLET;
-    }
-
-    @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
@@ -151,7 +180,16 @@ public class Bullet extends DynamicComponent {
             collideBox = this.animationHandler.getAnimation().getRectangle();
             xOffset = 100;
         } else {
-            imageWrapper = AssetsDeposit.get().getBulletByGunName(bulletType).imageWrapper;
+            imageWrapper = AssetDeposit.get().getBulletByGunName(bulletType).imageWrapper;
         }
+    }
+    @Override
+    public ComponentType getCurrentType() {
+        return possessor;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.BULLET;
     }
 }

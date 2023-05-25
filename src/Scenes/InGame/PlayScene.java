@@ -1,6 +1,6 @@
 package Scenes.InGame;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.GameComponents.Characters.AirEnemy;
 import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.Characters.GroundEnemy;
@@ -35,8 +35,6 @@ import static Enums.ComponentType.*;
 import static Enums.MessageType.CLEAR_INVENTORY;
 import static Utils.Constants.INVALID_ID;
 
-// TODO : Narrator(DynamicComponent) -> for tutorial
-
 /**
  * This class encapsulates the relation between in game components like player, enemies, bullets, platforms, etc.
  *
@@ -70,9 +68,9 @@ final public class PlayScene extends Scene {
     private Integer enemiesNumber = 0;
 
     /*
-    * current enemies text
-    */
-    private Text textEnemiesNumber;
+     * current enemies text
+     */
+    private final Text textEnemiesNumber;
 
     /**
      * This constructor initializes the scene.
@@ -81,7 +79,7 @@ final public class PlayScene extends Scene {
      */
     public PlayScene(Scenes.SceneHandler sceneHandler) {
         super(sceneHandler);
-        textEnemiesNumber = new Text(" " + enemiesNumber , new Coordinate<>(200,130) , 60);
+        textEnemiesNumber = new Text(" " + enemiesNumber, new Coordinate<>(200, 130), 60);
         textEnemiesNumber.setTextColor(ColorType.BLACK_COLOR);
     }
 
@@ -94,7 +92,7 @@ final public class PlayScene extends Scene {
             components.clear();
         }
         // add the components specific to the scene
-        GameMap map = AssetsDeposit.get().getGameMap(currentMap);
+        GameMap map = AssetDeposit.get().getGameMap(currentMap);
         map.setScene(this);
         addComponent(map);
 
@@ -156,7 +154,8 @@ final public class PlayScene extends Scene {
         // add player
         try {
             addComponent(new Player(this, map.getPositionForEntities(PLAYER).get(0), currentPlayer));
-        }catch (IndexOutOfBoundsException ignored){}
+        } catch (IndexOutOfBoundsException ignored) {
+        }
         textEnemiesNumber.setText("ENEMIES: " + enemiesNumber);
     }
 
@@ -247,7 +246,7 @@ final public class PlayScene extends Scene {
                         DynamicComponent component = (AirEnemy) objectStream.readObject();
                         components.add(component);
                         component.addMissingPartsAfterDeserialization(this);
-                        if(component.getCurrentType() == DRONE_ENEMY) enemiesNumber++;
+                        if (component.getCurrentType() == DRONE_ENEMY) enemiesNumber++;
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -270,10 +269,10 @@ final public class PlayScene extends Scene {
             for (Integer id : toBeDeleted) {
                 removeComponent(findComponentWithId(id));
             }
-            if(enemiesNumber == 0){
+            if (enemiesNumber == 0) {
                 sceneHandler.handleSceneChangeRequest(SceneType.LEVEL_COMPLETED_SCENE);
             }
-        }catch (ComponentNotFoundException e){
+        } catch (ComponentNotFoundException e) {
             System.out.println("Error : " + e.getMessage());
         }
         toBeDeleted.clear();
@@ -283,7 +282,7 @@ final public class PlayScene extends Scene {
     public void draw(Graphics2D graphics2D) {
         super.draw(graphics2D);
         textEnemiesNumber.draw(graphics2D);
-        AssetsDeposit.get().getGameOverlay().draw(graphics2D);
+        AssetDeposit.get().getMenuImage(GAME_OVERLAY).draw(graphics2D);
     }
 
     @Override
@@ -291,8 +290,8 @@ final public class PlayScene extends Scene {
         try {
             // no matter who is sending the 'Destroy' message, it must be handled first.
             if (message.type() == MessageType.DESTROY) {
-                if(message.source() == GROUND_ENEMY || message.source() == AIR_ENEMY) {
-                    enemiesNumber --;
+                if (message.source() == GROUND_ENEMY || message.source() == AIR_ENEMY) {
+                    enemiesNumber--;
                     textEnemiesNumber.setText("ENEMIES: " + enemiesNumber);
                 }
                 toBeDeleted.add(message.componentId());
@@ -310,7 +309,7 @@ final public class PlayScene extends Scene {
                 case SCENE -> {
                     switch (message.type()) {
                         case NEW_GAME -> {
-                            sceneHandler.notify(new Message(CLEAR_INVENTORY , SCENE , INVALID_ID) );
+                            sceneHandler.notify(new Message(CLEAR_INVENTORY, SCENE, INVALID_ID));
                             newGame();
                         }
                         case LOAD_GAME -> loadGame();
@@ -337,13 +336,7 @@ final public class PlayScene extends Scene {
                                 findComponentWithName(PLAYER).interactionWith(component);
                             }
                         }
-                        case PLAYER_DEATH -> {
-                           /* for (DynamicComponent component : getAllComponentsWithName(GROUND_ENEMY)) {
-                                component.notify(new Message(MessageType.PLAYER_DEATH, PLAYER, message.componentId()));
-                            }*/
-                            //todo
-                            sceneHandler.handleSceneChangeRequest(SceneType.LEVEL_FAILED_SCENE);
-                        }
+                        case PLAYER_DEATH -> sceneHandler.handleSceneChangeRequest(SceneType.LEVEL_FAILED_SCENE);
                         case PLAYER_DIRECTION_LEFT, PLAYER_DIRECTION_RIGHT, HIDE_GUN, SHOW_GUN, SHOOT -> {
                             for (DynamicComponent component : getAllComponentsWithName(GUN)) {
                                 component.notify(new Message(message.type(), PLAYER, message.componentId()));

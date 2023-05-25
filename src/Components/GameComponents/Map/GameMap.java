@@ -1,6 +1,6 @@
 package Components.GameComponents.Map;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.GameComponents.DynamicComponent;
 import Components.Notifiable;
 import Database.Database;
@@ -8,7 +8,6 @@ import Enums.ComponentType;
 import Enums.MessageType;
 import Scenes.InGame.PlayScene;
 import Scenes.Messages.Message;
-import Scenes.Scene;
 import Utils.Coordinate;
 import Utils.Rectangle;
 import Window.Camera;
@@ -28,22 +27,49 @@ import java.util.List;
 import static Utils.Constants.*;
 
 /**
- * This class contains all the information about the game map:
- * matrix of objects|tiles, dimensions, predefined object positions.
+ * This class contains all the information about the game map matrix of objects|tiles,
+ * dimensions, predefined object positions.
+ *
+ * @see DynamicComponent
  */
 public class GameMap extends DynamicComponent {
-    private int width; // lines
-    private int height; // columns
-    transient private Map<String, MapAsset> tiles; // String - id , Tile
-    transient private Map<String, MapAsset> objects; // String - id , Object
-    private String[][] tilesIndexes; // indexes for tiles
-    private String[][] objectsIndexes; // indexes for objects
-    private String[][] decorsIndexes; // indexes for objects
-    transient private ParallaxWallpaper background; // parallax ba    private String[][] tilesIndexes; // indexes for tilesckground
-    private Map<String, List<Rectangle>> entitiesCoordinates; // map of the preloaded entities
+    /**
+     * Containers that store tiles image wrappers.
+     */
+    transient private Map<String, MapAsset> tiles, objects;
+
+    /**
+     * Indexes matrix of the layers.
+     */
+    private String[][] tileIndexes, objectIndexes, decorIndexes;
+
+    /**
+     * Variable that wraps the parallel effect.
+     */
+    transient private ParallaxWallpaper background;
+
+    /**
+     * Container that stores all the map entities coordinates.
+     */
+    private Map<String, List<Rectangle>> entityCoordinates;
+
+    /**
+     * Variables that stores map dimentsion.
+     */
+    private int width, height;
+
+    /**
+     * Variable that stores the map type.
+     */
     ComponentType mapType;
 
-    public GameMap(Scene scene, ComponentType mapType) {
+    /**
+     * This constructor loads all the important fields.
+     *
+     * @param scene   reference to the component that must be notified.
+     * @param mapType map related type.
+     */
+    public GameMap(Notifiable scene, ComponentType mapType) {
         this.scene = scene;
         this.mapType = mapType;
         String path = "";
@@ -160,11 +186,11 @@ public class GameMap extends DynamicComponent {
             height = rows.length - 1;
             width = rows[1].split(",").length;
 
-            tilesIndexes = new String[height][width];
+            tileIndexes = new String[height][width];
 
             for (int i = 0; i < height; i++) {
                 String[] cols = rows[i + 1].split(",");
-                System.arraycopy(cols, 0, tilesIndexes[i], 0, width);
+                System.arraycopy(cols, 0, tileIndexes[i], 0, width);
             }
 
             // -------------------------------------
@@ -175,11 +201,11 @@ public class GameMap extends DynamicComponent {
 
             String[] objectsRows = objectsBuffer.split("\n"); // split the string into rows
 
-            objectsIndexes = new String[height][width];
+            objectIndexes = new String[height][width];
 
             for (int i = 0; i < height; i++) {
                 String[] objectsCols = objectsRows[i + 1].split(",");
-                System.arraycopy(objectsCols, 0, objectsIndexes[i], 0, width);
+                System.arraycopy(objectsCols, 0, objectIndexes[i], 0, width);
             }
 
             // -------------------------------------
@@ -191,18 +217,18 @@ public class GameMap extends DynamicComponent {
 
             String[] decorsRows = decorBuffer.split("\n"); // split the string into rows
 
-            decorsIndexes = new String[height][width];
+            decorIndexes = new String[height][width];
 
             for (int i = 0; i < height; i++) {
                 String[] decorsCols = decorsRows[i + 1].split(",");
-                System.arraycopy(decorsCols, 0, decorsIndexes[i], 0, width);
+                System.arraycopy(decorsCols, 0, decorIndexes[i], 0, width);
             }
 
             // -------------------------------------
             // few more code and the map is finally added
             // now load the predefined positions
 
-            entitiesCoordinates = new HashMap<>();
+            entityCoordinates = new HashMap<>();
             NodeList positions = root.getElementsByTagName("objectgroup");
 
             for (int index = 0; index < positions.getLength(); ++index) {
@@ -222,7 +248,7 @@ public class GameMap extends DynamicComponent {
                     int h = (int) (Float.parseFloat(objectElement.getAttributeNode("height").getValue()) * MAP_SCALE);
                     list.add(new Rectangle(new Coordinate<>(x, y), w, h));
 
-                    entitiesCoordinates.put(objectgroupName, list);
+                    entityCoordinates.put(objectgroupName, list);
                 }
 
                 // for an efficient drawing we must construct the mapAssets objects
@@ -234,7 +260,7 @@ public class GameMap extends DynamicComponent {
     }
 
     @Override
-    public void setScene(Scene scene) {
+    public void setScene(Notifiable scene) {
         super.setScene(scene);
         Camera.get().setGameMapPixelWidthDimension(this.width * MAP_DIM);
         Camera.get().setGameMapPixelHeightDimension(this.height * MAP_DIM);
@@ -244,81 +270,6 @@ public class GameMap extends DynamicComponent {
     public void notify(Message message) {
     }
 
-    @Override
-    public void update() {
-        background.update();
-    }
-
-    @Override
-    public void draw(Graphics2D graphics2D) {
-        /*
-         * drawing the parallax background
-         */
-        background.draw(graphics2D);
-
-        /*
-         * drawing the tiles
-         */
-        drawLayer(graphics2D, tilesIndexes, tiles);
-
-        /*
-         * drawing the objects
-         */
-        drawLayer(graphics2D, objectsIndexes, objects);
-
-        /*
-         * drawing decorations
-         */
-        drawLayer(graphics2D, decorsIndexes, objects);
-
-    }
-
-    @Override
-    public ComponentType getCurrentType() {
-        return mapType;
-    }
-
-    private void drawLayer(Graphics2D graphics2D, String[][] decorsIndexes, Map<String, MapAsset> types) {
-        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / MAP_DIM - 4);
-        int xEnd = Math.min(width - 1, (-Camera.get().getCurrentHorizontalOffset() + WINDOW_WIDTH) / MAP_DIM + 4);
-        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / MAP_DIM - 4);
-        int yEnd = Math.min(height - 1, (-Camera.get().getCurrentVerticalOffset() + WINDOW_HEIGHT) / MAP_DIM + 4);
-
-        for (int i = yStart; i <= yEnd; i++) {
-            for (int j = xStart; j <= xEnd; j++) {
-                if (!Objects.equals(decorsIndexes[i][j], "0")) {
-                    MapAsset asset = types.get(decorsIndexes[i][j]);
-                    int dimW = asset.getWidth();
-                    int dimH = asset.getHeight();
-                    int xPos = j * MAP_DIM + Camera.get().getCurrentHorizontalOffset();
-                    int yPos = i * MAP_DIM - dimH + MAP_DIM + Camera.get().getCurrentVerticalOffset();
-
-                    graphics2D.drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
-                }
-            }
-        }
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.MAP;
-    }
-
-    @Override
-    public void addMissingPartsAfterDeserialization(Notifiable scene) {
-        super.addMissingPartsAfterDeserialization(scene);
-        this.tiles = AssetsDeposit.get().getGameMap(mapType).tiles;
-        this.objects = AssetsDeposit.get().getGameMap(mapType).objects;
-        Camera.get().setGameMapPixelWidthDimension(width * MAP_DIM);
-        Camera.get().setGameMapPixelHeightDimension(height * MAP_DIM);
-        this.background = AssetsDeposit.get().getGameMap(mapType).background;
-    }
-
-    /**
-     * In this context, a map handles the interaction with any movable object
-     *
-     * @param object interacts with
-     */
     @Override
     public void interactionWith(Object object) {
         DynamicComponent component = (DynamicComponent) object;
@@ -330,7 +281,7 @@ public class GameMap extends DynamicComponent {
         if (component.getGeneralType() == ComponentType.PLAYER) {
             // => check if is on a ladder
             try {
-                for (Rectangle ladder : entitiesCoordinates.get("ladders")) {
+                for (Rectangle ladder : entityCoordinates.get("ladders")) {
                     if (rectangle.intersects(ladder)) {
                         component.notify(new Message(MessageType.IS_ON_LADDER, ComponentType.MAP, getId()));
                         return;
@@ -353,14 +304,15 @@ public class GameMap extends DynamicComponent {
                         return;
                     }
                 }
-            }catch (NullPointerException ignored){}
+            } catch (NullPointerException ignored) {
+            }
         }
 
         // if the message is from bullet => check if it has a collision
         if (component.getGeneralType() == ComponentType.BULLET) {
             int x = component.getCollideBox().getMinX() / MAP_DIM;
             int y = component.getCollideBox().getCenterY() / MAP_DIM;
-            if (x <= 0 || x > width - 1 || !Objects.equals(tilesIndexes[y][x], "0")) {
+            if (x <= 0 || x > width - 1 || !Objects.equals(tileIndexes[y][x], "0")) {
                 component.notify(new Message(MessageType.HAS_COLLISION, ComponentType.MAP, getId()));
             }
             return;
@@ -380,7 +332,7 @@ public class GameMap extends DynamicComponent {
 
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
-                if (!Objects.equals(tilesIndexes[y][x], "0")) {
+                if (!Objects.equals(tileIndexes[y][x], "0")) {
                     Rectangle tileRect = getRectangle(x, y);
 
                     /*
@@ -431,9 +383,9 @@ public class GameMap extends DynamicComponent {
         if (component.getGeneralType() != ComponentType.PLAYER) {
             if (component.getGeneralType() == ComponentType.GROUND_ENEMY) {
                 // collision verification is necessary to prevent components from falling off the platform
-                if (Objects.equals(tilesIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMaxX() / MAP_DIM - 1], "0")) {
+                if (Objects.equals(tileIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMaxX() / MAP_DIM - 1], "0")) {
                     wasLeftCollision = true;
-                } else if (Objects.equals(tilesIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMinX() / MAP_DIM + 1], "0")) {
+                } else if (Objects.equals(tileIndexes[rectangle.getCenterY() / MAP_DIM + 1][rectangle.getMinX() / MAP_DIM + 1], "0")) {
                     wasRightCollision = true;
                 }
             }
@@ -449,7 +401,87 @@ public class GameMap extends DynamicComponent {
         }
     }
 
+    @Override
+    public void update() {
+        background.update();
+    }
+
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        /*
+         * drawing the parallax background
+         */
+        background.draw(graphics2D);
+
+        /*
+         * drawing the tiles
+         */
+        drawLayer(graphics2D, tileIndexes, tiles);
+
+        /*
+         * drawing the objects
+         */
+        drawLayer(graphics2D, objectIndexes, objects);
+
+        /*
+         * drawing decorations
+         */
+        drawLayer(graphics2D, decorIndexes, objects);
+
+    }
+
+
     /**
+     * This method draws a specific layer of the map.
+     *
+     * @param graphics2D reference to graohic context.
+     * @param indexes    matrix specific to the layer.
+     * @param types      map of sprite types.
+     */
+    private void drawLayer(Graphics2D graphics2D, String[][] indexes, Map<String, MapAsset> types) {
+        int xStart = Math.max(0, -Camera.get().getCurrentHorizontalOffset() / MAP_DIM - 4);
+        int xEnd = Math.min(width - 1, (-Camera.get().getCurrentHorizontalOffset() + WINDOW_WIDTH) / MAP_DIM + 4);
+        int yStart = Math.max(0, -Camera.get().getCurrentVerticalOffset() / MAP_DIM - 4);
+        int yEnd = Math.min(height - 1, (-Camera.get().getCurrentVerticalOffset() + WINDOW_HEIGHT) / MAP_DIM + 4);
+
+        for (int i = yStart; i <= yEnd; i++) {
+            for (int j = xStart; j <= xEnd; j++) {
+                if (!Objects.equals(indexes[i][j], "0")) {
+                    MapAsset asset = types.get(indexes[i][j]);
+                    int dimW = asset.getWidth();
+                    int dimH = asset.getHeight();
+                    int xPos = j * MAP_DIM + Camera.get().getCurrentHorizontalOffset();
+                    int yPos = i * MAP_DIM - dimH + MAP_DIM + Camera.get().getCurrentVerticalOffset();
+
+                    graphics2D.drawImage(asset.getImage(), xPos, yPos, dimW, dimH, null);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void addMissingPartsAfterDeserialization(Notifiable scene) {
+        super.addMissingPartsAfterDeserialization(scene);
+        this.tiles = AssetDeposit.get().getGameMap(mapType).tiles;
+        this.objects = AssetDeposit.get().getGameMap(mapType).objects;
+        Camera.get().setGameMapPixelWidthDimension(width * MAP_DIM);
+        Camera.get().setGameMapPixelHeightDimension(height * MAP_DIM);
+        this.background = AssetDeposit.get().getGameMap(mapType).background;
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return mapType;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.MAP;
+    }
+
+    /**
+     * Getter for the map rectangle.
+     *
      * @param x map relative X coordinate
      * @param y map relative Y coordinate
      * @return rectangle object
@@ -459,6 +491,12 @@ public class GameMap extends DynamicComponent {
         return new Rectangle(pos, MAP_DIM, MAP_DIM);
     }
 
+    /**
+     * Getter for a specif group of entities.
+     *
+     * @param componentType entity group type.
+     * @return list of entity group coordinates.
+     */
     public List<Coordinate<Integer>> getPositionForEntities(ComponentType componentType) {
         String componentName = "";
         switch (componentType) {
@@ -473,20 +511,26 @@ public class GameMap extends DynamicComponent {
         }
         List<Coordinate<Integer>> coordinates = new ArrayList<>();
         try {
-            for (Rectangle rectangle : entitiesCoordinates.get(componentName)) {
+            for (Rectangle rectangle : entityCoordinates.get(componentName)) {
                 coordinates.add(rectangle.getPosition());
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println("Entity : " + componentName + " not found");
         }
         return coordinates;
     }
 
 
+    /**
+     * @return map vertical dimension
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * @return map horizontal dimension
+     */
     public int getWidth() {
         return width;
     }

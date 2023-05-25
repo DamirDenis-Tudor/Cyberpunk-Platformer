@@ -1,6 +1,6 @@
 package Scenes.InMenu;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
@@ -18,12 +18,19 @@ import Window.Camera;
 
 /**
  * This class encapsulates the first scene of the menu.
+ *
+ * @see Scene
  */
 final public class MainMenuScene extends Scene {
 
+    /**
+     * This constructor initializes the scene.
+     *
+     * @param sceneHandler reference to its handler.
+     */
     public MainMenuScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
+        ImageWrapper menuWallpaper = AssetDeposit.get().getMenuImage(ComponentType.MENU_WALLPAPER);
         menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
         components.add(new Text("v.1.4", new Coordinate<>(100, 50), 50));

@@ -6,17 +6,24 @@ import java.util.Random;
  * This class is a simple id generator.
  */
 public class RandomIdGenerator {
-    /**Alphabet of generator*/
+    /**
+     * Alphabet of generator
+     */
     private static final String ALPHABET = "ABCDEFGH123456789abcdefghijklmnopqrstuvwxyzIJKLMNOPQRSTUVWXYZ";
 
-    /**Id length*/
+    /**
+     * Id length
+     */
     private static final int LENGTH = 5;
 
-    /**Shared instance*/
+    /**
+     * Shared instance
+     */
     private static final Random RANDOM = new Random();
 
     /**
      * This method generates a string id.
+     *
      * @return generated id.
      */
     public static String generate() {

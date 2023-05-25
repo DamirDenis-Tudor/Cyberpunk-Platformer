@@ -1,6 +1,6 @@
 package Scenes.InMenu;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Database.Database;
@@ -19,20 +19,25 @@ import java.util.Objects;
 
 /**
  * This class encapsulates the load scene.
+ *
+ * @see Scene
  */
 public class LoadScene extends Scene {
-    /**Stores the starting position of loads related components.*/
+    /**
+     * Stores the starting position of loads related components.
+     */
     private int savesStartingPosition = 0;
 
 
     /**
      * This constructor initializes the scene.
+     *
      * @param sceneHandler reference to its handler.
      */
     public LoadScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
+        ImageWrapper menuWallpaper = AssetDeposit.get().getMenuImage(ComponentType.MENU_WALLPAPER);
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
         components.add(new Button(this, ComponentType.LOAD_SAVE, "LOAD",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));

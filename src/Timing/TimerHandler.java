@@ -8,10 +8,14 @@ import java.util.Map;
  * handles all the timers in the game by saving them into a HashMap.
  */
 public class TimerHandler {
-    /**Shared instance.*/
+    /**
+     * Shared instance.
+     */
     private static TimerHandler instance = null;
 
-    /**Map of active timers.*/
+    /**
+     * Map of active timers.
+     */
     private final Map<String, Timer> timers;
 
     /**
@@ -23,6 +27,7 @@ public class TimerHandler {
 
     /**
      * Getter for shared instance.
+     *
      * @return shared instance of class.
      */
     public static TimerHandler get() {
@@ -34,6 +39,7 @@ public class TimerHandler {
 
     /**
      * This method adds a timer that needs to be managed.
+     *
      * @param timer timer to be added
      * @param ID    identifier of the timer
      */
@@ -52,6 +58,7 @@ public class TimerHandler {
 
     /**
      * Getter for a specific timer.
+     *
      * @param ID timer identifier
      * @return timer
      */

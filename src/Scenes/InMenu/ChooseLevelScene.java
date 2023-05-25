@@ -1,6 +1,6 @@
 package Scenes.InMenu;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
@@ -23,23 +23,31 @@ import java.util.List;
 
 /**
  * This class encapsulates the scene of choosing a level.
+ *
+ * @see Scene
  */
 final public class ChooseLevelScene extends Scene {
 
-    /**Variable that stores the selected map.*/
+    /**
+     * Variable that stores the selected map.
+     */
     private MessageType selectedMap;
 
-    /**List that stores components that could be temporary.*/
-    private final List <StaticComponent> changeableComponents = new ArrayList<>();
+    /**
+     * List that stores components that could be temporary.
+     */
+    private final List<StaticComponent> changeableComponents = new ArrayList<>();
 
     /**
      * This constructor initializes the scene.
+     *
      * @param sceneHandler reference to its handler.
      */
     public ChooseLevelScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
+
+        ImageWrapper menuWallpaper = AssetDeposit.get().getMenuImage(ComponentType.MENU_WALLPAPER);
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
         components.add(new Button(this, ComponentType.INDUSTRIAL_CITY, "INDUSTRIAL CITY",
                 new Rectangle(new Coordinate<>(350, 300), 400, 100), 45));
@@ -54,10 +62,10 @@ final public class ChooseLevelScene extends Scene {
     @Override
     public void update() {
         super.update();
-        for (StaticComponent changeableComponent:changeableComponents){
+        for (StaticComponent changeableComponent : changeableComponents) {
             changeableComponent.update();
         }
-        if(KeyboardInput.get().getKeyEnter() && selectedMap!=null){
+        if (KeyboardInput.get().getKeyEnter() && selectedMap != null) {
             changeableComponents.clear();
             sceneHandler.notify(new Message(selectedMap, ComponentType.SCENE, -1));
             sceneHandler.handleSceneChangeRequest(SceneType.CHOOSE_PLAYER_SCENE);
@@ -67,7 +75,7 @@ final public class ChooseLevelScene extends Scene {
     @Override
     public void draw(Graphics2D graphics2D) {
         super.draw(graphics2D);
-        for (StaticComponent changeableComponent:changeableComponents){
+        for (StaticComponent changeableComponent : changeableComponents) {
             changeableComponent.draw(graphics2D);
         }
     }
@@ -77,30 +85,30 @@ final public class ChooseLevelScene extends Scene {
         switch (message.type()) {
             case SCENE_HAS_BEEN_ACTIVATED -> {
                 MouseInput.get().reset();
-                Text text = new Text("Select map ..." , new Coordinate<>(1300 , 500) , 55);
+                Text text = new Text("Select map ...", new Coordinate<>(1300, 500), 55);
                 changeableComponents.add(text);
             }
             case BUTTON_CLICKED -> {
                 switch (message.source()) {
-                    case GREEN_CITY, INDUSTRIAL_CITY,POWER_STATION -> {
+                    case GREEN_CITY, INDUSTRIAL_CITY, POWER_STATION -> {
                         changeableComponents.clear();
-                        Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 820) , 55);
+                        Text text = new Text("Press ENTER ...", new Coordinate<>(1250, 820), 55);
                         ImageWrapper imageWrapper = null;
-                        switch (message.source()){
+                        switch (message.source()) {
                             case GREEN_CITY -> {
                                 selectedMap = MessageType.GREEN_MAP_SELECTED;
-                                imageWrapper = AssetsDeposit.get().getGreenMapPreview();
-                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
+                                imageWrapper = AssetDeposit.get().getMenuImage(ComponentType.GREEN_MAP_PREVIEW);
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900, 300), 650, 450));
                             }
                             case INDUSTRIAL_CITY -> {
                                 selectedMap = MessageType.INDUSTRIAL_MAP_SELECTED;
-                                imageWrapper = AssetsDeposit.get().getIndustrialMapPreview();
-                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
+                                imageWrapper = AssetDeposit.get().getMenuImage(ComponentType.INDUSTRIAL_MAP_PREVIEW);
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900, 300), 650, 450));
                             }
                             case POWER_STATION -> {
                                 selectedMap = MessageType.POWER_MAP_SELECTED;
-                                imageWrapper = AssetsDeposit.get().getPowerMapPreview();
-                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900,300) , 650,450));
+                                imageWrapper = AssetDeposit.get().getMenuImage(ComponentType.POWER_MAP_PREVIEW);
+                                imageWrapper.setRectangle(new Rectangle(new Coordinate<>(900, 300), 650, 450));
                             }
                         }
                         changeableComponents.add(imageWrapper);

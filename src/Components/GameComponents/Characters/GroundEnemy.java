@@ -5,6 +5,7 @@ import Components.GameComponents.CharacterisesGenerator;
 import Components.GameComponents.DynamicComponent;
 import Components.Notifiable;
 import Enums.*;
+import Input.KeyboardInput;
 import Scenes.Messages.Message;
 import Scenes.Scene;
 import Timing.Timer;
@@ -18,18 +19,50 @@ import static Utils.Constants.ENEMY_RANGE;
 import static Utils.Constants.GRAVITATION_FORCE;
 
 /**
- * This class describes a basic enemy behavior.The code might be complicated, but it is not.
+ * This class describes a basic enemy behavior.
  * It is nothing more than a state machine that describes the interactions with other components.
+ *
+ * @see DynamicComponent
  */
 public class GroundEnemy extends DynamicComponent {
-    transient protected AnimationHandler animationHandler;
-    transient protected TimerHandler timerHandler;
-    protected Map<ComponentStatus, Boolean> statuses;
-    protected final Map<GeneralAnimationTypes, AnimationType> animationsType;
-    protected int health = 100;
-    protected int velocity ;
+    /**
+     * Reference to shared timer handler.
+     */
+    transient private TimerHandler timerHandler;
 
-    public GroundEnemy(Scene scene, Coordinate<Integer> position, ComponentType type){
+    /**
+     * Variable that wraps the animation behaviors.
+     */
+    transient private AnimationHandler animationHandler;
+
+    /**
+     * Collection that stores supported statuses.
+     */
+    private final Map<ComponentStatus, Boolean> statuses;
+
+    /**
+     * Collection that stores supported animations.
+     */
+    private final Map<GeneralAnimationTypes, AnimationType> animationType;
+
+    /**
+     * Variable that stores the component heath level.
+     */
+    protected int health = 100;
+
+    /**
+     * Variable that stores the component velocity.
+     */
+    protected int velocity;
+
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene    reference to the component that must be notified.
+     * @param position component start position.
+     * @param type     component-specific type.
+     */
+    public GroundEnemy(Scene scene, Coordinate<Integer> position, ComponentType type) {
         super();
         this.scene = scene;
         animationHandler = new AnimationHandler();
@@ -40,9 +73,9 @@ public class GroundEnemy extends DynamicComponent {
         subtype = type;
         velocity = CharacterisesGenerator.getVelocityFor(type);
         statuses = CharacterisesGenerator.generateStatusesFor(ComponentType.GROUND_ENEMY);
-        animationsType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
+        animationType = CharacterisesGenerator.generateAnimationTypesFor(type, getId());
 
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE), new Coordinate<>(position));
         collideBox = animationHandler.getAnimation().getRectangle();
     }
 
@@ -80,7 +113,7 @@ public class GroundEnemy extends DynamicComponent {
             case PLAYER, BULLET -> {
                 switch (message.type()) {
                     case ATTACK, HAS_COLLISION -> {
-                        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
+                        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.HURT), collideBox.getPosition());
                         animationHandler.getAnimation().setRepeats(4);
                         statuses.put(ComponentStatus.HURT, true);
                         health -= 15;
@@ -103,7 +136,7 @@ public class GroundEnemy extends DynamicComponent {
 
     @Override
     public void interactionWith(Object object) {
-        DynamicComponent component = (DynamicComponent)object;
+        DynamicComponent component = (DynamicComponent) object;
         switch (component.getGeneralType()) {
             case PLAYER -> {
                 if (collideBox.intersects(component.getCollideBox()) && !statuses.get(ComponentStatus.HURT)) {
@@ -178,12 +211,16 @@ public class GroundEnemy extends DynamicComponent {
         }
     }
 
-    protected void handleAnimations(){
+    /**
+     * This method takes some complexity from the update method, and its
+     * task is to change to the required animation at a specific moment of time.
+     */
+    protected void handleAnimations() {
         if (statuses.get(ComponentStatus.DEATH)) {
             if (animationHandler.getAnimation().animationIsOver()) {
                 animationHandler.getAnimation().lockAtLastFrame();
             }
-            animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
+            animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.DEATH), collideBox.getPosition());
         } else {
             if (statuses.get(ComponentStatus.HURT)) {
                 if (animationHandler.getAnimation().repeatsAreOver()) {
@@ -200,20 +237,20 @@ public class GroundEnemy extends DynamicComponent {
                         }
                     }
                 }
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
+                animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.ATTACK), collideBox.getPosition());
                 if (animationHandler.getAnimation().animationIsOver()) {
                     statuses.put(ComponentStatus.FIRST_HIT, false);
                 }
             } else if (statuses.get(ComponentStatus.IDLE)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
+                animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.IDLE), collideBox.getPosition());
             } else if (statuses.get(ComponentStatus.HORIZONTAL_MOVE)) {
-                animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
+                animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
             }
         }
     }
 
     @Override
-    public void update(){
+    public void update() {
         super.update();
         if (!statuses.get(ComponentStatus.BOTTOM_COLLISION)) {
             collideBox.moveByY(GRAVITATION_FORCE);
@@ -258,16 +295,6 @@ public class GroundEnemy extends DynamicComponent {
     }
 
     @Override
-    public ComponentType getCurrentType() {
-        return subtype;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.GROUND_ENEMY;
-    }
-
-    @Override
     public void addMissingPartsAfterDeserialization(Notifiable scene) {
         super.addMissingPartsAfterDeserialization(scene);
 
@@ -275,18 +302,28 @@ public class GroundEnemy extends DynamicComponent {
         timerHandler.addTimer(new Timer(0.2f), TimerType.LOCK_TARGET.toString() + getId());
 
         animationHandler = new AnimationHandler();
-        animationHandler.changeAnimation(animationsType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
+        animationHandler.changeAnimation(animationType.get(GeneralAnimationTypes.WALK), collideBox.getPosition());
 
         collideBox = animationHandler.getAnimation().getRectangle();
-        if (statuses.get(ComponentStatus.LEFT_COLLISION)){
+        if (statuses.get(ComponentStatus.LEFT_COLLISION)) {
             animationHandler.getAnimation().setDirection(true);
-        }else if (statuses.get(ComponentStatus.RIGHT_COLLISION)){
+        } else if (statuses.get(ComponentStatus.RIGHT_COLLISION)) {
             animationHandler.getAnimation().setDirection(false);
         }
 
-        switch (subtype){
-            case GUNNER_ENEMY -> TimerHandler.get().addTimer(new Timer(0.5f) , subtype.name()+getId());
-            case MACHINE_GUN_ENEMY -> TimerHandler.get().addTimer(new Timer(0.4f) , subtype.name()+getId());
+        switch (subtype) {
+            case GUNNER_ENEMY -> TimerHandler.get().addTimer(new Timer(0.5f), subtype.name() + getId());
+            case MACHINE_GUN_ENEMY -> TimerHandler.get().addTimer(new Timer(0.4f), subtype.name() + getId());
         }
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return subtype;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.GROUND_ENEMY;
     }
 }

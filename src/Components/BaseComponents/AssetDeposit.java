@@ -11,15 +11,17 @@ import Utils.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,47 +30,70 @@ import static Utils.Constants.MAP_SCALE;
 /**
  * This class has predefined maps, animations and so on.
  */
-public class AssetsDeposit {
-    private static AssetsDeposit instance = null;
-    private final Map<ComponentType, GameMap> gameMaps;
-    private final Map <AnimationType, Animation> animations;
-    private final Map<ComponentType , Gun> guns;
-    private final Map<ComponentType , Bullet> bullets;
-    private final Map<ComponentType , ComponentType> gunsBulletsRelation;
-    private ImageWrapper menuWallpaper = null;
-
-    private ImageWrapper greenMapPreview ;
-    private ImageWrapper industrialMapPreview ;
-    private ImageWrapper powerMapPreview ;
-    private ImageWrapper gameOverlay = null;
-    private List<ImageWrapper> overlayEffects;
+public class AssetDeposit {
     /**
-     * this constructor loads all the assets.
+     * Shared instance
      */
-    private AssetsDeposit() {
+    private static AssetDeposit instance = null;
+
+    /**
+     * Collection of game maps.
+     */
+    private final Map<ComponentType, GameMap> gameMaps;
+
+    /**
+     * Collection of game maps.
+     */
+    private final Map<AnimationType, Animation> animations;
+
+    /**
+     * Collection of game guns.
+     */
+    private final Map<ComponentType, Gun> guns;
+
+    /**
+     * Collection of game bullets.
+     */
+    private final Map<ComponentType, Bullet> bullets;
+
+    /**
+     * Collection of relations between bullets and guns.
+     */
+    private final Map<ComponentType, ComponentType> gunsBulletsRelation;
+
+    /**
+     * Collection of menu images.
+     */
+    private final Map<ComponentType, ImageWrapper> menuImages;
+
+    /**
+     * This constructor loads all the assets.
+     */
+    private AssetDeposit() {
         gameMaps = new HashMap<>();
         animations = new HashMap<>();
         gunsBulletsRelation = new HashMap<>();
         guns = new HashMap<>();
         bullets = new HashMap<>();
+        menuImages = new HashMap<>();
         try {
             // -------------------------load menu wallpaper
             String source1 = "Resources/wallpapers/menu_wallpaper1.png";
             source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
-            menuWallpaper = new ImageWrapper(ImageIO.read(new File(source1)));
+            menuImages.put(ComponentType.MENU_WALLPAPER, new ImageWrapper(ImageIO.read(new File(source1))));
 
             //--------------------------load map previews
             source1 = "Resources/wallpapers/Green-Zone-Tileset-Pixel-Art.png";
             source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
-            greenMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
+            menuImages.put(ComponentType.GREEN_MAP_PREVIEW, new ImageWrapper(ImageIO.read(new File(source1))));
 
             source1 = "Resources/wallpapers/Free-Industrial-Zone-Tileset-Pixel-Art.png";
             source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
-            industrialMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
+            menuImages.put(ComponentType.INDUSTRIAL_MAP_PREVIEW, new ImageWrapper(ImageIO.read(new File(source1))));
 
             source1 = "Resources/wallpapers/Power-Station-Free-Tileset-Pixel-Art-768x512.jpg";
             source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath();
-            powerMapPreview = new ImageWrapper(ImageIO.read(new File(source1)));
+            menuImages.put(ComponentType.POWER_MAP_PREVIEW, new ImageWrapper(ImageIO.read(new File(source1))));
 
             // -------------------------load the overlay effects and set the transparency
             //TODO
@@ -80,13 +105,13 @@ public class AssetsDeposit {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // 20% transparency
             g2d.drawImage(image, 0, 0, null);
             g2d.dispose();
-            gameOverlay = new ImageWrapper(transparentImage);
+            menuImages.put(ComponentType.GAME_OVERLAY, new ImageWrapper(transparentImage));
 
 
             // -----------------------load game maps
-            gameMaps.put(ComponentType.GREEN_CITY, new GameMap(null,ComponentType.GREEN_CITY));
-            gameMaps.put(ComponentType.INDUSTRIAL_CITY, new GameMap(null,ComponentType.INDUSTRIAL_CITY));
-            gameMaps.put(ComponentType.POWER_STATION, new GameMap(null,ComponentType.POWER_STATION));
+            gameMaps.put(ComponentType.GREEN_CITY, new GameMap(null, ComponentType.GREEN_CITY));
+            gameMaps.put(ComponentType.INDUSTRIAL_CITY, new GameMap(null, ComponentType.INDUSTRIAL_CITY));
+            gameMaps.put(ComponentType.POWER_STATION, new GameMap(null, ComponentType.POWER_STATION));
 
             // -----------------------load game animations
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -105,7 +130,7 @@ public class AssetsDeposit {
                 Element imageElement = (Element) element.getElementsByTagName("image").item(0);
 
                 String source = imageElement.getAttribute("source").replace("..", "Resources");
-                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
+                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20", " ");
                 String id = element.getAttribute("type");
                 int spriteSheetWidth = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));
@@ -121,7 +146,7 @@ public class AssetsDeposit {
             }
 
             // -----------------------load game ComponentTypes
-            // first of all let's make a mapping that describes
+            // first of all, let's make a mapping that describes
             // the bullet-gun relationship
 
             gunsBulletsRelation.put(ComponentType.GUN_1, ComponentType.BULLET_1);
@@ -137,7 +162,7 @@ public class AssetsDeposit {
 
 
             source1 = "Resources/in_game_assets/weapons&buletts.tsx";
-            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20" , " ");
+            source1 = Objects.requireNonNull(Database.class.getClassLoader().getResource(source1)).getPath().replace("%20", " ");
 
             document = builder.parse(new File(source1));
             root = document.getDocumentElement();
@@ -148,7 +173,7 @@ public class AssetsDeposit {
                 Element imageElement = (Element) element.getElementsByTagName("image").item(0);
 
                 String source = imageElement.getAttribute("source").replace("..", "Resources");
-                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20" , " ");
+                source = Objects.requireNonNull(Database.class.getClassLoader().getResource(source)).getPath().replace("%20", " ");
                 String id = element.getAttribute("type");
                 int width = Integer.parseInt(imageElement.getAttribute("width"));
                 int height = Integer.parseInt(imageElement.getAttribute("height"));
@@ -161,52 +186,56 @@ public class AssetsDeposit {
                     bullets.put(ComponentType.valueOf(id), new Bullet(ImageIO.read(new File(source)), boxBounding));
                 }
             }
-        }catch (Exception e){
-            System.out.println(e.getMessage() + "->" + e.getLocalizedMessage());
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static AssetsDeposit get(){
+    /**
+     * Getter for the shared instance.
+     *
+     * @return shared instance of class.
+     */
+    public static AssetDeposit get() {
         if (instance == null) {
-            instance = new AssetsDeposit();
+            instance = new AssetDeposit();
         }
         return instance;
     }
 
-    public void addGameMap(GameMap map){
-        if(!gameMaps.containsKey(map.getCurrentType())){
-           gameMaps.put(map.getCurrentType() , map);
-        }
-    }
-    public GameMap getGameMap(ComponentType name){
+    /**
+     * @param name related type of the preloaded map.
+     * @return requested map
+     */
+    public GameMap getGameMap(ComponentType name) {
         return gameMaps.get(name);
     }
 
-    public Animation getAnimation(AnimationType name){
+    /**
+     * @param name related type of the animation
+     * @return requested animation
+     */
+    public Animation getAnimation(AnimationType name) {
         return animations.get(name);
     }
 
     /**
-     * @param name bun type
-     * @return Gun object
+     * @param name related type of the gun
+     * @return requested gun
      */
-    public Gun getGun(ComponentType name){
+    public Gun getGun(ComponentType name) {
         return guns.get(name);
     }
 
     /**
-     * @param name bullet type
-     * @return Bullet object
+     * @param name related type of gun specific to a bullet
+     * @return requested bullet
      */
-    public Bullet getBulletByGunName(ComponentType name){return bullets.get(gunsBulletsRelation.get(name));}
-
-    public ImageWrapper getMenuWallpaper() {return menuWallpaper;}
-
-    public ImageWrapper getGameOverlay() {return gameOverlay;}
-
-    public ImageWrapper getGreenMapPreview() {
-        return greenMapPreview;
+    public Bullet getBulletByGunName(ComponentType name) {
+        return bullets.get(gunsBulletsRelation.get(name));
     }
-    public ImageWrapper getIndustrialMapPreview() {return industrialMapPreview;}
-    public ImageWrapper getPowerMapPreview() {return powerMapPreview;}
+
+    public ImageWrapper getMenuImage(ComponentType type) {
+        return menuImages.get(type);
+    }
 }

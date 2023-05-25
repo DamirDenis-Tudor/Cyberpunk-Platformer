@@ -12,21 +12,24 @@ import Scenes.SceneHandler;
 /**
  * This class is a facade that gives the possibility of
  * starting a game without knowing the underlying structure.
- * @Implemets Runnable
+ *
+ * @see Runnable
  */
 public class Game implements Runnable {
-    /** This variable stops the game*/
+    /**
+     * This variable stops the game
+     */
     private boolean runState;
 
     /**
-     *  This constructor instantiates the game
+     * This constructor instantiates the game
      */
     public Game() {
         runState = false;
     }
 
     /**
-     *  This method creates a thread that runs the game as its task
+     * This method creates a thread that runs the game as its task
      */
     public synchronized void startGame() {
         if (!runState) {
@@ -38,8 +41,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * This method implements the game loop.Moreover, this method threats
-     * drawing and updating exceptions separately.
+     * This method implements the game loop.
      */
     @Override
     public void run() {
@@ -57,17 +59,17 @@ public class Game implements Runnable {
             TimerHandler timerHandler = TimerHandler.get();
 
             // framerate text
-            Text framerate = new Text(" " , new Coordinate<>(Constants.WINDOW_WIDTH - 150,50) , 56);
+            Text framerate = new Text(" ", new Coordinate<>(Constants.WINDOW_WIDTH - 150, 50), 56);
             framerate.setTextColor(ColorType.BLACK_COLOR);
-            timerHandler.addTimer(new Timer(0.5f) , "FRAMERATE_REFRESH");
+            timerHandler.addTimer(new Timer(0.5f), "FRAMERATE_REFRESH");
 
             while (runState) {
                 currentTime = System.nanoTime();
 
                 if ((currentTime - oldTime) > timeFrame) {
-                    Timer.deltaTime = (currentTime-oldTime)/1000000000.f;
+                    Timer.deltaTime = (currentTime - oldTime) / 1000000000.f;
 
-                    if(!timerHandler.getTimer("FRAMERATE_REFRESH").getTimerState()) {
+                    if (!timerHandler.getTimer("FRAMERATE_REFRESH").getTimerState()) {
                         framerate.setText("FPS : " + Integer.valueOf((int) (1 / Timer.deltaTime + 1)).toString());
                         timerHandler.getTimer("FRAMERATE_REFRESH").resetTimer();
                     }
@@ -76,7 +78,8 @@ public class Game implements Runnable {
 
                     sceneHandler.getActiveScene().update();
 
-                    if(sceneHandler.getActiveScene()==null){;
+                    if (sceneHandler.getActiveScene() == null) {
+                        ;
                         System.exit(-1);
                     }
 
@@ -97,7 +100,7 @@ public class Game implements Runnable {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            System.out.println(exception.getMessage() + " " );
+            System.out.println(exception.getMessage() + " ");
             System.exit(-1);
         }
     }

@@ -16,9 +16,23 @@ import java.util.Map;
  * This class encapsulates the behavior of a chest.
  */
 public class Chest extends DynamicComponent {
+
+    /**
+     * Variable for animation wrapper specific to a chest.
+     */
     transient private AnimationHandler animationHandler;
+
+    /**
+     * Collection that stores supported statuses.
+     */
     private final Map<ComponentStatus, Boolean> statuses;
 
+    /**
+     * This constructor initializes all the important fields.
+     *
+     * @param scene    reference to the component that must be notified.
+     * @param position component start position.
+     */
     public Chest(Scene scene, Coordinate<Integer> position) {
         super();
         this.scene = scene;
@@ -66,18 +80,8 @@ public class Chest extends DynamicComponent {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        if(!getActiveStatus()) return;
+        if (!getActiveStatus()) return;
         animationHandler.draw(graphics2D);
-    }
-
-    @Override
-    public ComponentType getCurrentType() {
-        return null;
-    }
-
-    @Override
-    public ComponentType getGeneralType() {
-        return ComponentType.CHEST;
     }
 
     @Override
@@ -89,11 +93,21 @@ public class Chest extends DynamicComponent {
         animationHandler.changeAnimation(AnimationType.Chest1, collideBox.getPosition());
 
         // restore the animation status
-        if(statuses.get(ComponentStatus.IS_OPENED)){
+        if (statuses.get(ComponentStatus.IS_OPENED)) {
             animationHandler.getAnimation().lockAtLastFrame();
-        }else {
+        } else {
             animationHandler.getAnimation().lockAtFistFrame();
         }
         animationHandler.getAnimation().setRectangle(collideBox);
+    }
+
+    @Override
+    public ComponentType getCurrentType() {
+        return null;
+    }
+
+    @Override
+    public ComponentType getGeneralType() {
+        return ComponentType.CHEST;
     }
 }

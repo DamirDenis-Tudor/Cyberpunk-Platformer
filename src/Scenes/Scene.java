@@ -76,7 +76,7 @@ public abstract class Scene implements Notifiable {
     }
 
     /**
-     * This method removes a component.
+     * This method removes a specific component.
      *
      * @param component to be removed
      */

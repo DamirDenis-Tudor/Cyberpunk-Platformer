@@ -15,6 +15,8 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 /**
  * This class handles the behavior of a parallax background.
  * For additional info, see how the Parallax effect works.
+ *
+ * @note By the lack of drawing performance, this effect was disabled it was too costly to draw 10 images full hd.
  */
 public class ParallaxWallpaper implements StaticComponent{
     BufferedImage bufferedImage = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, TYPE_INT_ARGB);

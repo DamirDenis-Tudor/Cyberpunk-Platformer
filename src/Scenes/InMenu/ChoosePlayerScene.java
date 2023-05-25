@@ -1,7 +1,7 @@
 package Scenes.InMenu;
 
 import Components.BaseComponents.Animation;
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.BaseComponents.ImageWrapper;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
@@ -24,24 +24,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * THis class encapsulates the scene of choosing player.
+ * This class encapsulates the scene of choosing player.
+ *
+ * @see Scene
  */
-public class ChoosePlayerScene extends Scene {
+final public class ChoosePlayerScene extends Scene {
 
-    /**Variable that stores the selected player.*/
+    /**
+     * Variable that stores the selected player.
+     */
     private MessageType selectedPlayer;
 
-    /**List that stores components that could be temporary.*/
+    /**
+     * List that stores components that could be temporary.
+     */
     private final List<StaticComponent> changeableComponents = new ArrayList<>();
 
     /**
      * This constructor initializes the scene.
+     *
      * @param sceneHandler reference to its handler.
      */
     public ChoosePlayerScene(SceneHandler sceneHandler) {
         super(sceneHandler);
-        ImageWrapper menuWallpaper = AssetsDeposit.get().getMenuWallpaper();
-        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0,0) , Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
+        ImageWrapper menuWallpaper = AssetDeposit.get().getMenuImage(ComponentType.MENU_WALLPAPER);
+        menuWallpaper.setRectangle(new Rectangle(new Coordinate<>(0, 0), Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         components.add(menuWallpaper);
         components.add(new Button(this, ComponentType.BIKER, "Biker",
                 new Rectangle(new Coordinate<>(350, 300), 400, 100), 56));
@@ -56,7 +63,7 @@ public class ChoosePlayerScene extends Scene {
     @Override
     public void update() {
         super.update();
-        for (StaticComponent changeableComponent:changeableComponents){
+        for (StaticComponent changeableComponent : changeableComponents) {
             changeableComponent.update();
         }
     }
@@ -64,10 +71,10 @@ public class ChoosePlayerScene extends Scene {
     @Override
     public void draw(Graphics2D graphics2D) {
         super.draw(graphics2D);
-        for (StaticComponent changeableComponent:changeableComponents){
+        for (StaticComponent changeableComponent : changeableComponents) {
             changeableComponent.draw(graphics2D);
         }
-        if(KeyboardInput.get().getKeyEnter() && selectedPlayer!=null){
+        if (KeyboardInput.get().getKeyEnter() && selectedPlayer != null) {
             changeableComponents.clear();
             sceneHandler.notify(new Message(selectedPlayer, ComponentType.SCENE, -1));
             sceneHandler.notify(new Message(MessageType.NEW_GAME, ComponentType.SCENE, -1));
@@ -82,16 +89,16 @@ public class ChoosePlayerScene extends Scene {
             case SCENE_HAS_BEEN_ACTIVATED -> {
                 MouseInput.get().reset();
                 KeyboardInput.get().reset();
-                Text text = new Text("Select player ..." , new Coordinate<>(1300 , 500) , 55);
+                Text text = new Text("Select player ...", new Coordinate<>(1300, 500), 55);
                 changeableComponents.add(text);
             }
             case BUTTON_CLICKED -> {
                 switch (message.source()) {
                     case CYBORG, PUNK, BIKER -> {
                         changeableComponents.clear();
-                        Text text = new Text("Press ENTER ..." , new Coordinate<>(1250 , 820) , 55);
-                        AnimationType animationType = null ;
-                        switch (message.source()){
+                        Text text = new Text("Press ENTER ...", new Coordinate<>(1250, 820), 55);
+                        AnimationType animationType = null;
+                        switch (message.source()) {
                             case BIKER -> {
                                 animationType = AnimationType.BikerIdle;
                                 selectedPlayer = MessageType.BIKER_SELECTED;
@@ -105,7 +112,7 @@ public class ChoosePlayerScene extends Scene {
                                 selectedPlayer = MessageType.PUNK_SELECTED;
                             }
                         }
-                        Animation animation = new Animation(AssetsDeposit.get().getAnimation(animationType));
+                        Animation animation = new Animation(AssetDeposit.get().getAnimation(animationType));
                         animation.setPosition(new Coordinate<>(1300, 300));
                         animation.setAnimationScale(5);
                         changeableComponents.add(animation);

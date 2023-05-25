@@ -20,19 +20,29 @@ import java.util.Objects;
  * Normally, this class should implement an interface of CRUD instructions.
  */
 public class Database {
-    /**Shared instance.*/
-    private static Database instance ;
+    /**
+     * Shared instance.
+     */
+    private static Database instance;
 
-    /**Connection to a database.*/
-    private Connection connection ;
+    /**
+     * Connection to a database.
+     */
+    private Connection connection;
 
-    /**Name of the oldest save.*/
+    /**
+     * Name of the oldest save.
+     */
     private String oldestSave = "";
 
-    /**Name of the load save.*/
+    /**
+     * Name of the load save.
+     */
     private String saveToBeLoaded = "";
 
-    /**Number of displayed saves.*/
+    /**
+     * Number of displayed saves.
+     */
     private int currentNumberOfDisplayedSaves = 0;
 
     /**
@@ -53,6 +63,7 @@ public class Database {
 
     /**
      * Getter for shared instance.
+     *
      * @return shared instance
      */
     public static Database get() {
@@ -108,7 +119,9 @@ public class Database {
         }
     }
 
-    /**Insert information into a current created save.*/
+    /**
+     * Insert information into a current created save.
+     */
     public void insertDataIntoSave(ComponentType componentType, byte[] data) {
         try {
             int maxNumberOfDisplayedSaves = 7;
@@ -165,7 +178,7 @@ public class Database {
 
             while (resultSet.next()) {
                 byte[] bytes = resultSet.getBytes("SERIALIZED_FIELD");
-                objects.add(new SerializedObject(ComponentType.values()[resultSet.getInt("COMPONENT_TYPE")] , bytes));
+                objects.add(new SerializedObject(ComponentType.values()[resultSet.getInt("COMPONENT_TYPE")], bytes));
             }
             statement.close();
             resultSet.close();
@@ -176,6 +189,9 @@ public class Database {
         return objects;
     }
 
+    /**
+     * This method deletes the OLDEST save from a database.
+     */
     public void deleteLastSave() {
         try {
             String sql = "SELECT * FROM SAVES";
@@ -196,6 +212,9 @@ public class Database {
         }
     }
 
+    /**
+     * This method closes the connection to a database.
+     */
     public void closeConnection() {
         try {
             connection.close();
@@ -205,10 +224,19 @@ public class Database {
         }
     }
 
+    /**
+     * This method notifies the database about the new save name.
+     *
+     * @param save identifier of the newly added save.
+     */
     public void setSaveToBeLoaded(String save) {
         saveToBeLoaded = save;
     }
 
+    /**
+     * Getter for the newly added save.
+     * @return newly added save
+     */
     public String getSaveToBeLoaded() {
         return saveToBeLoaded;
     }

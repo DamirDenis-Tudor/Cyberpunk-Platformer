@@ -1,6 +1,6 @@
 package Scenes.InGame;
 
-import Components.BaseComponents.AssetsDeposit;
+import Components.BaseComponents.AssetDeposit;
 import Components.MenuComponents.Button;
 import Components.MenuComponents.Text;
 import Enums.ComponentType;
@@ -16,11 +16,22 @@ import Window.Camera;
 
 import static Utils.Constants.INVALID_ID;
 
+/**
+ * This class encapsulates the failed game scene.
+ *
+ * @see Scene
+ */
 final public class LevelFailedScene extends Scene {
+
+    /**
+     * This constructor initializes the scene.
+     *
+     * @param sceneHandler reference to its handler.
+     */
     public LevelFailedScene(SceneHandler sceneHandler) {
 
         super(sceneHandler);
-        components.add(AssetsDeposit.get().getMenuWallpaper());
+        components.add(AssetDeposit.get().getMenuImage(ComponentType.MENU_WALLPAPER));
         components.add(new Text("GAME FAILED", new Coordinate<>(1300, 575), 120));
         components.add(new Button(this, ComponentType.LOAD_BUTTON, "LOAD",
                 new Rectangle(new Coordinate<>(350, 300), 400, 150), 56));

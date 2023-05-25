@@ -19,22 +19,29 @@ import static Utils.Constants.*;
 
 /**
  * This class is responsible for the handling of multiple scenes.
+ *
  * @see Notifiable
  */
 public class SceneHandler implements Notifiable {
-    /**Shared instance.*/
+    /**
+     * Shared instance.
+     */
     static SceneHandler instance;
 
-    /**Map of scenes.*/
+    /**
+     * Map of scenes.
+     */
     private final Map<SceneType, Scene> scenes;
 
-    /**Current active scene.*/
+    /**
+     * Current active scene.
+     */
     private Scene activeScene;
 
     /**
      * This constructor loads a series of predefined scenes.
      */
-    private SceneHandler()  {
+    private SceneHandler() {
         scenes = new HashMap<>();
         scenes.put(MAIN_MENU_SCENE, new MainMenuScene(this));
         scenes.put(CHOOSE_PLAYER_SCENE, new ChoosePlayerScene(this));
@@ -50,6 +57,7 @@ public class SceneHandler implements Notifiable {
 
     /**
      * Getter for shared instance.
+     *
      * @return shared instance
      */
     public static SceneHandler getInstance() {
@@ -61,15 +69,17 @@ public class SceneHandler implements Notifiable {
 
     /**
      * Getter for a current active scene.
+     *
      * @return current scene
      */
-    public Scene getActiveScene(){
+    public Scene getActiveScene() {
         return activeScene;
     }
 
     /**
      * This method handles the scene change request.
      * It can change the active state if the new scene does not belong to the current active state.
+     *
      * @param newScene scene to be activated
      */
     public void handleSceneChangeRequest(SceneType newScene) {
@@ -96,14 +106,15 @@ public class SceneHandler implements Notifiable {
                         scenes.get(LEVEL_PAUSED_SCENE).notify(message);
                     }
                     case NEW_GAME, LOAD_GAME, GREEN_MAP_SELECTED,
-                            INDUSTRIAL_MAP_SELECTED,POWER_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
-                    case WEAPON_IS_DROPPED,CLEAR_INVENTORY -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
+                            INDUSTRIAL_MAP_SELECTED, POWER_MAP_SELECTED -> scenes.get(PLAY_SCENE).notify(message);
+                    case WEAPON_IS_DROPPED, CLEAR_INVENTORY -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
                 }
             }
 
             case INVENTORY -> {
                 switch (message.type()) {
-                    case WEAPON_IS_SELECTED, DISABLE_GUN, WEAPON_IS_DROPPED,HAS_NO_WEAPON -> scenes.get(PLAY_SCENE).notify(message);
+                    case WEAPON_IS_SELECTED, DISABLE_GUN, WEAPON_IS_DROPPED, HAS_NO_WEAPON ->
+                            scenes.get(PLAY_SCENE).notify(message);
                 }
             }
 
@@ -111,7 +122,7 @@ public class SceneHandler implements Notifiable {
                     GUN_9, GUN_10 -> scenes.get(LEVEL_PAUSED_SCENE).notify(message);
 
             case PLAYER -> {
-                if(message.type() ==MessageType.WEAPON_IS_SELECTED) scenes.get(LEVEL_PAUSED_SCENE).notify(message);
+                if (message.type() == MessageType.WEAPON_IS_SELECTED) scenes.get(LEVEL_PAUSED_SCENE).notify(message);
             }
         }
     }

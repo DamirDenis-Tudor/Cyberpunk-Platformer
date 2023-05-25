@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * THis class register different keyboard events.
+ * This class register different keyboard events.
  */
 public class KeyboardInput implements KeyListener {
     private static KeyboardInput instance;

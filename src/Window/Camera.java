@@ -8,22 +8,34 @@ import Utils.Coordinate;
  */
 public class Camera {
 
-    /** Shared instance.*/
+    /**
+     * Shared instance.
+     */
     private static Camera instance;
 
-    /** Reference to component focused position. */
+    /**
+     * Reference to component focused position.
+     */
     private Coordinate<Integer> focusComponentPosition;
 
-    /**Stores the horizontal offsets: X - current , Y - past */
+    /**
+     * Stores the horizontal offsets: X - current , Y - past
+     */
     private final Coordinate<Integer> horizontalOffsets;
 
-    /**Stores the vertical offsets: X - current , Y - past */
+    /**
+     * Stores the vertical offsets: X - current , Y - past
+     */
     private final Coordinate<Integer> verticalOffsets;
 
-    /**Stores the map dimensions: X - width , Y - height */
+    /**
+     * Stores the map dimensions: X - width , Y - height
+     */
     private final Coordinate<Integer> mapDimensions;
 
-    /**Stores the current state of camera.*/
+    /**
+     * Stores the current state of camera.
+     */
     private boolean active = true;
 
     /**
@@ -33,7 +45,7 @@ public class Camera {
         horizontalOffsets = new Coordinate<>(0, 0);
         verticalOffsets = new Coordinate<>(0, 0);
         focusComponentPosition = new Coordinate<>(0, 0);
-        mapDimensions = new Coordinate<>(0,0);
+        mapDimensions = new Coordinate<>(0, 0);
     }
 
     /**
@@ -98,15 +110,21 @@ public class Camera {
 
     /**
      * This method refreshes the current camera horizontal boundary.
+     *
      * @param dimension map width dimension
      */
-    public void setGameMapPixelWidthDimension(int dimension) {mapDimensions.setX(dimension);}
+    public void setGameMapPixelWidthDimension(int dimension) {
+        mapDimensions.setX(dimension);
+    }
 
     /**
      * This method refreshes the current camera vertical boundary.
+     *
      * @param dimension map height dimension
      */
-    public void setGameMapPixelHeightDimension(int dimension) {mapDimensions.setY(dimension);}
+    public void setGameMapPixelHeightDimension(int dimension) {
+        mapDimensions.setY(dimension);
+    }
 
     /**
      * This method is responsible for detecting the borders of the map and to stop camera movement when is necessary.
